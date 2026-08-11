@@ -12,7 +12,9 @@ const TABS = [
 
 const CONTENT_MAX_WIDTH = {
   hardwareSpec: 1000,
-  cablePlan:    1000,
+  // The cable plan is a two-pane workspace — configuration rail plus a
+  // persistent elevation — so it needs the full width to be usable.
+  cablePlan:    1700,
   overpressure: 1400,
 }
 

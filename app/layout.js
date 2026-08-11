@@ -2,10 +2,16 @@ import './globals.css'
 
 export const metadata = {
   title: 'MF Services Apps',
-  viewport: 'width=device-width, initial-scale=1',
   icons: {
     icon: '/favicon.ico',
   },
+}
+
+// Next 16 requires viewport to be its own export rather than a
+// metadata key.
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
 }
 
 export default function RootLayout({ children }) {
