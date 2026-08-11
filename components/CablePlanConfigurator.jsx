@@ -3,26 +3,10 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import DoorElevation from "./DoorElevation";
 import ReviewAndGenerate from "./ReviewAndGenerate";
 import {
-  FONT_SANS, FONT_MONO, CABLE_TYPES, resolveCable,
+  UI, FONT, CABLE_TYPES, resolveCable,
   flattenComponents, buildInclusionMap, buildInitialState,
   isMandatoryForSystem, getRemarksOverride, validateConfiguration,
 } from "../lib/cablePlanSpec";
-
-// ─── Surface palette ──────────────────────────────────────────────
-const T = {
-  navy:    "#00387B",
-  orange:  "#ED6E02",
-  red:     "#A6382F",
-  ink:     "#1B2430",
-  body:    "#3D4753",
-  muted:   "#6B7686",
-  faint:   "#98A2AE",
-  hair:    "#DDE2E8",
-  hairSoft:"#EBEEF2",
-  surface: "#FFFFFF",
-  sunken:  "#F7F9FA",
-  canvas:  "#F1F4F6",
-};
 
 // ─── System definition ────────────────────────────────────────────
 // Physical anchor points and cable routing for each position live in
@@ -67,43 +51,45 @@ const TYPE_LABELS = {
   manual_release_button: "Release button", smoke_detector: "Smoke detector",
 };
 
-const STEPS = ["Components", "Project", "Release"];
+const STEPS = ["Components", "Project", "Review"];
+
+const fieldStyle = {
+  width: "100%", boxSizing: "border-box",
+  border: `1px solid ${UI.ruleStrong}`, background: UI.surface,
+  padding: "10px 12px", fontSize: 13.5, lineHeight: 1.5,
+  fontFamily: FONT, color: UI.ink, outline: "none",
+};
+
+const focusField = e => { e.target.style.borderColor = UI.accent; e.target.style.boxShadow = `inset 0 0 0 1px ${UI.accent}`; };
+const blurField  = e => { e.target.style.borderColor = UI.ruleStrong; e.target.style.boxShadow = "none"; };
 
 // ─── Primitives ───────────────────────────────────────────────────
 
-function FieldLabel({ children }) {
+function Label({ children }) {
   return (
     <div style={{
-      fontSize: 10, fontWeight: 700, letterSpacing: "0.09em", textTransform: "uppercase",
-      color: T.faint, fontFamily: FONT_SANS, marginBottom: 7,
+      fontSize: 11.5, fontWeight: 600, letterSpacing: "0.07em", textTransform: "uppercase",
+      color: UI.muted, fontFamily: FONT, marginBottom: 8,
     }}>
       {children}
     </div>
   );
 }
 
-/** Square check control — matches the reference tool's affordance. */
-function CheckBox({ checked, disabled, onChange, label }) {
+function CheckBox({ checked, onChange, label }) {
   return (
     <button
-      type="button"
-      role="checkbox"
-      aria-checked={checked}
-      aria-label={label}
-      disabled={disabled}
-      onClick={disabled ? undefined : onChange}
+      type="button" role="checkbox" aria-checked={checked} aria-label={label} onClick={onChange}
       style={{
-        width: 15, height: 15, flexShrink: 0, padding: 0,
-        border: `1.5px solid ${disabled ? T.hair : checked ? T.orange : T.muted}`,
-        background: checked ? T.orange : T.surface,
-        cursor: disabled ? "not-allowed" : "pointer",
-        display: "flex", alignItems: "center", justifyContent: "center",
-        transition: "background 120ms, border-color 120ms",
+        width: 17, height: 17, flexShrink: 0, padding: 0,
+        border: `1.5px solid ${checked ? UI.accent : UI.ruleStrong}`,
+        background: checked ? UI.accent : UI.surface,
+        cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
       }}
     >
       {checked && (
-        <svg width="9" height="7" viewBox="0 0 9 7" aria-hidden="true">
-          <path d="M1 3.6L3.3 5.9L8 1.2" fill="none" stroke="#FFFFFF" strokeWidth="1.8"
+        <svg width="10" height="8" viewBox="0 0 10 8" aria-hidden="true">
+          <path d="M1 4L3.6 6.6L9 1.2" fill="none" stroke="#FFFFFF" strokeWidth="2"
             strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       )}
@@ -113,40 +99,36 @@ function CheckBox({ checked, disabled, onChange, label }) {
 
 function StepBar({ currentStep, setCurrentStep, furthest }) {
   return (
-    <nav aria-label="Progress" style={{ display: "flex", borderBottom: `1px solid ${T.hair}`, background: T.surface, flexShrink: 0 }}>
+    <nav aria-label="Progress" style={{ display: "flex", borderBottom: `1px solid ${UI.rule}`, flexShrink: 0 }}>
       {STEPS.map((label, i) => {
         const done = i < currentStep;
         const active = i === currentStep;
         const reachable = i <= furthest;
         return (
           <button
-            key={label}
-            type="button"
+            key={label} type="button"
             onClick={reachable ? () => setCurrentStep(i) : undefined}
             aria-current={active ? "step" : undefined}
             style={{
-              flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 7,
-              padding: "13px 8px", background: "none", border: "none",
-              borderBottom: `2px solid ${active ? T.navy : "transparent"}`,
-              marginBottom: -1,
-              cursor: reachable ? "pointer" : "default",
-              fontFamily: FONT_SANS,
-              color: active ? T.ink : reachable ? T.muted : T.faint,
-              fontWeight: active ? 650 : 500,
-              fontSize: 12.5,
+              flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+              padding: "14px 8px", background: "none", border: "none",
+              borderBottom: `2px solid ${active ? UI.accent : "transparent"}`, marginBottom: -1,
+              cursor: reachable ? "pointer" : "default", fontFamily: FONT,
+              color: active ? UI.ink : reachable ? UI.body : UI.muted,
+              fontWeight: active ? 600 : 500, fontSize: 13.5,
             }}
           >
             <span style={{
-              width: 18, height: 18, flexShrink: 0,
-              border: `1.5px solid ${active ? T.navy : done ? T.navy : T.hair}`,
-              background: done ? T.navy : "transparent",
-              color: done ? "#FFFFFF" : active ? T.navy : T.faint,
+              width: 20, height: 20, flexShrink: 0,
+              border: `1.5px solid ${active || done ? UI.accent : UI.ruleStrong}`,
+              background: done ? UI.accent : "transparent",
+              color: done ? "#FFFFFF" : active ? UI.accent : UI.muted,
               display: "flex", alignItems: "center", justifyContent: "center",
-              fontSize: 10, fontWeight: 700, fontFamily: FONT_MONO,
+              fontSize: 11, fontWeight: 600,
             }}>
               {done ? (
-                <svg width="9" height="7" viewBox="0 0 9 7" aria-hidden="true">
-                  <path d="M1 3.6L3.3 5.9L8 1.2" fill="none" stroke="#FFFFFF" strokeWidth="1.8"
+                <svg width="10" height="8" viewBox="0 0 10 8" aria-hidden="true">
+                  <path d="M1 4L3.6 6.6L9 1.2" fill="none" stroke="#FFFFFF" strokeWidth="2"
                     strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               ) : i + 1}
@@ -178,17 +160,14 @@ function ComponentEntry({ comp, depth, system, componentStates, inclusion, onSta
       onFocusCapture={onActivate}
       onMouseEnter={onActivate}
       style={{
-        borderBottom: `1px solid ${T.hairSoft}`,
-        borderLeft: `2px solid ${active ? T.navy : "transparent"}`,
-        background: active ? "#FBFCFD" : T.surface,
-        paddingLeft: depth > 0 ? 22 : 0,
-        transition: "background 120ms, border-color 120ms",
+        borderBottom: `1px solid ${UI.rule}`,
+        borderLeft: `3px solid ${active ? UI.accent : "transparent"}`,
+        paddingLeft: depth > 0 ? 24 : 0,
       }}
     >
-      <div style={{ padding: "14px 20px 16px" }}>
+      <div style={{ padding: "16px 22px 18px" }}>
 
-        {/* Heading row */}
-        <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+        <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
           {comp.optional && !mandatory ? (
             <div style={{ paddingTop: 2 }}>
               <CheckBox
@@ -198,31 +177,29 @@ function ComponentEntry({ comp, depth, system, componentStates, inclusion, onSta
               />
             </div>
           ) : (
-            // Mandatory positions have no control — an empty gutter, so
-            // the headings still align but nothing reads as "unchecked".
-            <span aria-hidden="true" style={{ width: 15, flexShrink: 0 }} />
+            <span aria-hidden="true" style={{ width: 17, flexShrink: 0 }} />
           )}
 
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ display: "flex", alignItems: "baseline", gap: 7 }}>
-              <span style={{ fontFamily: FONT_MONO, fontSize: 12.5, fontWeight: 700, color: included ? T.navy : T.faint }}>
+            <div style={{ display: "flex", alignItems: "baseline", gap: 9 }}>
+              <span style={{ fontSize: 14.5, fontWeight: 700, color: included ? UI.accent : UI.muted, fontFamily: FONT }}>
                 {comp.position}
               </span>
               <h3 style={{
-                margin: 0, fontSize: 13.5, fontWeight: 600, lineHeight: 1.35,
-                color: included ? T.ink : T.faint, fontFamily: FONT_SANS,
+                margin: 0, fontSize: 14.5, fontWeight: 600, lineHeight: 1.4,
+                color: included ? UI.ink : UI.muted, fontFamily: FONT,
               }}>
                 {comp.label}
               </h3>
             </div>
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 3 }}>
-              <span style={{ fontSize: 11, color: T.faint, fontFamily: FONT_SANS }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 4 }}>
+              <span style={{ fontSize: 12.5, color: UI.muted, fontFamily: FONT }}>
                 {TYPE_LABELS[comp.type] || comp.type}
               </span>
               {mandatory && (
                 <span style={{
-                  fontSize: 9.5, fontWeight: 700, letterSpacing: "0.07em", textTransform: "uppercase",
-                  color: T.orange, fontFamily: FONT_SANS,
+                  fontSize: 11, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase",
+                  color: UI.warn, fontFamily: FONT,
                 }}>
                   Required
                 </span>
@@ -231,102 +208,90 @@ function ComponentEntry({ comp, depth, system, componentStates, inclusion, onSta
           </div>
 
           {included && (
-            <span aria-hidden="true" style={{ width: 14, height: 3, background: swatch, marginTop: 8, flexShrink: 0 }} />
+            <span aria-hidden="true" style={{ width: 18, height: 3, background: swatch, marginTop: 9, flexShrink: 0 }} />
           )}
         </div>
 
         {included && (
-          <div style={{ marginTop: 14, paddingLeft: 25 }}>
+          <div style={{ marginTop: 16, paddingLeft: 29 }}>
 
-            {/* Cable */}
             {fixedCable ? (
-              <div style={{ marginBottom: 14 }}>
-                <FieldLabel>Cable</FieldLabel>
-                <span style={{ fontFamily: FONT_MONO, fontSize: 12, color: T.muted }}>
+              <div style={{ marginBottom: 16 }}>
+                <Label>Cable</Label>
+                <span style={{ fontSize: 13.5, color: UI.body, fontFamily: FONT }}>
                   {comp.cable.defaultCable}
                 </span>
               </div>
             ) : (
-              <div style={{ marginBottom: 14 }}>
-                <FieldLabel>Cable</FieldLabel>
-                <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+              <div style={{ marginBottom: 16 }}>
+                <Label>Cable</Label>
+                <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>
                   {cables.map(cable => {
                     const on = state.selectedCable === cable && !state.isOther;
                     return (
-                      <label key={cable} style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
+                      <label key={cable} style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }}>
                         <input
-                          type="radio"
-                          name={`cable-${comp.id}`}
-                          checked={on}
+                          type="radio" name={`cable-${comp.id}`} checked={on}
                           onChange={() => onStateChange(comp.id, { selectedCable: cable, isOther: false })}
-                          style={{ accentColor: T.navy, width: 13, height: 13, margin: 0, flexShrink: 0 }}
+                          style={{ accentColor: UI.accent, width: 15, height: 15, margin: 0, flexShrink: 0 }}
                         />
-                        <span aria-hidden="true" style={{ width: 14, height: 3, background: CABLE_TYPES[cable]?.color ?? T.faint, flexShrink: 0 }} />
-                        <span style={{ fontFamily: FONT_MONO, fontSize: 12, color: on ? T.ink : T.body }}>{cable}</span>
+                        <span aria-hidden="true" style={{ width: 18, height: 3, background: CABLE_TYPES[cable]?.color ?? UI.muted, flexShrink: 0 }} />
+                        <span style={{ fontSize: 13.5, color: on ? UI.ink : UI.body, fontWeight: on ? 600 : 400, fontFamily: FONT }}>
+                          {cable}
+                        </span>
                       </label>
                     );
                   })}
                   {comp.cable.allowOther && (
-                    <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
+                    <label style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }}>
                       <input
-                        type="radio"
-                        name={`cable-${comp.id}`}
-                        checked={!!state.isOther}
+                        type="radio" name={`cable-${comp.id}`} checked={!!state.isOther}
                         onChange={() => onStateChange(comp.id, { isOther: true, selectedCable: "" })}
-                        style={{ accentColor: T.orange, width: 13, height: 13, margin: 0, flexShrink: 0 }}
+                        style={{ accentColor: UI.accent, width: 15, height: 15, margin: 0, flexShrink: 0 }}
                       />
-                      <span aria-hidden="true" style={{ width: 14, height: 3, background: T.orange, flexShrink: 0 }} />
-                      <span style={{ fontSize: 12, color: state.isOther ? T.ink : T.body, fontFamily: FONT_SANS }}>Other cable</span>
+                      <span aria-hidden="true" style={{ width: 18, height: 3, background: UI.warn, flexShrink: 0 }} />
+                      <span style={{ fontSize: 13.5, color: state.isOther ? UI.ink : UI.body, fontWeight: state.isOther ? 600 : 400, fontFamily: FONT }}>
+                        Other cable
+                      </span>
                     </label>
                   )}
                 </div>
                 {state.isOther && (
                   <input
-                    type="text"
-                    placeholder="Specify cable type"
+                    type="text" placeholder="Cable type"
                     aria-label={`Cable type for ${comp.label}`}
                     value={state.otherValue || ""}
                     onChange={e => onStateChange(comp.id, { otherValue: e.target.value })}
-                    style={{
-                      marginTop: 8, width: "100%", boxSizing: "border-box",
-                      border: `1px solid ${state.otherValue?.trim() ? T.hair : T.orange}`,
-                      background: T.surface, padding: "8px 10px",
-                      fontSize: 12, fontFamily: FONT_MONO, color: T.ink, outline: "none",
-                    }}
+                    style={{ ...fieldStyle, marginTop: 10, borderColor: state.otherValue?.trim() ? UI.ruleStrong : UI.warn }}
+                    onFocus={focusField}
+                    onBlur={e => { e.target.style.borderColor = e.target.value.trim() ? UI.ruleStrong : UI.warn; e.target.style.boxShadow = "none"; }}
                   />
                 )}
               </div>
             )}
 
-            {/* Standard remark — specification text, not editable */}
             {standardRemark && (
               <div style={{
-                marginBottom: 14, padding: "9px 11px",
-                background: override ? "#FDF6EF" : T.sunken,
-                borderLeft: `2px solid ${override ? T.orange : T.hair}`,
-                fontSize: 11.5, lineHeight: 1.5, fontFamily: FONT_SANS,
-                color: override ? "#8A4A08" : T.muted,
+                marginBottom: 16, padding: "11px 13px",
+                background: UI.sunken,
+                borderLeft: `3px solid ${override ? UI.warn : UI.ruleStrong}`,
+                fontSize: 13, lineHeight: 1.55, fontFamily: FONT,
+                color: override ? UI.warn : UI.body,
+                fontWeight: override ? 500 : 400,
               }}>
                 {standardRemark}
               </div>
             )}
 
-            {/* Site note */}
             <div>
-              <FieldLabel>Site note</FieldLabel>
+              <Label>Site note</Label>
               <textarea
-                rows={2}
-                placeholder="Optional — appears on the issued plan"
+                rows={2} placeholder="Optional"
                 aria-label={`Site note for ${comp.label}`}
                 value={state.userRemarks || ""}
                 onChange={e => onStateChange(comp.id, { userRemarks: e.target.value })}
-                style={{
-                  width: "100%", boxSizing: "border-box", resize: "vertical",
-                  border: `1px solid ${T.hair}`, background: T.surface, padding: "8px 10px",
-                  fontSize: 12, lineHeight: 1.5, fontFamily: FONT_SANS, color: T.ink, outline: "none",
-                }}
-                onFocus={e => { e.target.style.borderColor = T.navy; }}
-                onBlur={e => { e.target.style.borderColor = T.hair; }}
+                style={{ ...fieldStyle, resize: "vertical" }}
+                onFocus={focusField} onBlur={blurField}
               />
             </div>
           </div>
@@ -336,28 +301,20 @@ function ComponentEntry({ comp, depth, system, componentStates, inclusion, onSta
   );
 }
 
-// ─── Issue list ───────────────────────────────────────────────────
+// ─── Issues ───────────────────────────────────────────────────────
 
 function IssueList({ validation }) {
   const { errors, warnings } = validation;
-  if (errors.length === 0 && warnings.length === 0) {
-    return (
-      <div style={{ display: "flex", alignItems: "center", gap: 9, padding: "10px 20px", borderBottom: `1px solid ${T.hair}`, background: T.surface }}>
-        <span aria-hidden="true" style={{ width: 3, height: 14, background: "#5C8A2E", flexShrink: 0 }} />
-        <span style={{ fontSize: 12, color: T.body, fontFamily: FONT_SANS }}>
-          Configuration complete — no outstanding issues.
-        </span>
-      </div>
-    );
-  }
+  const items = [...errors.map(e => ({ ...e, level: "error" })), ...warnings.map(w => ({ ...w, level: "warning" }))];
   return (
-    <div style={{ padding: "10px 20px", borderBottom: `1px solid ${T.hair}`, background: T.surface }}>
-      {[...errors.map(e => ({ ...e, level: "error" })), ...warnings.map(w => ({ ...w, level: "warning" }))].map((item, i) => (
-        <div key={`${item.id}-${i}`} style={{ display: "flex", alignItems: "flex-start", gap: 9, marginBottom: 5 }}>
-          <span aria-hidden="true" style={{ width: 3, height: 14, marginTop: 2, background: item.level === "error" ? T.red : T.orange, flexShrink: 0 }} />
-          <span style={{ fontSize: 12, lineHeight: 1.45, color: T.body, fontFamily: FONT_SANS }}>
-            <strong style={{ fontFamily: FONT_MONO, fontWeight: 700, color: T.ink }}>{item.position}</strong>
-            {"  "}{item.reason}
+    <div style={{ padding: "12px 22px", borderBottom: `1px solid ${UI.rule}`, background: UI.sunken }}>
+      {items.length === 0 ? (
+        <span style={{ fontSize: 13, color: UI.body, fontFamily: FONT }}>No outstanding issues.</span>
+      ) : items.map((item, i) => (
+        <div key={`${item.id}-${i}`} style={{ display: "flex", alignItems: "flex-start", gap: 10, marginBottom: i < items.length - 1 ? 7 : 0 }}>
+          <span aria-hidden="true" style={{ width: 3, height: 17, marginTop: 1, background: item.level === "error" ? UI.warn : UI.ruleStrong, flexShrink: 0 }} />
+          <span style={{ fontSize: 13, lineHeight: 1.5, color: UI.body, fontFamily: FONT }}>
+            <strong style={{ fontWeight: 700, color: UI.ink }}>{item.position}</strong>{" "}{item.reason}
           </span>
         </div>
       ))}
@@ -368,53 +325,35 @@ function IssueList({ validation }) {
 // ─── Project details ──────────────────────────────────────────────
 
 const PROJECT_FIELDS = [
-  ["constructionProject", "Construction project"],
-  ["doorNumberOrNaming", "Door number / naming"],
-  ["installationLocation", "Installation location"],
-  ["positionNumberInSpec", "Position no. in specification"],
-  ["functionDescription", "Function description"],
-  ["miscellaneous", "Miscellaneous"],
+  ["constructionProject", "Construction project", false],
+  ["doorNumberOrNaming", "Door number", false],
+  ["installationLocation", "Installation location", false],
+  ["positionNumberInSpec", "Position no. in specification", false],
+  ["functionDescription", "Function description", true],
+  ["miscellaneous", "Notes", true],
 ];
 
 function ProjectDetails({ projectData, setProjectData }) {
   return (
-    <div style={{ padding: "20px" }}>
-      <p style={{ margin: "0 0 20px", fontSize: 12.5, lineHeight: 1.55, color: T.muted, fontFamily: FONT_SANS }}>
-        Recorded in the title block of the issued cable plan.
+    <div style={{ padding: "20px 22px" }}>
+      <p style={{ margin: "0 0 22px", fontSize: 13.5, lineHeight: 1.6, color: UI.body, fontFamily: FONT }}>
+        These appear in the title block of the PDF.
       </p>
-      {PROJECT_FIELDS.map(([key, label]) => (
-        <div key={key} style={{ marginBottom: 16 }}>
-          <label htmlFor={`pd-${key}`}>
-            <FieldLabel>{label}</FieldLabel>
-          </label>
-          {key === "functionDescription" || key === "miscellaneous" ? (
-            <textarea
-              id={`pd-${key}`}
-              rows={3}
+      {PROJECT_FIELDS.map(([key, label, multiline]) => (
+        <div key={key} style={{ marginBottom: 18 }}>
+          <label htmlFor={`pd-${key}`}><Label>{label}</Label></label>
+          {multiline ? (
+            <textarea id={`pd-${key}`} rows={3}
               value={projectData[key]}
               onChange={e => setProjectData(p => ({ ...p, [key]: e.target.value }))}
-              style={{
-                width: "100%", boxSizing: "border-box", resize: "vertical",
-                border: `1px solid ${T.hair}`, background: T.surface, padding: "9px 11px",
-                fontSize: 13, lineHeight: 1.5, fontFamily: FONT_SANS, color: T.ink, outline: "none",
-              }}
-              onFocus={e => { e.target.style.borderColor = T.navy; }}
-              onBlur={e => { e.target.style.borderColor = T.hair; }}
-            />
+              style={{ ...fieldStyle, resize: "vertical" }}
+              onFocus={focusField} onBlur={blurField} />
           ) : (
-            <input
-              id={`pd-${key}`}
-              type="text"
+            <input id={`pd-${key}`} type="text"
               value={projectData[key]}
               onChange={e => setProjectData(p => ({ ...p, [key]: e.target.value }))}
-              style={{
-                width: "100%", boxSizing: "border-box",
-                border: `1px solid ${T.hair}`, background: T.surface, padding: "9px 11px",
-                fontSize: 13, fontFamily: FONT_SANS, color: T.ink, outline: "none",
-              }}
-              onFocus={e => { e.target.style.borderColor = T.navy; }}
-              onBlur={e => { e.target.style.borderColor = T.hair; }}
-            />
+              style={fieldStyle}
+              onFocus={focusField} onBlur={blurField} />
           )}
         </div>
       ))}
@@ -448,8 +387,7 @@ export default function CablePlanConfigurator() {
     setComponentStates(prev => ({ ...prev, [compId]: { ...prev[compId], ...updates } }));
   }, []);
 
-  // Selecting a callout on the drawing brings its entry into view.
-  const handleSelectFromDrawing = useCallback((compId) => {
+  const handleSelectFromDrawing = useCallback(compId => {
     setActiveId(compId);
     setCurrentStep(0);
   }, []);
@@ -472,41 +410,35 @@ export default function CablePlanConfigurator() {
     if (railRef.current) railRef.current.scrollTop = 0;
   };
 
+  const nextDisabled = currentStep === 0 && !validation.isValid;
+
   return (
     <div style={{
-      display: "flex",
-      height: "calc(100vh - 190px)",
-      minHeight: 620,
-      border: `1px solid ${T.hair}`,
-      background: T.surface,
-      fontFamily: FONT_SANS,
-      color: T.body,
-      overflow: "hidden",
+      display: "flex", height: "calc(100vh - 190px)", minHeight: 640,
+      border: `1px solid ${UI.ruleStrong}`, background: UI.surface,
+      fontFamily: FONT, color: UI.body, overflow: "hidden",
     }}>
 
       {/* ── Configuration rail ── */}
       <aside style={{
-        width: 408, flexShrink: 0, display: "flex", flexDirection: "column",
-        borderRight: `1px solid ${T.hair}`, background: T.surface, minHeight: 0,
+        width: 424, flexShrink: 0, display: "flex", flexDirection: "column",
+        borderRight: `1px solid ${UI.ruleStrong}`, minHeight: 0,
       }}>
 
-        {/* Title block */}
-        <header style={{ padding: "16px 20px 14px", borderBottom: `1px solid ${T.hair}`, flexShrink: 0 }}>
-          <h1 style={{ margin: 0, fontSize: 16, fontWeight: 650, letterSpacing: "-0.01em", color: T.ink }}>
+        <header style={{ padding: "18px 22px 16px", borderBottom: `1px solid ${UI.rule}`, flexShrink: 0 }}>
+          <h1 style={{ margin: 0, fontSize: 19, fontWeight: 600, letterSpacing: "-0.01em", color: UI.ink, lineHeight: 1.3 }}>
             {system.name}
           </h1>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 5, flexWrap: "wrap" }}>
-            <span style={{ fontSize: 11.5, color: T.muted, fontFamily: FONT_MONO }}>{system.leafType}</span>
-            <span aria-hidden="true" style={{ width: 1, height: 10, background: T.hair }} />
-            <span style={{ fontSize: 11.5, color: T.muted, fontFamily: FONT_MONO }}>
-              {includedCount} of {flat.length} positions
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 6, flexWrap: "wrap" }}>
+            <span style={{ fontSize: 13, color: UI.body }}>{system.leafType}</span>
+            <span aria-hidden="true" style={{ width: 1, height: 12, background: UI.ruleStrong }} />
+            <span style={{ fontSize: 13, color: UI.body }}>
+              <strong style={{ color: UI.ink, fontWeight: 700 }}>{includedCount}</strong> of {flat.length} positions
             </span>
             {system.isFireDoor && (
               <>
-                <span aria-hidden="true" style={{ width: 1, height: 10, background: T.hair }} />
-                <span style={{
-                  fontSize: 9.5, fontWeight: 700, letterSpacing: "0.07em", textTransform: "uppercase", color: T.orange,
-                }}>
+                <span aria-hidden="true" style={{ width: 1, height: 12, background: UI.ruleStrong }} />
+                <span style={{ fontSize: 11.5, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: UI.warn }}>
                   Fire door
                 </span>
               </>
@@ -518,16 +450,11 @@ export default function CablePlanConfigurator() {
 
         {currentStep === 0 && <IssueList validation={validation} />}
 
-        {/* Scrolling body */}
         <div ref={railRef} style={{ flex: 1, minHeight: 0, overflowY: "auto" }}>
           {currentStep === 0 && flat.map(({ comp, depth }) => (
             <ComponentEntry
-              key={comp.id}
-              comp={comp}
-              depth={depth}
-              system={system}
-              componentStates={componentStates}
-              inclusion={inclusion}
+              key={comp.id} comp={comp} depth={depth} system={system}
+              componentStates={componentStates} inclusion={inclusion}
               onStateChange={handleStateChange}
               active={activeId === comp.id}
               onActivate={() => setActiveId(comp.id)}
@@ -535,71 +462,56 @@ export default function CablePlanConfigurator() {
             />
           ))}
 
-          {currentStep === 1 && (
-            <ProjectDetails projectData={projectData} setProjectData={setProjectData} />
-          )}
+          {currentStep === 1 && <ProjectDetails projectData={projectData} setProjectData={setProjectData} />}
 
           {currentStep === 2 && (
             <ReviewAndGenerate
-              system={system}
-              componentStates={componentStates}
-              projectData={projectData}
-              validation={validation}
-              inclusion={inclusion}
+              system={system} componentStates={componentStates} projectData={projectData}
+              validation={validation} inclusion={inclusion}
             />
           )}
         </div>
 
-        {/* Rail footer */}
         <footer style={{
           display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12,
-          padding: "12px 20px", borderTop: `1px solid ${T.hair}`, background: T.surface, flexShrink: 0,
+          padding: "14px 22px", borderTop: `1px solid ${UI.ruleStrong}`, flexShrink: 0,
         }}>
           <button
-            type="button"
-            onClick={goBack}
-            disabled={currentStep === 0}
+            type="button" onClick={goBack} disabled={currentStep === 0}
             style={{
-              padding: "9px 16px", fontSize: 12.5, fontWeight: 550, fontFamily: FONT_SANS,
-              border: `1px solid ${T.hair}`, background: T.surface,
-              color: currentStep === 0 ? T.faint : T.body,
+              padding: "10px 18px", fontSize: 13.5, fontWeight: 500, fontFamily: FONT,
+              border: `1px solid ${UI.ruleStrong}`, background: UI.surface,
+              color: currentStep === 0 ? UI.muted : UI.ink,
               cursor: currentStep === 0 ? "not-allowed" : "pointer",
+              opacity: currentStep === 0 ? 0.5 : 1,
             }}
           >
             Back
           </button>
-          {currentStep < STEPS.length - 1 ? (
+          {currentStep < STEPS.length - 1 && (
             <button
-              type="button"
-              onClick={goNext}
-              disabled={currentStep === 0 && !validation.isValid}
+              type="button" onClick={goNext} disabled={nextDisabled}
               style={{
-                padding: "9px 22px", fontSize: 12.5, fontWeight: 600, fontFamily: FONT_SANS,
-                border: "none",
-                background: currentStep === 0 && !validation.isValid ? T.hair : T.navy,
-                color: currentStep === 0 && !validation.isValid ? T.faint : "#FFFFFF",
-                cursor: currentStep === 0 && !validation.isValid ? "not-allowed" : "pointer",
+                padding: "10px 26px", fontSize: 13.5, fontWeight: 600, fontFamily: FONT,
+                border: `1px solid ${nextDisabled ? UI.ruleStrong : UI.accent}`,
+                background: nextDisabled ? UI.sunken : UI.accent,
+                color: nextDisabled ? UI.muted : "#FFFFFF",
+                cursor: nextDisabled ? "not-allowed" : "pointer",
               }}
             >
-              {currentStep === 0 && !validation.isValid
-                ? `Resolve ${validation.errors.length} issue${validation.errors.length === 1 ? "" : "s"}`
+              {nextDisabled
+                ? `${validation.errors.length} to fix`
                 : "Next"}
             </button>
-          ) : (
-            <span style={{ fontSize: 11.5, color: T.faint, fontFamily: FONT_MONO }}>
-              {system.systemVariant}
-            </span>
           )}
         </footer>
       </aside>
 
       {/* ── Drawing ── */}
-      <section style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", background: T.canvas }}>
+      <section style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column" }}>
         <DoorElevation
-          system={system}
-          componentStates={componentStates}
-          activeId={activeId}
-          onSelect={handleSelectFromDrawing}
+          system={system} componentStates={componentStates}
+          activeId={activeId} onSelect={handleSelectFromDrawing}
         />
       </section>
     </div>
