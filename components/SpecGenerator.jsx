@@ -211,29 +211,8 @@ export default function SpecGenerator() {
   const handleBack = () => setCurrentStep(s => Math.max(s - 1, 0));
 
   return (
-    <div style={{ minHeight: "100vh", background: T.canvas, fontFamily: "DM Sans, sans-serif", color: T.textBody }}>
-      {/* ── HEADER ── */}
-      <header className="mf-app-header" style={{  background: T.navy, borderBottom: `3px solid ${T.orange}`, padding: "0 32px", borderRadius: 12, boxShadow: shadow.md, marginBottom: 20 }}>
-        <div className="mf-header-inner" style={{ maxWidth: 1000, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between", height: 64, gap: 16 }}>
-          <div className="mf-header-row" style={{ display: "flex", alignItems: "center", gap: 14 }}>
-            <img src="/linkedin.jpg" alt="MF Services" style={{ height: 40, width: "auto", borderRadius: 4, background: "#ffffff" }} />
-            <div>
-              <div className="mf-header-title" style={{ fontWeight: 700, fontSize: 16, color: T.white, letterSpacing: "-0.02em", lineHeight: 1.2, maxWidth: 320, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>Hardware Spec Generator</div>
-              <div className="mf-header-subtitle" style={{ fontSize: 11, color: "rgba(255,255,255,0.55)", letterSpacing: "0.04em" }}>MF Services — Door Systems</div>
-            </div>
-          </div>
-          {doorType && (
-            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <div style={{ background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 8, padding: "6px 14px", fontSize: 13, color: T.white, fontWeight: 500 }}>
-                {doorType.label}
-              </div>
-            </div>
-          )}
-        </div>
-      </header>
-
-      {/* ── BODY ── */}
-      <main className="mf-content-shell" style={{ maxWidth: 1000, margin: "0 auto", padding: "40px 32px" }}>
+    <div style={{ fontFamily: "DM Sans, sans-serif", color: T.textBody }}>
+      <main className="mf-content-shell" style={{ maxWidth: 1000, margin: "0 auto", padding: "40px 0" }}>
         <StepIndicator currentStep={currentStep} setCurrentStep={setCurrentStep} />
 
         {/* STEP 0: Select Door Type */}

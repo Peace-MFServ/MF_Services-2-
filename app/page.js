@@ -7,11 +7,9 @@ import OverpressureCalculator from '../components/OverpressureCalculator'
 const TABS = [
   { id: 'hardwareSpec', label: 'Hardware Spec' },
   { id: 'cablePlan',    label: 'Cable Plan' },
-  { id: 'overpressure', label: 'Overpressure Calculator' },
+  { id: 'overpressure', label: 'Overpressure' },
 ]
 
-// Per-tab content max-width. The Overpressure Calculator's three-panel
-// layout needs more horizontal room than the form-based tools.
 const CONTENT_MAX_WIDTH = {
   hardwareSpec: 1000,
   cablePlan:    1000,
@@ -20,47 +18,62 @@ const CONTENT_MAX_WIDTH = {
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState('hardwareSpec')
-  const contentMaxWidth = CONTENT_MAX_WIDTH[activeTab] ?? 1000
 
   return (
-    <div className="mf-page-shell" style={{ minHeight: '100vh', background: '#F8F9FA', color: '#0F1C2E', fontFamily: 'DM Sans, sans-serif' }}>
-      {/* Tabs — always in a narrow, consistent container */}
-      <div className="mf-page-container" style={{ maxWidth: 1000, margin: '0 auto', padding: '24px 32px 0' }}>
-        <div style={{ display: 'flex', gap: 12, marginBottom: 24, background: '#FFFFFF', borderRadius: 16, padding: 8, boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
+    <div style={{ minHeight: '100vh', background: '#F8F9FA', fontFamily: 'DM Sans, sans-serif' }}>
+
+      {/* ── GLOBAL HEADER ── */}
+      <header style={{ background: '#00387B', borderBottom: '3px solid #ED6E02' }}>
+        <div style={{ maxWidth: 1400, margin: '0 auto', padding: '0 32px', display: 'flex', alignItems: 'center', height: 56, gap: 14 }}>
+          <img src="/linkedin.jpg" alt="MF Services" style={{ height: 34, width: 'auto', borderRadius: 3, flexShrink: 0 }} />
+          <div>
+            <div style={{ color: '#fff', fontWeight: 700, fontSize: 14, letterSpacing: '-0.01em', lineHeight: 1.2 }}>MF Services</div>
+            <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: 11, letterSpacing: '0.03em' }}>Door Systems Toolbox</div>
+          </div>
+        </div>
+      </header>
+
+      {/* ── TAB NAV ── */}
+      <nav style={{ background: '#fff', borderBottom: '1px solid #E2E8F0', position: 'sticky', top: 0, zIndex: 10 }}>
+        <div style={{ maxWidth: 1400, margin: '0 auto', padding: '0 32px', display: 'flex' }}>
           {TABS.map(tab => (
             <button
               key={tab.id}
               type="button"
               onClick={() => setActiveTab(tab.id)}
               style={{
-                flex: 1,
+                background: 'none',
                 border: 'none',
-                borderRadius: 12,
-                padding: '14px 18px',
-                fontSize: 15,
-                fontWeight: 600,
+                borderBottom: `2px solid ${activeTab === tab.id ? '#ED6E02' : 'transparent'}`,
+                padding: '13px 20px',
+                fontSize: 14,
+                fontWeight: activeTab === tab.id ? 600 : 400,
+                color: activeTab === tab.id ? '#0F1C2E' : '#6B7280',
                 cursor: 'pointer',
-                background: activeTab === tab.id ? '#00387B' : '#F3F4F6',
-                color: activeTab === tab.id ? '#FFFFFF' : '#374151',
+                fontFamily: 'DM Sans, sans-serif',
+                transition: 'color 150ms',
+                marginBottom: -1,
+                whiteSpace: 'nowrap',
               }}
             >
               {tab.label}
             </button>
           ))}
         </div>
-      </div>
+      </nav>
 
-      {/* Content — width adapts per tab */}
+      {/* ── CONTENT ── */}
       <div style={{
-        maxWidth: contentMaxWidth,
+        maxWidth: CONTENT_MAX_WIDTH[activeTab] ?? 1000,
         margin: '0 auto',
-        padding: '0 32px 32px',
+        padding: '32px',
         transition: 'max-width 200ms ease',
       }}>
         {activeTab === 'hardwareSpec' && <SpecGenerator />}
         {activeTab === 'cablePlan'    && <CablePlanConfigurator />}
         {activeTab === 'overpressure' && <OverpressureCalculator />}
       </div>
+
     </div>
   )
 }

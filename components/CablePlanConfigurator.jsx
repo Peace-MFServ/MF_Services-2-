@@ -2,7 +2,6 @@
 import { useState, useCallback } from "react";
 import ReviewAndGenerate from "./ReviewAndGenerate";
 import WiringDiagram from "./WiringDiagram";
-import { ETS64RDiagram } from "./SystemDiagram";
 
 // ─── DESIGN TOKENS ────────────────────────────────────────────────────────────
 const T = {
@@ -67,12 +66,6 @@ const SYSTEMS = {
       { id: "comp-12", position: "12", label: "Lintel-mounted smoke detector", type: "smoke_detector", mandatory: false, optional: true, cable: { defaultCable: "J-Y(ST)Y 4 x 0.8 mm²", allowedCables: ["J-Y(ST)Y 4 x 0.8 mm²"], allowOther: true }, remarks: "Cable laying in building as per approval" },
     ],
   },
-};
-
-const TYPE_ICONS = {
-  power_supply: "⚡", e_opener: "🔓", bolt_switch: "🔘", cable_transition: "🔌",
-  sensor_strip: "📡", flip_switch: "🔀", radar_sensor: "📻", program_switch: "⚙️",
-  manual_release_button: "🚨", smoke_detector: "🔥", door_closer: "🚪",
 };
 
 const TYPE_LABELS = {
@@ -153,7 +146,7 @@ function CableSelector({ comp, state, onChange }) {
   );
 }
 
-// ─── BENTO COMPONENT CARD ─────────────────────────────────────────────────────
+// ─── COMPONENT CARD ───────────────────────────────────────────────────────────
 function ComponentCard({ comp, state, onStateChange, system, depth = 0 }) {
   const mandatory = isMandatoryForSystem(comp, system);
   const remarksOverride = getRemarksOverride(comp, system);
@@ -181,7 +174,6 @@ function ComponentCard({ comp, state, onStateChange, system, depth = 0 }) {
           <div style={{ width: 32, height: 32, borderRadius: 8, background: mandatory ? "#FDF0F0" : T.blueLight, border: `1.5px solid ${mandatory ? "#FACACA" : "#C5DDF0"}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, color: mandatory ? T.red : T.blue, flexShrink: 0, fontFamily: "DM Mono, monospace" }}>
             {comp.position}
           </div>
-          <span style={{ fontSize: 16, flexShrink: 0 }}>{TYPE_ICONS[comp.type] || "•"}</span>
           <div style={{ minWidth: 0 }}>
             <div style={{ fontSize: 14, fontWeight: 600, color: T.textPrimary, fontFamily: "DM Sans, sans-serif", lineHeight: 1.3 }}>{comp.label}</div>
             <div style={{ fontSize: 11, color: T.textMuted, marginTop: 2 }}>{TYPE_LABELS[comp.type] || comp.type}</div>
@@ -252,7 +244,7 @@ function ValidationPanel({ validation }) {
 }
 
 // ─── STEP INDICATOR ───────────────────────────────────────────────────────────
-const STEPS = ["Select", "Configure", "Project", "Review"];
+const STEPS = ["Configure", "Project", "Review"];
 
 function StepIndicator({ currentStep, setCurrentStep }) {
   return (
@@ -284,75 +276,26 @@ function StepIndicator({ currentStep, setCurrentStep }) {
 // ─── MAIN ─────────────────────────────────────────────────────────────────────
 export default function CablePlanConfigurator() {
   const [currentStep, setCurrentStep] = useState(0);
-  const [selectedSystemId, setSelectedSystemId] = useState(null);
-  const [componentStates, setComponentStates] = useState({});
+  const [selectedSystemId] = useState("ets64r-single");
+  const [componentStates, setComponentStates] = useState(() => buildInitialState(SYSTEMS["ets64r-single"]));
   const [projectData, setProjectData] = useState({ constructionProject: "", doorNumberOrNaming: "", installationLocation: "", positionNumberInSpec: "", functionDescription: "", miscellaneous: "" });
 
-  const system = selectedSystemId ? SYSTEMS[selectedSystemId] : null;
-  const validation = system ? validateConfiguration(system, componentStates) : { errors: [], warnings: [], isValid: true };
+  const system = SYSTEMS[selectedSystemId];
+  const validation = validateConfiguration(system, componentStates);
 
-  const handleSelectSystem = id => { setSelectedSystemId(id); setComponentStates(buildInitialState(SYSTEMS[id])); };
   const handleStateChange = useCallback((compId, updates) => { setComponentStates(prev => ({ ...prev, [compId]: { ...prev[compId], ...updates } })); }, []);
-  const handleNext = () => { if (currentStep === 1 && !validation.isValid) return; setCurrentStep(s => Math.min(s + 1, STEPS.length - 1)); };
+  const handleNext = () => { if (currentStep === 0 && !validation.isValid) return; setCurrentStep(s => Math.min(s + 1, STEPS.length - 1)); };
   const handleBack = () => setCurrentStep(s => Math.max(s - 1, 0));
 
   return (
-    <div style={{ minHeight: "100vh", background: T.canvas, fontFamily: "DM Sans, sans-serif", color: T.textBody }}>
-
-      {/* ── HEADER ── */}
-      <header className="mf-app-header" style={{  background: T.navy, borderBottom: `3px solid ${T.orange}`, padding: "0 32px", borderRadius: 12, boxShadow: shadow.md, marginBottom: 20 }}>
-        <div className="mf-header-inner" style={{ maxWidth: 1000, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between", height: 64, gap: 16 }}>
-          <div className="mf-header-row" style={{ display: "flex", alignItems: "center", gap: 14 }}>
-            <img src="/linkedin.jpg" alt="MF Services" style={{ height: 40, width: "auto", borderRadius: 4, background: "#ffffff" }} />
-            <div>
-              <div className="mf-header-title" style={{ fontWeight: 700, fontSize: 16, color: T.white, letterSpacing: "-0.02em", lineHeight: 1.2, maxWidth: 320, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>Cable Plan Configurator</div>
-              <div className="mf-header-subtitle" style={{ fontSize: 11, color: "rgba(255,255,255,0.55)", letterSpacing: "0.04em" }}>MF Services — Door Systems</div>
-            </div>
-          </div>
-          {system && (
-            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <div style={{ background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 8, padding: "6px 14px", fontSize: 13, color: T.white, fontWeight: 500 }}>
-                {system.name} · {system.leafType}
-              </div>
-              {system.isFireDoor && (
-                <div style={{ background: T.orange, borderRadius: 6, padding: "4px 10px", fontSize: 11, fontWeight: 700, color: T.white, letterSpacing: "0.06em" }}>FIRE DOOR</div>
-              )}
-            </div>
-          )}
-        </div>
-      </header>
+    <div style={{ fontFamily: "DM Sans, sans-serif", color: T.textBody }}>
 
       {/* ── BODY ── */}
-      <main className="mf-content-shell" style={{ maxWidth: 1000, margin: "0 auto", padding: "40px 32px" }}>
+      <main className="mf-content-shell" style={{ maxWidth: 1000, margin: "0 auto", padding: "40px 0" }}>
         <StepIndicator currentStep={currentStep} setCurrentStep={setCurrentStep} />
 
-        {/* STEP 0: Select System */}
-        {currentStep === 0 && (
-          <div>
-            <h1 style={{ fontSize: 28, fontWeight: 700, color: T.textPrimary, letterSpacing: "-0.03em", marginBottom: 6 }}>Select Door System</h1>
-            <p style={{ color: T.textMuted, fontSize: 15, marginBottom: 32 }}>Choose the system you are configuring the cable plan for.</p>
-          
-            <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 16 }}>
-              {Object.values(SYSTEMS).map(sys => (
-                <div key={sys.id} onClick={() => handleSelectSystem(sys.id)}
-                  style={{ background: T.surface, border: `2px solid ${selectedSystemId === sys.id ? T.blue : T.border}`, borderRadius: 14, padding: 24, cursor: "pointer", transition: "all 200ms", boxShadow: selectedSystemId === sys.id ? `0 0 0 4px rgba(20,112,177,0.12), ${shadow.md}` : shadow.sm, minWidth: 400 }}>
-                  {sys.id === "ets64r-single" && (
-                    <div style={{ marginBottom: 20, padding: 16, background: T.surface2, borderRadius: 12, minHeight: 280, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                      <ETS64RDiagram system={sys} componentStates={{}} />
-                    </div>
-                  )}
-                  <div style={{ fontSize: 22, fontWeight: 700, color: T.textPrimary, letterSpacing: "-0.02em", marginBottom: 4 }}>{sys.name}</div>
-                  <div style={{ fontSize: 13, color: T.textMuted, marginBottom: 12 }}>{sys.leafType}</div>
-                  {sys.isFireDoor && <div style={{ display: "inline-block", background: T.orangeLight, color: T.orange, border: `1px solid #FCD9B0`, borderRadius: 6, padding: "3px 10px", fontSize: 12, fontWeight: 600, marginBottom: 10 }}>🔥 Fire Door</div>}
-                  <div style={{ fontSize: 12, color: T.textFaint }}>{sys.components.length} components</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* STEP 1: Configure */}
-        {currentStep === 1 && system && (
+        {/* STEP 0: Configure */}
+        {currentStep === 0 && system && (
           <div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 28, gap: 20, flexWrap: "wrap" }}>
               <div>
@@ -363,22 +306,19 @@ export default function CablePlanConfigurator() {
                 <ValidationPanel validation={validation} />
               </div>
             </div>
-            {/* Bento grid */}
-             <div style={{ marginBottom: 28 }}>
-  <WiringDiagram system={system} componentStates={componentStates} />
-</div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-              {system.components.map((comp, i) => (
-                <div key={comp.id} style={{ gridColumn: comp.subComponents ? "1 / -1" : "auto" }}>
-                  <ComponentCard comp={comp} state={componentStates} onStateChange={handleStateChange} system={system} />
-                </div>
+            <div style={{ marginBottom: 28 }}>
+              <WiringDiagram system={system} componentStates={componentStates} />
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              {system.components.map((comp) => (
+                <ComponentCard key={comp.id} comp={comp} state={componentStates} onStateChange={handleStateChange} system={system} />
               ))}
             </div>
           </div>
         )}
 
-        {/* STEP 2: Project Details */}
-        {currentStep === 2 && (
+        {/* STEP 1: Project Details */}
+        {currentStep === 1 && (
           <div>
             <h1 style={{ fontSize: 28, fontWeight: 700, color: T.textPrimary, letterSpacing: "-0.03em", marginBottom: 6 }}>Project Details</h1>
             <p style={{ color: T.textMuted, fontSize: 15, marginBottom: 32 }}>This information will appear on the generated PDF.</p>
@@ -407,8 +347,8 @@ export default function CablePlanConfigurator() {
           </div>
         )}
 
-        {/* STEP 3: Review */}
-        {currentStep === 3 && system && (
+        {/* STEP 2: Review */}
+        {currentStep === 2 && system && (
           <ReviewAndGenerate system={system} componentStates={componentStates} projectData={projectData} />
         )}
 
@@ -419,9 +359,9 @@ export default function CablePlanConfigurator() {
             ← Previous
           </button>
           {currentStep < STEPS.length - 1 && (
-            <button onClick={handleNext} disabled={currentStep === 0 && !selectedSystemId}
-              style={{ background: (currentStep === 0 && !selectedSystemId) ? T.borderStrong : T.blue, color: T.white, border: "none", borderRadius: 10, padding: "13px 32px", fontSize: 14, fontWeight: 600, cursor: (currentStep === 0 && !selectedSystemId) ? "not-allowed" : "pointer", fontFamily: "DM Sans, sans-serif", transition: "all 150ms", boxShadow: (currentStep === 0 && !selectedSystemId) ? "none" : shadow.sm }}>
-              {currentStep === 1 && !validation.isValid ? "Fix errors to continue" : "Next Step →"}
+            <button onClick={handleNext} disabled={currentStep === 0 && !validation.isValid}
+              style={{ background: (currentStep === 0 && !validation.isValid) ? T.borderStrong : T.blue, color: T.white, border: "none", borderRadius: 10, padding: "13px 32px", fontSize: 14, fontWeight: 600, cursor: (currentStep === 0 && !validation.isValid) ? "not-allowed" : "pointer", fontFamily: "DM Sans, sans-serif", transition: "all 150ms", boxShadow: (currentStep === 0 && !validation.isValid) ? "none" : shadow.sm }}>
+              {currentStep === 0 && !validation.isValid ? "Fix errors to continue" : "Next Step →"}
             </button>
           )}
         </div>

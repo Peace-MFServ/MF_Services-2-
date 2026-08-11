@@ -1,8 +1,7 @@
 'use client'
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo } from 'react'
 import {
   evaluateCloser,
-  findBestRecommendation,
   getDoorMoments,
   getRecommendedSize,
   getMaxWeight,
@@ -155,19 +154,6 @@ export default function OverpressureCalculator() {
         padding: '32px 24px',
       }}>
         <div style={{ maxWidth: 1400, margin: '0 auto' }}>
-          {/* ── HEADER ── */}
-          <header className="mf-app-header" style={{ background: T.navy, borderBottom: `3px solid ${T.orange}`, padding: "0 32px", borderRadius: 12, boxShadow: shadow.md, marginBottom: 20 }}>
-            <div className="mf-header-inner" style={{ display: 'flex', alignItems: "center", justifyContent: "space-between", height: 64, gap: 16 }}>
-              <div className="mf-header-row" style={{ display: "flex", alignItems: "center", gap: 14 }}>
-                <img src="/linkedin.jpg" alt="MF Services" style={{ height: 40, width: "auto", borderRadius: 4, background: "#ffffff" }} />
-                <div>
-                  <div className="mf-header-title" style={{ fontWeight: 700, fontSize: 16, color: T.white, letterSpacing: "-0.02em", lineHeight: 1.2, maxWidth: 320, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>Overpressure Calculator</div>
-                  <div className="mf-header-subtitle" style={{ fontSize: 11, color: "rgba(255,255,255,0.55)", letterSpacing: "0.04em" }}>MF Services — Door Systems</div>
-                </div>
-              </div>
-            </div>
-          </header>
-
           <IntroSection />
 
           <div className="op-grid" style={{
@@ -176,7 +162,7 @@ export default function OverpressureCalculator() {
             gap: 24,
             alignItems: 'start',
           }}>
-            <DataPanel inputs={inputs} update={update} reset={reset} onHelp={() => setHelpOpen(true)}/>
+            <DataPanel inputs={inputs} update={update} reset={reset} />
             <ResultPanel
               matrix={matrix}
               selectedCell={selectedCell}

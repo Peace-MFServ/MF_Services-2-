@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect, useCallback } from "react";
-import { generateCablePlanPDF, runComplianceCheck } from "../lib/generateCablePlanPDF";
+import { generateCablePlanPDF as _generateCablePlanPDF, runComplianceCheck } from "../lib/generateCablePlanPDF";
 
 const THEME = {
   navy: "#00387B",
@@ -78,8 +78,7 @@ export default function ReviewAndGenerate({ system, componentStates, projectData
     }
     setGenerating(true);
     try {
-      const { generateCablePlanPDF: genPDF } = await import("../lib/generateCablePlanPDF");
-      const filename = await genPDF({ system, componentStates, projectData });
+      const filename = await _generateCablePlanPDF({ system, componentStates, projectData });
       push({ type:"success", title:"PDF Generated Successfully", message:`Saved as: ${filename}`, duration:5000 });
     } catch (err) {
       push({ type:"error", title:"PDF Generation Failed", message:err.message||"An unexpected error occurred.", duration:8000 });
@@ -101,9 +100,9 @@ export default function ReviewAndGenerate({ system, componentStates, projectData
   return (
     <>
       <Toast toasts={toasts} dismiss={dismiss} />
-      <div style={{ fontFamily: "'IBM Plex Mono','Courier New',monospace", color: THEME.textPrimary, background: THEME.surface, minHeight: "100vh", padding: 24 }}>
+      <div style={{ fontFamily: "DM Sans, sans-serif", color: THEME.textPrimary, background: THEME.surface, padding: 24 }}>
         <div style={{ maxWidth: 1000, margin: "0 auto" }}>
-          <h2 style={{ fontFamily: "'IBM Plex Sans',sans-serif", fontSize: 22, fontWeight: 700, color: THEME.textPrimary, marginBottom: 8 }}>Review & Generate</h2>
+          <h2 style={{ fontFamily: "DM Sans, sans-serif", fontSize: 22, fontWeight: 700, color: THEME.textPrimary, marginBottom: 8 }}>Review & Generate</h2>
           <p style={{ color: THEME.textMuted, fontSize: 14, marginBottom: 24 }}>Final compliance check before PDF generation.</p>
 
           <div style={{ display: "flex", gap: 0, background: THEME.surface, border: `1px solid ${THEME.border}`, borderRadius: 10, overflow: "hidden", marginBottom: 24 }}>
@@ -192,7 +191,7 @@ export default function ReviewAndGenerate({ system, componentStates, projectData
             <button
               onClick={handleGeneratePDF}
               disabled={generating}
-              style={{ width: "100%", padding: "18px 24px", border: "none", borderRadius: 10, fontSize: 16, fontWeight: 700, color: "#fff", fontFamily: "'IBM Plex Sans',sans-serif", cursor: generating ? "wait" : "pointer", background: failures.length > 0 ? THEME.border : generating ? THEME.navy : THEME.navy, boxShadow: failures.length > 0 ? "none" : "0 10px 30px rgba(0,56,123,0.18)" }}>
+              style={{ width: "100%", padding: "18px 24px", border: "none", borderRadius: 10, fontSize: 16, fontWeight: 700, color: "#fff", fontFamily: "DM Sans, sans-serif", cursor: generating ? "wait" : "pointer", background: failures.length > 0 ? THEME.border : generating ? THEME.navy : THEME.navy, boxShadow: failures.length > 0 ? "none" : "0 10px 30px rgba(0,56,123,0.18)" }}>
               {generating ? "Generating PDF..." : failures.length > 0 ? `Fix ${failures.length} issue${failures.length > 1 ? "s" : ""} to unlock PDF` : "Download Cable Plan PDF"}
             </button>
             {failures.length === 0 && !generating && <p style={{ textAlign: "center", color: THEME.textFaint, fontSize: 12, marginTop: 12 }}>PDF will include project metadata, cable diagram, and component table.</p>}
