@@ -6,21 +6,61 @@ import { generateHardwareSpecPDF } from "../lib/generateHardwareSpecPDF";
 import { UI, FONT, fieldStyle, focusField, blurField } from "../lib/theme";
 import {
   PRODUCT_TYPES, SPEC_TYPES, getProduct,
-  buildInitialConfig, resolveProduct, validateSpec, specRows,
+  buildInitialConfig, resolveProduct, validateSpec, specRows, REQUIRE_ENQUIRY_DETAILS,
 } from "../lib/hardwareSpec";
 
 const STEPS = ["Product", "Specify", "Review"];
 
 // ─── Primitives ───────────────────────────────────────────────────
 
-function Label({ children, htmlFor }) {
+function Label({ children, htmlFor, required }) {
   return (
     <label htmlFor={htmlFor} style={{
       display: "block", fontSize: 11.5, fontWeight: 600, letterSpacing: "0.07em",
       textTransform: "uppercase", color: UI.muted, fontFamily: FONT, marginBottom: 8,
     }}>
       {children}
+      {required && <span style={{ color: UI.warn, marginLeft: 4 }} aria-hidden="true">*</span>}
+      {required && <span style={{ position: "absolute", left: -9999 }}>(required)</span>}
     </label>
+  );
+}
+
+function RailSection({ title, note, children }) {
+  return (
+    <div style={{ borderTop: `1px solid ${UI.ruleStrong}`, paddingTop: 20, marginTop: 26 }}>
+      <div style={{
+        fontSize: 11.5, fontWeight: 700, letterSpacing: "0.07em", textTransform: "uppercase",
+        color: UI.ink, fontFamily: FONT, marginBottom: note ? 6 : 16,
+      }}>
+        {title}
+      </div>
+      {note && (
+        <p style={{ margin: "0 0 16px", fontSize: 12.5, lineHeight: 1.5, color: UI.body, fontFamily: FONT }}>
+          {note}
+        </p>
+      )}
+      {children}
+    </div>
+  );
+}
+
+/** Labelled text field with its own error slot. */
+function TextField({ id, label, required, value, onChange, onBlurTouch, error, type = "text", multiline }) {
+  const border = error ? UI.warn : UI.ruleStrong;
+  const common = {
+    id, value: value || "",
+    onChange: e => onChange(e.target.value),
+    style: { ...fieldStyle, borderColor: border, ...(multiline ? { resize: "vertical" } : {}) },
+    onFocus: focusField,
+    onBlur: e => { onBlurTouch?.(); e.target.style.borderColor = border; e.target.style.boxShadow = "none"; },
+  };
+  return (
+    <div style={{ marginBottom: 18 }}>
+      <Label htmlFor={id} required={required}>{label}</Label>
+      {multiline ? <textarea rows={3} {...common} /> : <input type={type} {...common} />}
+      <FieldError>{error}</FieldError>
+    </div>
   );
 }
 
@@ -204,9 +244,9 @@ function ProductCard({ product, selected, onSelect }) {
         {live && (
           <div style={{
             marginTop: 12, fontSize: 12.5, fontWeight: 600,
-            color: selected ? UI.accent : UI.muted,
+            color: lift ? UI.accent : UI.muted,
           }}>
-            {selected ? "Selected" : "Choose"}
+            Specify this doorset →
           </div>
         )}
       </div>
@@ -214,72 +254,26 @@ function ProductCard({ product, selected, onSelect }) {
   );
 }
 
-function ProductStep({ productTypeId, setProductTypeId, specType, setSpecType, projectData, setProjectData }) {
+function ProductStep({ productTypeId, onChoose }) {
   return (
-    <div style={{ padding: "32px 32px 40px" }}>
-
-      <h1 style={{ margin: 0, fontSize: 27, fontWeight: 600, letterSpacing: "-0.02em", color: UI.ink, lineHeight: 1.2 }}>
-        Specify a doorset
+    <div style={{ padding: "36px 32px 44px" }}>
+      <h1 style={{ margin: 0, fontSize: 28, fontWeight: 600, letterSpacing: "-0.02em", color: UI.ink, lineHeight: 1.2 }}>
+        Choose a doorset
       </h1>
-      <p style={{ margin: "8px 0 26px", fontSize: 15, lineHeight: 1.55, color: UI.body, maxWidth: 620 }}>
-        Choose a product, set the dimensions, and download a specification for your tender.
+      <p style={{ margin: "9px 0 30px", fontSize: 15, lineHeight: 1.55, color: UI.body, maxWidth: 620 }}>
+        Select a product to specify.
       </p>
 
       <div style={{
-        display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(258px, 1fr))",
-        gap: 16, marginBottom: 40,
+        display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(266px, 1fr))", gap: 18,
       }}>
         {PRODUCT_TYPES.map(pt => (
           <ProductCard
             key={pt.id}
             product={pt}
             selected={productTypeId === pt.id}
-            onSelect={() => setProductTypeId(pt.id)}
+            onSelect={() => onChoose(pt.id)}
           />
-        ))}
-      </div>
-
-      {/* Specification and project details */}
-      <div style={{
-        display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-        gap: 32, borderTop: `1px solid ${UI.ruleStrong}`, paddingTop: 28,
-      }}>
-        <div>
-          <Label>Specification type</Label>
-          <Segmented
-            name="Specification type"
-            options={SPEC_TYPES.map(s => ({ value: s.id, label: s.label }))}
-            value={specType}
-            onChange={setSpecType}
-          />
-          <p style={{ margin: "10px 0 0", fontSize: 13, lineHeight: 1.55, color: UI.body, maxWidth: 380 }}>
-            {SPEC_TYPES.find(s => s.id === specType)?.summary}
-          </p>
-        </div>
-
-        {[
-          ["projectName", "Project name", false],
-          ["architecturalFirm", "Architectural firm", false],
-          ["contactDetails", "Contact details", true],
-        ].map(([key, label, multiline]) => (
-          <div key={key}>
-            <Label htmlFor={`pd-${key}`}>{label}</Label>
-            {multiline ? (
-              <textarea
-                id={`pd-${key}`} rows={3} value={projectData[key]}
-                onChange={e => setProjectData(p => ({ ...p, [key]: e.target.value }))}
-                style={{ ...fieldStyle, resize: "vertical" }}
-                onFocus={focusField} onBlur={blurField}
-              />
-            ) : (
-              <input
-                id={`pd-${key}`} type="text" value={projectData[key]}
-                onChange={e => setProjectData(p => ({ ...p, [key]: e.target.value }))}
-                style={fieldStyle}
-                onFocus={focusField} onBlur={blurField}
-              />
-            )}
-          </div>
         ))}
       </div>
     </div>
@@ -311,7 +305,7 @@ function OutstandingList({ errors }) {
   );
 }
 
-function SpecifyStep({ product, config, setConfig, errorFor, markTouched }) {
+function SpecifyStep({ product, config, setConfig, errorFor, markTouched, specType, setSpecType, projectData, setProjectData }) {
   const set = (key, value) => { markTouched(key); setConfig(c => ({ ...c, [key]: value })); };
 
   return (
@@ -385,6 +379,60 @@ function SpecifyStep({ product, config, setConfig, errorFor, markTouched }) {
           <FieldError>{errorFor(opt.id)}</FieldError>
         </div>
       ))}
+
+      <RailSection title="Specification type">
+        <Segmented
+          name="Specification type"
+          options={SPEC_TYPES.map(sp => ({ value: sp.id, label: sp.label }))}
+          value={specType}
+          onChange={setSpecType}
+        />
+        <p style={{ margin: "10px 0 0", fontSize: 12.5, lineHeight: 1.5, color: UI.body, fontFamily: FONT }}>
+          {SPEC_TYPES.find(sp => sp.id === specType)?.summary}
+        </p>
+      </RailSection>
+
+      <RailSection title="Your details" note={REQUIRE_ENQUIRY_DETAILS ? "So we can send the specification on and answer any questions." : "Optional for now. So we can answer any questions."}>
+        <TextField
+          id="pd-businessName" label="Business name" required={REQUIRE_ENQUIRY_DETAILS}
+          value={projectData.businessName}
+          onChange={v => setProjectData(pd => ({ ...pd, businessName: v }))}
+          onBlurTouch={() => markTouched("businessName")}
+          error={errorFor("businessName")}
+        />
+        <TextField
+          id="pd-contactName" label="Contact name"
+          value={projectData.contactName}
+          onChange={v => setProjectData(pd => ({ ...pd, contactName: v }))}
+        />
+        <TextField
+          id="pd-email" label="Email" required={REQUIRE_ENQUIRY_DETAILS} type="email"
+          value={projectData.email}
+          onChange={v => setProjectData(pd => ({ ...pd, email: v }))}
+          onBlurTouch={() => markTouched("email")}
+          error={errorFor("email")}
+        />
+        <TextField
+          id="pd-phone" label="Phone" required={REQUIRE_ENQUIRY_DETAILS} type="tel"
+          value={projectData.phone}
+          onChange={v => setProjectData(pd => ({ ...pd, phone: v }))}
+          onBlurTouch={() => markTouched("phone")}
+          error={errorFor("phone")}
+        />
+      </RailSection>
+
+      <RailSection title="Project">
+        <TextField
+          id="pd-projectName" label="Project name"
+          value={projectData.projectName}
+          onChange={v => setProjectData(pd => ({ ...pd, projectName: v }))}
+        />
+        <TextField
+          id="pd-architecturalFirm" label="Architectural firm"
+          value={projectData.architecturalFirm}
+          onChange={v => setProjectData(pd => ({ ...pd, architecturalFirm: v }))}
+        />
+      </RailSection>
     </div>
   );
 }
@@ -438,7 +486,13 @@ function ReviewStep({ product, config, projectData, specType, validation, onGene
           ? <Row label="Project" value={projectData.projectName} />
           : <p style={{ margin: 0, fontSize: 13.5, color: UI.body, fontFamily: FONT }}>No project name recorded.</p>}
         {projectData.architecturalFirm?.trim() && <Row label="Architectural firm" value={projectData.architecturalFirm} />}
-        {projectData.contactDetails?.trim() && <Row label="Contact" value={projectData.contactDetails} />}
+      </Section>
+
+      <Section title="Your details">
+        {projectData.businessName?.trim() && <Row label="Business" value={projectData.businessName} />}
+        {projectData.contactName?.trim() && <Row label="Contact" value={projectData.contactName} />}
+        {projectData.email?.trim() && <Row label="Email" value={projectData.email} />}
+        {projectData.phone?.trim() && <Row label="Phone" value={projectData.phone} />}
       </Section>
 
       <Section title="Standards">
@@ -487,7 +541,10 @@ export default function SpecGenerator() {
   const [furthest, setFurthest] = useState(0);
   const [productTypeId, setProductTypeId] = useState("riser-doors");
   const [specType, setSpecType] = useState("branded");
-  const [projectData, setProjectData] = useState({ projectName: "", architecturalFirm: "", contactDetails: "" });
+  const [projectData, setProjectData] = useState({
+    businessName: "", contactName: "", email: "", phone: "",
+    projectName: "", architecturalFirm: "",
+  });
 
   const product = getProduct(productTypeId);
   const [config, setConfig] = useState(() => buildInitialConfig(getProduct("riser-doors")));
@@ -510,6 +567,13 @@ export default function SpecGenerator() {
     field => (touched.has(field) ? validation.errors.find(e => e.field === field)?.message : undefined),
     [touched, validation.errors],
   );
+
+  const chooseProduct = useCallback(id => {
+    setProductTypeId(id);
+    setCurrentStep(1);
+    setFurthest(f => Math.max(f, 1));
+    if (railRef.current) railRef.current.scrollTop = 0;
+  }, []);
 
   const goNext = () => {
     const next = Math.min(currentStep + 1, STEPS.length - 1);
@@ -582,13 +646,8 @@ export default function SpecGenerator() {
       <div style={{ ...shell, display: "flex", flexDirection: "column", minHeight: 640 }}>
         <StepBar currentStep={currentStep} setCurrentStep={setCurrentStep} furthest={furthest} />
         <div style={{ flex: 1 }}>
-          <ProductStep
-            productTypeId={productTypeId} setProductTypeId={setProductTypeId}
-            specType={specType} setSpecType={setSpecType}
-            projectData={projectData} setProjectData={setProjectData}
-          />
+          <ProductStep productTypeId={productTypeId} onChoose={chooseProduct} />
         </div>
-        {footer}
       </div>
     );
   }
@@ -618,8 +677,12 @@ export default function SpecGenerator() {
 
         <div ref={railRef} style={{ flex: 1, minHeight: 0, overflowY: "auto" }}>
           {currentStep === 1 && product && (
-            <SpecifyStep product={product} config={config} setConfig={setConfig}
-              errorFor={errorFor} markTouched={markTouched} />
+            <SpecifyStep
+              product={product} config={config} setConfig={setConfig}
+              errorFor={errorFor} markTouched={markTouched}
+              specType={specType} setSpecType={setSpecType}
+              projectData={projectData} setProjectData={setProjectData}
+            />
           )}
           {currentStep === 2 && product && (
             <ReviewStep
