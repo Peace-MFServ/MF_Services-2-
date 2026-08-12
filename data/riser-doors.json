@@ -1,77 +1,108 @@
 {
   "id": "riser-doors",
   "label": "Riser Doors",
-  "summary": "Fire-rated access doors to service risers and shafts.",
+  "range": "Christo Riser Door",
+  "manufacturer": "Simplis — The Access Panel Company Ltd",
+  "summary": "Fire-rated steel access doors to service risers and shafts.",
+  "construction": "Steel skins to both faces over an insulated strengthened core, 100 mm thick. Door tray and frame in 1.0 and 1.2 mm Zintec electro-galvanised mild steel. Quick-release heavy-duty pivot hinges welded into the door trays. Multiple-point locking to the active leaf.",
 
-  "_PROVISIONAL": "Size bands, limits and product codes below are PLACEHOLDERS pending the real range data. The resolution logic is complete and driven entirely by this file — replacing these values needs no code change. Every number here must be confirmed before the tool is issued to anyone outside the business.",
+  "_PROVISIONAL": "CONFIRM BEFORE ISSUE. Taken from the Simplis Christo Riser Door literature. The overall envelope (4169 x 2755 mm, up to 6 leaves), the option lists, the acoustic figures and the standards are all from that literature and are sound. What is NOT known is which width band each leaf count covers — the sizeBands below split the envelope evenly as a placeholder and must be replaced with the real orderable ranges. Also unconfirmed: whether E and EI classifications are offered on riser doors (the literature evidences EW120 for riser doors; E120 and EI60 are quoted for access panels, a different product), and whether periods below 120 are orderable. Product codes follow the classification seen on the door label (EW120S) but the ordering format needs confirming.",
 
   "limits": {
-    "width":  { "min": 300, "absoluteMax": 3600, "unit": "mm" },
-    "height": { "min": 300, "absoluteMax": 2400, "unit": "mm" }
+    "width":  { "min": 300, "absoluteMax": 4169, "unit": "mm" },
+    "height": { "min": 300, "absoluteMax": 2755, "unit": "mm" }
+  },
+
+  "clearOpening": {
+    "widthDeduction": 201,
+    "heightDeduction": 75,
+    "note": "Clear opening is the structural opening less 201 mm on width and 75 mm on height."
+  },
+
+  "structuralAllowance": {
+    "oversize": 16,
+    "note": "Prepare the structural opening 16 mm larger than the ordered door. The FrameSmart system gives 10 mm of in-frame adjustment, so no packers or mastic are needed."
   },
 
   "leafOptions": [
     { "value": 1, "label": "1 leaf" },
     { "value": 2, "label": "2 leaves" },
     { "value": 3, "label": "3 leaves" },
-    { "value": 4, "label": "4 leaves" }
+    { "value": 4, "label": "4 leaves" },
+    { "value": 5, "label": "5 leaves" },
+    { "value": 6, "label": "6 leaves" }
   ],
 
   "fireRatings": [
-    { "id": "FD30",  "label": "FD30",  "minutes": 30 },
-    { "id": "FD60",  "label": "FD60",  "minutes": 60 },
-    { "id": "FD90",  "label": "FD90",  "minutes": 90 },
-    { "id": "FD120", "label": "FD120", "minutes": 120 }
+    { "id": "EW30",  "label": "EW30",  "classification": "EW", "period": 30 },
+    { "id": "EW60",  "label": "EW60",  "classification": "EW", "period": 60 },
+    { "id": "EW90",  "label": "EW90",  "classification": "EW", "period": 90 },
+    { "id": "EW120", "label": "EW120", "classification": "EW", "period": 120 }
   ],
 
-  "sizeBands": [
-    { "leaves": 1, "fireRatings": ["FD30", "FD60"],
-      "width": { "min": 300, "max": 900 }, "height": { "min": 300, "max": 2400 },
-      "product": { "code": "RD-1L-60", "name": "Riser door, single leaf" } },
-    { "leaves": 1, "fireRatings": ["FD90", "FD120"],
-      "width": { "min": 300, "max": 900 }, "height": { "min": 300, "max": 2100 },
-      "product": { "code": "RD-1L-120", "name": "Riser door, single leaf, extended rating" } },
+  "defaultFireRating": "EW120",
 
-    { "leaves": 2, "fireRatings": ["FD30", "FD60"],
-      "width": { "min": 901, "max": 1800 }, "height": { "min": 300, "max": 2400 },
-      "product": { "code": "RD-2L-60", "name": "Riser door, two leaf" } },
-    { "leaves": 2, "fireRatings": ["FD90", "FD120"],
-      "width": { "min": 901, "max": 1800 }, "height": { "min": 300, "max": 2100 },
-      "product": { "code": "RD-2L-120", "name": "Riser door, two leaf, extended rating" } },
-
-    { "leaves": 3, "fireRatings": ["FD30", "FD60"],
-      "width": { "min": 1801, "max": 2700 }, "height": { "min": 300, "max": 2400 },
-      "product": { "code": "RD-3L-60", "name": "Riser door, three leaf" } },
-    { "leaves": 3, "fireRatings": ["FD90", "FD120"],
-      "width": { "min": 1801, "max": 2700 }, "height": { "min": 300, "max": 2100 },
-      "product": { "code": "RD-3L-120", "name": "Riser door, three leaf, extended rating" } },
-
-    { "leaves": 4, "fireRatings": ["FD30", "FD60"],
-      "width": { "min": 2701, "max": 3600 }, "height": { "min": 300, "max": 2400 },
-      "product": { "code": "RD-4L-60", "name": "Riser door, four leaf" } },
-    { "leaves": 4, "fireRatings": ["FD90", "FD120"],
-      "width": { "min": 2701, "max": 3600 }, "height": { "min": 300, "max": 2100 },
-      "product": { "code": "RD-4L-120", "name": "Riser door, four leaf, extended rating" } }
-  ],
+  "fireClassificationNote": "EW adds control of radiated heat to integrity, reducing the risk of fire spreading by radiation and allowing safer passage past an open riser door on an escape route. Christo Riser Doors are bi-directionally tested to EW120.",
 
   "options": [
+    {
+      "id": "handing",
+      "label": "Handing",
+      "required": true,
+      "note": "Viewed from the access side. For multi-leaf sets this is the active leaf.",
+      "choices": [
+        { "id": "left",  "label": "Left hand" },
+        { "id": "right", "label": "Right hand" }
+      ]
+    },
+    {
+      "id": "wallType",
+      "label": "Wall construction",
+      "required": true,
+      "note": "The fire rating depends on the partition meeting the required fire performance.",
+      "choices": [
+        { "id": "studwork", "label": "Studwork" },
+        { "id": "masonry",  "label": "Masonry / blockwork" },
+        { "id": "shaftwall", "label": "Shaftwall" }
+      ]
+    },
+    {
+      "id": "frameType",
+      "label": "Frame",
+      "required": true,
+      "choices": [
+        { "id": "picture",   "label": "Solid picture frame" },
+        { "id": "perforated", "label": "60 mm perforated frame" },
+        { "id": "beaded",    "label": "Beaded frame" }
+      ]
+    },
+    {
+      "id": "lockType",
+      "label": "Lock and keyhole",
+      "required": true,
+      "choices": [
+        { "id": "euro-slik",   "label": "Euro-Cylinder and SLIK", "note": "Most popular — handles are rarely fitted to flush doors." },
+        { "id": "slik",        "label": "SLIK only", "note": "Square drive T-key. Keyhole concealed behind a spring-loaded flap." },
+        { "id": "euro",        "label": "Euro-Cylinder only", "note": "Cylinder visible; last turn of the key operates the latch." },
+        { "id": "slik-plus",   "label": "SLIK+", "note": "Square drive keyhole and Euro-Cylinder concealed behind a magnet-held flush flap." }
+      ]
+    },
+    {
+      "id": "acoustic",
+      "label": "Acoustic rating",
+      "required": true,
+      "choices": [
+        { "id": "standard", "label": "43 dB Rw (standard)" },
+        { "id": "enhanced", "label": "47 dB Rw (enhanced)" }
+      ]
+    },
     {
       "id": "doorRestrictor",
       "label": "Door restrictor",
       "required": true,
       "choices": [
-        { "id": "yes", "label": "Yes" },
-        { "id": "no",  "label": "No" }
-      ]
-    },
-    {
-      "id": "lockType",
-      "label": "Lock type",
-      "required": true,
-      "choices": [
-        { "id": "cylinder-keyed-alike", "label": "Cylinder (keyed alike) included" },
-        { "id": "cylinder-prep-only",   "label": "Cylinder prep only" },
-        { "id": "generic-square-key",   "label": "Generic square key" }
+        { "id": "no",  "label": "No" },
+        { "id": "yes", "label": "Yes" }
       ]
     },
     {
@@ -79,14 +110,27 @@
       "label": "Finish",
       "required": true,
       "choices": [
-        { "id": "ral",    "label": "RAL colour", "requiresText": true, "textLabel": "RAL number", "textPlaceholder": "e.g. RAL 7016" },
-        { "id": "primed", "label": "Primed" }
+        { "id": "ral9010",   "label": "Powder coat RAL 9010 white, 20% gloss (standard)" },
+        { "id": "ral-other", "label": "Powder coat, other RAL", "requiresText": true, "textLabel": "RAL number", "textPlaceholder": "e.g. RAL 7016" },
+        { "id": "low-resin", "label": "Low-resin powder for over-painting", "note": "Formulated to take emulsion and blend into the surrounding wall. No extra cost." },
+        { "id": "wallpaper", "label": "Wallpapered", "note": "Enquire — subject to specification." }
       ]
     }
   ],
 
+  "sizeBands": [
+    { "leaves": 1, "fireRatings": ["EW30", "EW60", "EW90", "EW120"], "width": { "min": 300,  "max": 900 },  "height": { "min": 300, "max": 2755 }, "product": { "code": "CRD-EW-1L", "name": "Christo Riser Door, single leaf" } },
+    { "leaves": 2, "fireRatings": ["EW30", "EW60", "EW90", "EW120"], "width": { "min": 901,  "max": 1500 }, "height": { "min": 300, "max": 2755 }, "product": { "code": "CRD-EW-2L", "name": "Christo Riser Door, two leaf" } },
+    { "leaves": 3, "fireRatings": ["EW30", "EW60", "EW90", "EW120"], "width": { "min": 1501, "max": 2200 }, "height": { "min": 300, "max": 2755 }, "product": { "code": "CRD-EW-3L", "name": "Christo Riser Door, three leaf" } },
+    { "leaves": 4, "fireRatings": ["EW30", "EW60", "EW90", "EW120"], "width": { "min": 2201, "max": 2900 }, "height": { "min": 300, "max": 2755 }, "product": { "code": "CRD-EW-4L", "name": "Christo Riser Door, four leaf" } },
+    { "leaves": 5, "fireRatings": ["EW30", "EW60", "EW90", "EW120"], "width": { "min": 2901, "max": 3550 }, "height": { "min": 300, "max": 2755 }, "product": { "code": "CRD-EW-5L", "name": "Christo Riser Door, five leaf" } },
+    { "leaves": 6, "fireRatings": ["EW30", "EW60", "EW90", "EW120"], "width": { "min": 3551, "max": 4169 }, "height": { "min": 300, "max": 2755 }, "product": { "code": "CRD-EW-6L", "name": "Christo Riser Door, six leaf" } }
+  ],
+
   "standards": [
-    { "code": "EN 1634-1",  "description": "Fire resistance tests for door and shutter assemblies" },
-    { "code": "EN 13501-2", "description": "Fire classification from fire resistance test data" }
+    { "code": "EN 1634-1:2014+A1:2018", "description": "Fire resistance tests for door and shutter assemblies" },
+    { "code": "BS 476-22:1987",        "description": "Fire resistance of non-loadbearing elements of construction" },
+    { "code": "BS EN 1634-3:2004",     "description": "Smoke control test — S-rating achieved" },
+    { "code": "BS EN ISO 140-3:2010",  "description": "Laboratory measurement of airborne sound insulation" }
   ]
 }

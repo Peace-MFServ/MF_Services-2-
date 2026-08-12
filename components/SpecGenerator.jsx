@@ -6,7 +6,7 @@ import { generateHardwareSpecPDF } from "../lib/generateHardwareSpecPDF";
 import { UI, FONT, fieldStyle, focusField, blurField } from "../lib/theme";
 import {
   PRODUCT_TYPES, SPEC_TYPES, getProduct,
-  buildInitialConfig, resolveProduct, validateSpec, specRows, REQUIRE_ENQUIRY_DETAILS,
+  buildInitialConfig, resolveProduct, validateSpec, specRows, getClearOpening, REQUIRE_ENQUIRY_DETAILS,
 } from "../lib/hardwareSpec";
 
 const STEPS = ["Product", "Specify", "Review"];
@@ -119,6 +119,14 @@ function RadioList({ choices, value, onChange, name, textValue, onTextChange }) 
                 {choice.label}
               </span>
             </label>
+            {choice.note && (
+              <p style={{
+                margin: "3px 0 0 25px", fontSize: 12.5, lineHeight: 1.45,
+                color: UI.muted, fontFamily: FONT,
+              }}>
+                {choice.note}
+              </p>
+            )}
             {on && choice.requiresText && (
               <input
                 type="text"
@@ -307,6 +315,7 @@ function OutstandingList({ errors }) {
 
 function SpecifyStep({ product, config, setConfig, errorFor, markTouched, specType, setSpecType, projectData, setProjectData }) {
   const set = (key, value) => { markTouched(key); setConfig(c => ({ ...c, [key]: value })); };
+  const clearOpening = getClearOpening(product, config);
 
   return (
     <div style={{ padding: "20px 22px" }}>
@@ -326,7 +335,7 @@ function SpecifyStep({ product, config, setConfig, errorFor, markTouched, specTy
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 24 }}>
         <div>
-          <Label htmlFor="cfg-width">Maximum width (mm)</Label>
+          <Label htmlFor="cfg-width">Structural width (mm)</Label>
           <input
             id="cfg-width" type="number" inputMode="numeric"
             min={product.limits.width.min} max={product.limits.width.absoluteMax}
@@ -339,7 +348,7 @@ function SpecifyStep({ product, config, setConfig, errorFor, markTouched, specTy
           <FieldError>{errorFor("width")}</FieldError>
         </div>
         <div>
-          <Label htmlFor="cfg-height">Maximum height (mm)</Label>
+          <Label htmlFor="cfg-height">Structural height (mm)</Label>
           <input
             id="cfg-height" type="number" inputMode="numeric"
             min={product.limits.height.min} max={product.limits.height.absoluteMax}
@@ -355,6 +364,25 @@ function SpecifyStep({ product, config, setConfig, errorFor, markTouched, specTy
 
       <FieldError>{errorFor("size")}</FieldError>
 
+      {clearOpening && (
+        <div style={{
+          marginTop: 4, padding: "11px 13px", background: UI.sunken,
+          borderLeft: `3px solid ${UI.ruleStrong}`, fontFamily: FONT,
+        }}>
+          <div style={{ fontSize: 13, color: UI.body, lineHeight: 1.5 }}>
+            Clear opening{" "}
+            <strong style={{ color: UI.ink, fontWeight: 700 }}>
+              {clearOpening.width} × {clearOpening.height} mm
+            </strong>
+          </div>
+          {product.structuralAllowance?.note && (
+            <div style={{ fontSize: 12.5, color: UI.muted, lineHeight: 1.45, marginTop: 4 }}>
+              {product.structuralAllowance.note}
+            </div>
+          )}
+        </div>
+      )}
+
       <div style={{ marginBottom: 24, marginTop: 24 }}>
         <Label>Fire rating</Label>
         <Segmented
@@ -363,11 +391,21 @@ function SpecifyStep({ product, config, setConfig, errorFor, markTouched, specTy
           value={config.fireRating}
           onChange={v => set("fireRating", v)}
         />
+        {product.fireClassificationNote && (
+          <p style={{ margin: "10px 0 0", fontSize: 12.5, lineHeight: 1.5, color: UI.body, fontFamily: FONT }}>
+            {product.fireClassificationNote}
+          </p>
+        )}
       </div>
 
       {product.options.map(opt => (
         <div key={opt.id} style={{ marginBottom: 24 }}>
           <Label>{opt.label}</Label>
+          {opt.note && (
+            <p style={{ margin: "-3px 0 10px", fontSize: 12.5, lineHeight: 1.5, color: UI.body, fontFamily: FONT }}>
+              {opt.note}
+            </p>
+          )}
           <RadioList
             name={`opt-${opt.id}`}
             choices={opt.choices}
@@ -468,6 +506,7 @@ function ReviewStep({ product, config, projectData, specType, validation, onGene
     <div style={{ padding: "20px 22px" }}>
       <Section title="Product">
         <Row label="Type" value={product.label} />
+        {product.range && <Row label="Range" value={product.range} />}
         {resolution?.status === "matched" && (
           <>
             <Row label="Product" value={resolution.product.name} />
