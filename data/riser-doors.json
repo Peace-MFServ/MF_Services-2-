@@ -1,12 +1,10 @@
 {
   "id": "riser-doors",
   "label": "Riser Doors",
-  "range": "Christo Riser Door",
-  "manufacturer": "Simplis — The Access Panel Company Ltd",
-  "summary": "Fire-rated steel access doors to service risers and shafts.",
+  "summary": "Fire-rated steel access doors to service risers and shafts, supplied and installed.",
   "construction": "Steel skins to both faces over an insulated strengthened core, 100 mm thick. Door tray and frame in 1.0 and 1.2 mm Zintec electro-galvanised mild steel. Quick-release heavy-duty pivot hinges welded into the door trays. Multiple-point locking to the active leaf.",
 
-  "_PROVISIONAL": "CONFIRM BEFORE ISSUE. Taken from the Simplis Christo Riser Door literature. The overall envelope (4169 x 2755 mm, up to 6 leaves), the option lists, the acoustic figures and the standards are all from that literature and are sound. What is NOT known is which width band each leaf count covers — the sizeBands below split the envelope evenly as a placeholder and must be replaced with the real orderable ranges. Also unconfirmed: whether E and EI classifications are offered on riser doors (the literature evidences EW120 for riser doors; E120 and EI60 are quoted for access panels, a different product), and whether periods below 120 are orderable. Product codes follow the classification seen on the door label (EW120S) but the ordering format needs confirming.",
+  "_PROVISIONAL": "INTERNAL NOTE — never rendered in the interface or the PDF, and not to be pasted into anything client-facing. CONFIRM BEFORE ISSUE. Figures come from the current supplier's literature; the tool deliberately names neither the supplier nor the range. The overall envelope (4169 x 2755 mm, up to 6 leaves), the option lists, the acoustic figures and the standards are all from that literature and are sound. What is NOT known is which width band each leaf count covers — the sizeBands below split the envelope evenly as a placeholder and must be replaced with the real orderable ranges. Also unconfirmed: whether E and EI classifications are offered on riser doors (the literature evidences EW120 for riser doors; E120 and EI60 are quoted for access panels, a different product), and whether periods below 120 are orderable. The tool no longer resolves to a product code — the business specifies to requirement and sources against it.",
 
   "limits": {
     "width":  { "min": 300, "absoluteMax": 4169, "unit": "mm" },
@@ -21,7 +19,7 @@
 
   "structuralAllowance": {
     "oversize": 16,
-    "note": "Prepare the structural opening 16 mm larger than the ordered door. The FrameSmart system gives 10 mm of in-frame adjustment, so no packers or mastic are needed."
+    "note": "Prepare the structural opening 16 mm larger than the ordered door. The frame provides 10 mm of in-frame adjustment, so no packers or mastic are needed."
   },
 
   "leafOptions": [
@@ -42,7 +40,7 @@
 
   "defaultFireRating": "EW120",
 
-  "fireClassificationNote": "EW adds control of radiated heat to integrity, reducing the risk of fire spreading by radiation and allowing safer passage past an open riser door on an escape route. Christo Riser Doors are bi-directionally tested to EW120.",
+  "fireClassificationNote": "EW adds control of radiated heat to integrity, reducing the risk of fire spreading by radiation and allowing safer passage past an open riser door on an escape route. Bi-directionally tested to EW120.",
 
   "options": [
     {
@@ -81,10 +79,10 @@
       "label": "Lock and keyhole",
       "required": true,
       "choices": [
-        { "id": "euro-slik",   "label": "Euro-Cylinder and SLIK", "note": "Most popular — handles are rarely fitted to flush doors." },
-        { "id": "slik",        "label": "SLIK only", "note": "Square drive T-key. Keyhole concealed behind a spring-loaded flap." },
-        { "id": "euro",        "label": "Euro-Cylinder only", "note": "Cylinder visible; last turn of the key operates the latch." },
-        { "id": "slik-plus",   "label": "SLIK+", "note": "Square drive keyhole and Euro-Cylinder concealed behind a magnet-held flush flap." }
+        { "id": "euro-concealed",  "label": "Euro-cylinder and concealed keyhole", "note": "Most popular — handles are rarely fitted to flush doors." },
+        { "id": "concealed",       "label": "Concealed keyhole only", "note": "Square-drive T-key. The keyhole sits behind a spring-loaded flap." },
+        { "id": "euro",            "label": "Euro-cylinder only", "note": "Cylinder visible; the last turn of the key operates the latch." },
+        { "id": "fully-concealed", "label": "Fully concealed", "note": "Keyhole and euro-cylinder both behind a magnet-held flush flap." }
       ]
     },
     {
@@ -119,12 +117,12 @@
   ],
 
   "sizeBands": [
-    { "leaves": 1, "fireRatings": ["EW30", "EW60", "EW90", "EW120"], "width": { "min": 300,  "max": 900 },  "height": { "min": 300, "max": 2755 }, "product": { "code": "CRD-EW-1L", "name": "Christo Riser Door, single leaf" } },
-    { "leaves": 2, "fireRatings": ["EW30", "EW60", "EW90", "EW120"], "width": { "min": 901,  "max": 1500 }, "height": { "min": 300, "max": 2755 }, "product": { "code": "CRD-EW-2L", "name": "Christo Riser Door, two leaf" } },
-    { "leaves": 3, "fireRatings": ["EW30", "EW60", "EW90", "EW120"], "width": { "min": 1501, "max": 2200 }, "height": { "min": 300, "max": 2755 }, "product": { "code": "CRD-EW-3L", "name": "Christo Riser Door, three leaf" } },
-    { "leaves": 4, "fireRatings": ["EW30", "EW60", "EW90", "EW120"], "width": { "min": 2201, "max": 2900 }, "height": { "min": 300, "max": 2755 }, "product": { "code": "CRD-EW-4L", "name": "Christo Riser Door, four leaf" } },
-    { "leaves": 5, "fireRatings": ["EW30", "EW60", "EW90", "EW120"], "width": { "min": 2901, "max": 3550 }, "height": { "min": 300, "max": 2755 }, "product": { "code": "CRD-EW-5L", "name": "Christo Riser Door, five leaf" } },
-    { "leaves": 6, "fireRatings": ["EW30", "EW60", "EW90", "EW120"], "width": { "min": 3551, "max": 4169 }, "height": { "min": 300, "max": 2755 }, "product": { "code": "CRD-EW-6L", "name": "Christo Riser Door, six leaf" } }
+    { "leaves": 1, "fireRatings": ["EW30", "EW60", "EW90", "EW120"], "width": { "min": 300,  "max": 900 },  "height": { "min": 300, "max": 2755 }, "product": { "name": "Riser door, single leaf" } },
+    { "leaves": 2, "fireRatings": ["EW30", "EW60", "EW90", "EW120"], "width": { "min": 901,  "max": 1500 }, "height": { "min": 300, "max": 2755 }, "product": { "name": "Riser door, two leaf" } },
+    { "leaves": 3, "fireRatings": ["EW30", "EW60", "EW90", "EW120"], "width": { "min": 1501, "max": 2200 }, "height": { "min": 300, "max": 2755 }, "product": { "name": "Riser door, three leaf" } },
+    { "leaves": 4, "fireRatings": ["EW30", "EW60", "EW90", "EW120"], "width": { "min": 2201, "max": 2900 }, "height": { "min": 300, "max": 2755 }, "product": { "name": "Riser door, four leaf" } },
+    { "leaves": 5, "fireRatings": ["EW30", "EW60", "EW90", "EW120"], "width": { "min": 2901, "max": 3550 }, "height": { "min": 300, "max": 2755 }, "product": { "name": "Riser door, five leaf" } },
+    { "leaves": 6, "fireRatings": ["EW30", "EW60", "EW90", "EW120"], "width": { "min": 3551, "max": 4169 }, "height": { "min": 300, "max": 2755 }, "product": { "name": "Riser door, six leaf" } }
   ],
 
   "standards": [

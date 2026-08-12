@@ -492,28 +492,26 @@ function ReviewStep({ product, config, projectData, specType, validation, onGene
     </div>
   );
 
-  const Row = ({ label, value }) => (
+  const Row = ({ label, value, accent }) => (
     <div style={{
       display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 14,
       padding: "9px 0", borderBottom: `1px solid ${UI.rule}`,
     }}>
       <span style={{ fontSize: 13.5, color: UI.body, fontFamily: FONT }}>{label}</span>
-      <span style={{ fontSize: 13.5, fontWeight: 600, color: UI.ink, fontFamily: FONT, textAlign: "right" }}>{value}</span>
+      <span style={{ fontSize: 13.5, fontWeight: 600, color: accent || UI.ink, fontFamily: FONT, textAlign: "right" }}>{value}</span>
     </div>
   );
 
   return (
     <div style={{ padding: "20px 22px" }}>
-      <Section title="Product">
+      <Section title="Doorset">
         <Row label="Type" value={product.label} />
-        {product.range && <Row label="Range" value={product.range} />}
-        {resolution?.status === "matched" && (
-          <>
-            <Row label="Product" value={resolution.product.name} />
-            <Row label="Code" value={resolution.product.code} />
-          </>
-        )}
-        <Row label="Specification" value={SPEC_TYPES.find(s => s.id === specType)?.label ?? specType} />
+        {resolution?.status === "matched"
+          ? <Row label="Configuration" value={resolution.product.name} />
+          : resolution?.status !== "incomplete" && (
+              <Row label="Configuration" value="Bespoke enquiry" accent={UI.warn} />
+            )}
+        <Row label="Document" value={SPEC_TYPES.find(s => s.id === specType)?.label ?? specType} />
       </Section>
 
       <Section title="Specification">

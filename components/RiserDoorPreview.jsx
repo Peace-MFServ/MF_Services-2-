@@ -134,25 +134,28 @@ export default function RiserDoorPreview({ product, config, resolution }) {
         {resolution?.status === "matched" ? (
           <div style={{ display: "flex", alignItems: "baseline", gap: 12, flexWrap: "wrap" }}>
             <span style={{ fontSize: 11.5, fontWeight: 600, letterSpacing: "0.07em", textTransform: "uppercase", color: UI.muted, fontFamily: FONT }}>
-              Product
+              Specification
             </span>
             <span style={{ fontSize: 15, fontWeight: 600, color: UI.ink, fontFamily: FONT }}>
               {resolution.product.name}
             </span>
             <span style={{ fontSize: 13.5, color: UI.body, fontFamily: FONT }}>
-              {resolution.product.code}
+              supplied and installed
             </span>
           </div>
         ) : resolution?.status === "incomplete" ? (
           <span style={{ fontSize: 13.5, color: UI.muted, fontFamily: FONT }}>
-            Enter a width and height to match a product.
+            Enter a width and height to confirm the specification.
           </span>
         ) : (
           <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
             <span aria-hidden="true" style={{ width: 3, height: 18, background: UI.warn, flexShrink: 0, marginTop: 1 }} />
-            <span style={{ fontSize: 13.5, lineHeight: 1.5, color: UI.body, fontFamily: FONT }}>
-              {resolution?.reason}
-            </span>
+            <div>
+              <div style={{ fontSize: 13.5, fontWeight: 600, color: UI.ink, fontFamily: FONT }}>Bespoke enquiry</div>
+              <div style={{ fontSize: 13, lineHeight: 1.5, color: UI.body, fontFamily: FONT, marginTop: 2 }}>
+                {resolution?.reason}
+              </div>
+            </div>
           </div>
         )}
       </div>
