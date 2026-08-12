@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { FONT } from '../lib/theme'
 import CablePlanConfigurator from '../components/CablePlanConfigurator'
 import SpecGenerator from '../components/SpecGenerator'
 import OverpressureCalculator from '../components/OverpressureCalculator'
@@ -23,41 +24,31 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState('hardwareSpec')
 
   return (
-    <div style={{ minHeight: '100vh', background: '#F8F9FA', fontFamily: 'DM Sans, sans-serif' }}>
+    <div style={{ minHeight: '100vh', background: '#F8F9FA', fontFamily: FONT }}>
 
       {/* ── GLOBAL HEADER ── */}
       <header style={{ background: '#00387B', borderBottom: '3px solid #ED6E02' }}>
-        <div style={{ maxWidth: 1400, margin: '0 auto', padding: '0 32px', display: 'flex', alignItems: 'center', height: 56, gap: 14 }}>
+        <div style={{ maxWidth: CONTENT_MAX_WIDTH[activeTab] ?? 1000, margin: '0 auto', padding: '0 32px', display: 'flex', alignItems: 'center', height: 60, gap: 14 }}>
           <img src="/linkedin.jpg" alt="MF Services" style={{ height: 34, width: 'auto', borderRadius: 3, flexShrink: 0 }} />
           <div>
             <div style={{ color: '#fff', fontWeight: 700, fontSize: 14, letterSpacing: '-0.01em', lineHeight: 1.2 }}>MF Services</div>
-            <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: 11, letterSpacing: '0.03em' }}>Door Systems Toolbox</div>
+            <div style={{ color: 'rgba(255,255,255,0.74)', fontSize: 11.5, letterSpacing: '0.03em' }}>Door Systems Toolbox</div>
           </div>
         </div>
       </header>
 
       {/* ── TAB NAV ── */}
-      <nav style={{ background: '#fff', borderBottom: '1px solid #E2E8F0', position: 'sticky', top: 0, zIndex: 10 }}>
-        <div style={{ maxWidth: 1400, margin: '0 auto', padding: '0 32px', display: 'flex' }}>
+      {/* Width tracks the active section so the tabs line up with the
+          content beneath them rather than stopping short of it. */}
+      <nav className="mf-nav" aria-label="Sections">
+        <div className="mf-nav-inner" style={{ maxWidth: CONTENT_MAX_WIDTH[activeTab] ?? 1000 }}>
           {TABS.map(tab => (
             <button
               key={tab.id}
               type="button"
+              className="mf-tab"
+              aria-current={activeTab === tab.id ? 'page' : undefined}
               onClick={() => setActiveTab(tab.id)}
-              style={{
-                background: 'none',
-                border: 'none',
-                borderBottom: `2px solid ${activeTab === tab.id ? '#ED6E02' : 'transparent'}`,
-                padding: '13px 20px',
-                fontSize: 14,
-                fontWeight: activeTab === tab.id ? 600 : 400,
-                color: activeTab === tab.id ? '#0F1C2E' : '#6B7280',
-                cursor: 'pointer',
-                fontFamily: 'DM Sans, sans-serif',
-                transition: 'color 150ms',
-                marginBottom: -1,
-                whiteSpace: 'nowrap',
-              }}
             >
               {tab.label}
             </button>

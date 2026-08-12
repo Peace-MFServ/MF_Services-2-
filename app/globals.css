@@ -311,3 +311,60 @@ body {
 .mf-toast-success { border-color: #D4E077; background: var(--mf-green-light); }
 .mf-toast-error   { border-color: #F5BFBF; background: var(--mf-red-light); }
 .mf-toast-warning { border-color: #FCD9B0; background: var(--mf-orange-light); }
+
+/* ─── Primary navigation ──────────────────────────────────────────
+   The section tabs are the main way around the toolbox, so they are
+   set at reading size in near-black rather than the light grey they
+   used to be, with a real hover state and a focus ring. */
+.mf-nav {
+  background: var(--mf-surface);
+  border-bottom: 1px solid #C4CCD4;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.mf-nav-inner {
+  margin: 0 auto;
+  padding: 0 32px;
+  display: flex;
+  gap: 4px;
+}
+
+.mf-tab {
+  appearance: none;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -1px;
+  padding: 15px 20px 13px;
+  font-family: inherit;
+  font-size: 15.5px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  color: #2B3641;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 120ms, border-color 120ms, background-color 120ms;
+}
+
+.mf-tab:hover {
+  color: #00387B;
+  border-bottom-color: #9AA5B1;
+  background: #F2F5F7;
+}
+
+.mf-tab:focus-visible {
+  outline: 2px solid #00387B;
+  outline-offset: -3px;
+}
+
+.mf-tab[aria-current="page"] {
+  color: #00387B;
+  font-weight: 650;
+  border-bottom-color: #00387B;
+}
+
+.mf-tab[aria-current="page"]:hover {
+  background: none;
+}
