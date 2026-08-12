@@ -1,6 +1,7 @@
 'use client'
 import { useState, useCallback, useRef } from "react";
 import RiserDoorPreview from "./RiserDoorPreview";
+import { PRODUCT_ART } from "./ProductIllustrations";
 import { generateHardwareSpecPDF } from "../lib/generateHardwareSpecPDF";
 import { UI, FONT, fieldStyle, focusField, blurField } from "../lib/theme";
 import {
@@ -141,83 +142,146 @@ function StepBar({ currentStep, setCurrentStep, furthest }) {
 
 // ─── Step 1 — product and project ─────────────────────────────────
 
+/** Product card — the illustration carries it, the text supports it. */
+function ProductCard({ product, selected, onSelect }) {
+  const Art = PRODUCT_ART[product.id];
+  const [hover, setHover] = useState(false);
+  const live = product.available;
+  const lift = live && (hover || selected);
+
+  return (
+    <button
+      type="button"
+      onClick={live ? onSelect : undefined}
+      disabled={!live}
+      aria-pressed={selected}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      style={{
+        display: "flex", flexDirection: "column", textAlign: "left", padding: 0,
+        fontFamily: FONT, background: UI.surface,
+        border: `1px solid ${selected ? UI.accent : lift ? UI.ruleStrong : UI.rule}`,
+        boxShadow: selected ? `inset 0 0 0 2px ${UI.accent}` : "none",
+        cursor: live ? "pointer" : "not-allowed",
+        transition: "border-color 120ms, transform 120ms",
+        transform: lift && !selected ? "translateY(-2px)" : "none",
+        overflow: "hidden",
+      }}
+    >
+      {/* Illustration */}
+      <div style={{
+        position: "relative", width: "100%", aspectRatio: "4 / 3",
+        borderBottom: `1px solid ${selected ? UI.accent : UI.rule}`,
+        background: "#F4F6F8",
+        // Unavailable products stay legible — they are still selling the
+        // range. The badge does the work of saying they aren't ready.
+        opacity: live ? 1 : 0.78,
+      }}>
+        {Art ? <Art /> : null}
+        {!live && (
+          <span style={{
+            position: "absolute", top: 10, right: 10,
+            background: UI.ink, color: "#FFFFFF",
+            fontSize: 10.5, fontWeight: 700, letterSpacing: "0.07em", textTransform: "uppercase",
+            padding: "4px 8px",
+          }}>
+            Coming soon
+          </span>
+        )}
+      </div>
+
+      {/* Caption */}
+      <div style={{ padding: "14px 16px 16px", flex: 1, display: "flex", flexDirection: "column" }}>
+        <div style={{
+          fontSize: 16, fontWeight: 600, letterSpacing: "-0.01em",
+          color: live ? UI.ink : UI.muted, lineHeight: 1.3,
+        }}>
+          {product.label}
+        </div>
+        <div style={{ fontSize: 13, color: UI.body, marginTop: 5, lineHeight: 1.5, flex: 1 }}>
+          {product.summary}
+        </div>
+        {live && (
+          <div style={{
+            marginTop: 12, fontSize: 12.5, fontWeight: 600,
+            color: selected ? UI.accent : UI.muted,
+          }}>
+            {selected ? "Selected" : "Choose"}
+          </div>
+        )}
+      </div>
+    </button>
+  );
+}
+
 function ProductStep({ productTypeId, setProductTypeId, specType, setSpecType, projectData, setProjectData }) {
   return (
-    <div style={{ padding: "20px 22px" }}>
-      <Label>Product type</Label>
-      <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 26 }}>
-        {PRODUCT_TYPES.map(pt => {
-          const on = productTypeId === pt.id;
-          return (
-            <button
-              key={pt.id} type="button"
-              onClick={pt.available ? () => setProductTypeId(pt.id) : undefined}
-              disabled={!pt.available}
-              aria-pressed={on}
-              style={{
-                textAlign: "left", padding: "13px 15px", fontFamily: FONT,
-                border: `1px solid ${on ? UI.accent : UI.ruleStrong}`,
-                boxShadow: on ? `inset 0 0 0 1px ${UI.accent}` : "none",
-                background: pt.available ? UI.surface : UI.sunken,
-                cursor: pt.available ? "pointer" : "not-allowed",
-                opacity: pt.available ? 1 : 0.65,
-              }}
-            >
-              <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 10 }}>
-                <span style={{ fontSize: 14.5, fontWeight: 600, color: pt.available ? UI.ink : UI.muted }}>
-                  {pt.label}
-                </span>
-                {!pt.available && (
-                  <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: UI.muted }}>
-                    Coming soon
-                  </span>
-                )}
-              </div>
-              <div style={{ fontSize: 12.5, color: UI.body, marginTop: 4, lineHeight: 1.45 }}>
-                {pt.summary}
-              </div>
-            </button>
-          );
-        })}
+    <div style={{ padding: "32px 32px 40px" }}>
+
+      <h1 style={{ margin: 0, fontSize: 27, fontWeight: 600, letterSpacing: "-0.02em", color: UI.ink, lineHeight: 1.2 }}>
+        Specify a doorset
+      </h1>
+      <p style={{ margin: "8px 0 26px", fontSize: 15, lineHeight: 1.55, color: UI.body, maxWidth: 620 }}>
+        Choose a product, set the dimensions, and download a specification for your tender.
+      </p>
+
+      <div style={{
+        display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(258px, 1fr))",
+        gap: 16, marginBottom: 40,
+      }}>
+        {PRODUCT_TYPES.map(pt => (
+          <ProductCard
+            key={pt.id}
+            product={pt}
+            selected={productTypeId === pt.id}
+            onSelect={() => setProductTypeId(pt.id)}
+          />
+        ))}
       </div>
 
-      <Label>Specification type</Label>
-      <div style={{ marginBottom: 26 }}>
-        <Segmented
-          name="Specification type"
-          options={SPEC_TYPES.map(s => ({ value: s.id, label: s.label }))}
-          value={specType}
-          onChange={setSpecType}
-        />
-        <p style={{ margin: "9px 0 0", fontSize: 12.5, lineHeight: 1.5, color: UI.body, fontFamily: FONT }}>
-          {SPEC_TYPES.find(s => s.id === specType)?.summary}
-        </p>
-      </div>
-
-      {[
-        ["projectName", "Project name"],
-        ["architecturalFirm", "Architectural firm"],
-        ["contactDetails", "Contact details"],
-      ].map(([key, label]) => (
-        <div key={key} style={{ marginBottom: 18 }}>
-          <Label htmlFor={`pd-${key}`}>{label}</Label>
-          {key === "contactDetails" ? (
-            <textarea
-              id={`pd-${key}`} rows={3} value={projectData[key]}
-              onChange={e => setProjectData(p => ({ ...p, [key]: e.target.value }))}
-              style={{ ...fieldStyle, resize: "vertical" }}
-              onFocus={focusField} onBlur={blurField}
-            />
-          ) : (
-            <input
-              id={`pd-${key}`} type="text" value={projectData[key]}
-              onChange={e => setProjectData(p => ({ ...p, [key]: e.target.value }))}
-              style={fieldStyle}
-              onFocus={focusField} onBlur={blurField}
-            />
-          )}
+      {/* Specification and project details */}
+      <div style={{
+        display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+        gap: 32, borderTop: `1px solid ${UI.ruleStrong}`, paddingTop: 28,
+      }}>
+        <div>
+          <Label>Specification type</Label>
+          <Segmented
+            name="Specification type"
+            options={SPEC_TYPES.map(s => ({ value: s.id, label: s.label }))}
+            value={specType}
+            onChange={setSpecType}
+          />
+          <p style={{ margin: "10px 0 0", fontSize: 13, lineHeight: 1.55, color: UI.body, maxWidth: 380 }}>
+            {SPEC_TYPES.find(s => s.id === specType)?.summary}
+          </p>
         </div>
-      ))}
+
+        {[
+          ["projectName", "Project name", false],
+          ["architecturalFirm", "Architectural firm", false],
+          ["contactDetails", "Contact details", true],
+        ].map(([key, label, multiline]) => (
+          <div key={key}>
+            <Label htmlFor={`pd-${key}`}>{label}</Label>
+            {multiline ? (
+              <textarea
+                id={`pd-${key}`} rows={3} value={projectData[key]}
+                onChange={e => setProjectData(p => ({ ...p, [key]: e.target.value }))}
+                style={{ ...fieldStyle, resize: "vertical" }}
+                onFocus={focusField} onBlur={blurField}
+              />
+            ) : (
+              <input
+                id={`pd-${key}`} type="text" value={projectData[key]}
+                onChange={e => setProjectData(p => ({ ...p, [key]: e.target.value }))}
+                style={fieldStyle}
+                onFocus={focusField} onBlur={blurField}
+              />
+            )}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -472,23 +536,79 @@ export default function SpecGenerator() {
 
   const nextBlocked = currentStep === 1 && !validation.isValid;
 
+  const shell = {
+    border: `1px solid ${UI.ruleStrong}`, background: UI.surface,
+    fontFamily: FONT, color: UI.body,
+  };
+
+  const footer = (
+    <footer style={{
+      display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12,
+      padding: "14px 22px", borderTop: `1px solid ${UI.ruleStrong}`, flexShrink: 0,
+    }}>
+      <button
+        type="button" onClick={goBack} disabled={currentStep === 0}
+        style={{
+          padding: "10px 18px", fontSize: 13.5, fontWeight: 500, fontFamily: FONT,
+          border: `1px solid ${UI.ruleStrong}`, background: UI.surface,
+          color: currentStep === 0 ? UI.muted : UI.ink,
+          cursor: currentStep === 0 ? "not-allowed" : "pointer",
+          opacity: currentStep === 0 ? 0.5 : 1,
+        }}
+      >
+        Back
+      </button>
+      {currentStep < STEPS.length - 1 && (
+        <button
+          type="button" onClick={goNext} disabled={nextBlocked}
+          style={{
+            padding: "10px 26px", fontSize: 13.5, fontWeight: 600, fontFamily: FONT,
+            border: `1px solid ${nextBlocked ? UI.ruleStrong : UI.accent}`,
+            background: nextBlocked ? UI.sunken : UI.accent,
+            color: nextBlocked ? UI.muted : "#FFFFFF",
+            cursor: nextBlocked ? "not-allowed" : "pointer",
+          }}
+        >
+          {nextBlocked ? `${validation.errors.length} to fix` : currentStep === 0 ? `Specify ${product?.label ?? "product"}` : "Next"}
+        </button>
+      )}
+    </footer>
+  );
+
+  // Product selection runs full width — the illustrations are the point
+  // of the step, and they do not read at rail width.
+  if (currentStep === 0) {
+    return (
+      <div style={{ ...shell, display: "flex", flexDirection: "column", minHeight: 640 }}>
+        <StepBar currentStep={currentStep} setCurrentStep={setCurrentStep} furthest={furthest} />
+        <div style={{ flex: 1 }}>
+          <ProductStep
+            productTypeId={productTypeId} setProductTypeId={setProductTypeId}
+            specType={specType} setSpecType={setSpecType}
+            projectData={projectData} setProjectData={setProjectData}
+          />
+        </div>
+        {footer}
+      </div>
+    );
+  }
+
   return (
     <div style={{
-      display: "flex", height: "calc(100vh - 190px)", minHeight: 640,
-      border: `1px solid ${UI.ruleStrong}`, background: UI.surface,
-      fontFamily: FONT, color: UI.body, overflow: "hidden",
+      ...shell, display: "flex", height: "calc(100vh - 190px)",
+      minHeight: 640, overflow: "hidden",
     }}>
-
       <aside style={{
         width: 424, flexShrink: 0, display: "flex", flexDirection: "column",
         borderRight: `1px solid ${UI.ruleStrong}`, minHeight: 0,
       }}>
         <header style={{ padding: "18px 22px 16px", borderBottom: `1px solid ${UI.rule}`, flexShrink: 0 }}>
           <h1 style={{ margin: 0, fontSize: 19, fontWeight: 600, letterSpacing: "-0.01em", color: UI.ink, lineHeight: 1.3 }}>
-            Hardware specification
+            {product?.label ?? "Doorset"}
           </h1>
           <p style={{ margin: "6px 0 0", fontSize: 13, color: UI.body, lineHeight: 1.5 }}>
-            Choose a product, set the dimensions, download the specification.
+            {SPEC_TYPES.find(s => s.id === specType)?.label} specification
+            {projectData.projectName?.trim() ? ` · ${projectData.projectName.trim()}` : ""}
           </p>
         </header>
 
@@ -497,13 +617,6 @@ export default function SpecGenerator() {
         {currentStep === 1 && <OutstandingList errors={validation.errors} />}
 
         <div ref={railRef} style={{ flex: 1, minHeight: 0, overflowY: "auto" }}>
-          {currentStep === 0 && (
-            <ProductStep
-              productTypeId={productTypeId} setProductTypeId={setProductTypeId}
-              specType={specType} setSpecType={setSpecType}
-              projectData={projectData} setProjectData={setProjectData}
-            />
-          )}
           {currentStep === 1 && product && (
             <SpecifyStep product={product} config={config} setConfig={setConfig}
               errorFor={errorFor} markTouched={markTouched} />
@@ -516,37 +629,7 @@ export default function SpecGenerator() {
           )}
         </div>
 
-        <footer style={{
-          display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12,
-          padding: "14px 22px", borderTop: `1px solid ${UI.ruleStrong}`, flexShrink: 0,
-        }}>
-          <button
-            type="button" onClick={goBack} disabled={currentStep === 0}
-            style={{
-              padding: "10px 18px", fontSize: 13.5, fontWeight: 500, fontFamily: FONT,
-              border: `1px solid ${UI.ruleStrong}`, background: UI.surface,
-              color: currentStep === 0 ? UI.muted : UI.ink,
-              cursor: currentStep === 0 ? "not-allowed" : "pointer",
-              opacity: currentStep === 0 ? 0.5 : 1,
-            }}
-          >
-            Back
-          </button>
-          {currentStep < STEPS.length - 1 && (
-            <button
-              type="button" onClick={goNext} disabled={nextBlocked}
-              style={{
-                padding: "10px 26px", fontSize: 13.5, fontWeight: 600, fontFamily: FONT,
-                border: `1px solid ${nextBlocked ? UI.ruleStrong : UI.accent}`,
-                background: nextBlocked ? UI.sunken : UI.accent,
-                color: nextBlocked ? UI.muted : "#FFFFFF",
-                cursor: nextBlocked ? "not-allowed" : "pointer",
-              }}
-            >
-              {nextBlocked ? `${validation.errors.length} to fix` : "Next"}
-            </button>
-          )}
-        </footer>
+        {footer}
       </aside>
 
       <section style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column" }}>
