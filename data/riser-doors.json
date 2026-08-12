@@ -1,0 +1,92 @@
+{
+  "id": "riser-doors",
+  "label": "Riser Doors",
+  "summary": "Fire-rated access doors to service risers and shafts.",
+
+  "_PROVISIONAL": "Size bands, limits and product codes below are PLACEHOLDERS pending the real range data. The resolution logic is complete and driven entirely by this file — replacing these values needs no code change. Every number here must be confirmed before the tool is issued to anyone outside the business.",
+
+  "limits": {
+    "width":  { "min": 300, "absoluteMax": 3600, "unit": "mm" },
+    "height": { "min": 300, "absoluteMax": 2400, "unit": "mm" }
+  },
+
+  "leafOptions": [
+    { "value": 1, "label": "1 leaf" },
+    { "value": 2, "label": "2 leaves" },
+    { "value": 3, "label": "3 leaves" },
+    { "value": 4, "label": "4 leaves" }
+  ],
+
+  "fireRatings": [
+    { "id": "FD30",  "label": "FD30",  "minutes": 30 },
+    { "id": "FD60",  "label": "FD60",  "minutes": 60 },
+    { "id": "FD90",  "label": "FD90",  "minutes": 90 },
+    { "id": "FD120", "label": "FD120", "minutes": 120 }
+  ],
+
+  "sizeBands": [
+    { "leaves": 1, "fireRatings": ["FD30", "FD60"],
+      "width": { "min": 300, "max": 900 }, "height": { "min": 300, "max": 2400 },
+      "product": { "code": "RD-1L-60", "name": "Riser door, single leaf" } },
+    { "leaves": 1, "fireRatings": ["FD90", "FD120"],
+      "width": { "min": 300, "max": 900 }, "height": { "min": 300, "max": 2100 },
+      "product": { "code": "RD-1L-120", "name": "Riser door, single leaf, extended rating" } },
+
+    { "leaves": 2, "fireRatings": ["FD30", "FD60"],
+      "width": { "min": 901, "max": 1800 }, "height": { "min": 300, "max": 2400 },
+      "product": { "code": "RD-2L-60", "name": "Riser door, two leaf" } },
+    { "leaves": 2, "fireRatings": ["FD90", "FD120"],
+      "width": { "min": 901, "max": 1800 }, "height": { "min": 300, "max": 2100 },
+      "product": { "code": "RD-2L-120", "name": "Riser door, two leaf, extended rating" } },
+
+    { "leaves": 3, "fireRatings": ["FD30", "FD60"],
+      "width": { "min": 1801, "max": 2700 }, "height": { "min": 300, "max": 2400 },
+      "product": { "code": "RD-3L-60", "name": "Riser door, three leaf" } },
+    { "leaves": 3, "fireRatings": ["FD90", "FD120"],
+      "width": { "min": 1801, "max": 2700 }, "height": { "min": 300, "max": 2100 },
+      "product": { "code": "RD-3L-120", "name": "Riser door, three leaf, extended rating" } },
+
+    { "leaves": 4, "fireRatings": ["FD30", "FD60"],
+      "width": { "min": 2701, "max": 3600 }, "height": { "min": 300, "max": 2400 },
+      "product": { "code": "RD-4L-60", "name": "Riser door, four leaf" } },
+    { "leaves": 4, "fireRatings": ["FD90", "FD120"],
+      "width": { "min": 2701, "max": 3600 }, "height": { "min": 300, "max": 2100 },
+      "product": { "code": "RD-4L-120", "name": "Riser door, four leaf, extended rating" } }
+  ],
+
+  "options": [
+    {
+      "id": "doorRestrictor",
+      "label": "Door restrictor",
+      "required": true,
+      "choices": [
+        { "id": "yes", "label": "Yes" },
+        { "id": "no",  "label": "No" }
+      ]
+    },
+    {
+      "id": "lockType",
+      "label": "Lock type",
+      "required": true,
+      "choices": [
+        { "id": "cylinder-keyed-alike", "label": "Cylinder (keyed alike) included" },
+        { "id": "cylinder-prep-only",   "label": "Cylinder prep only" },
+        { "id": "generic-square-key",   "label": "Generic square key" }
+      ]
+    },
+    {
+      "id": "finish",
+      "label": "Finish",
+      "required": true,
+      "choices": [
+        { "id": "ral",    "label": "RAL colour", "requiresText": true, "textLabel": "RAL number", "textPlaceholder": "e.g. RAL 7016" },
+        { "id": "primed", "label": "Primed" }
+      ]
+    }
+  ],
+
+  "standards": [
+    { "code": "EN 1634-1",  "description": "Fire resistance tests for door and shutter assemblies" },
+    { "code": "EN 13501-2", "description": "Fire classification from fire resistance test data" }
+  ]
+}

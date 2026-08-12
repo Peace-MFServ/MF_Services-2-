@@ -10,10 +10,11 @@ const TABS = [
   { id: 'overpressure', label: 'Overpressure' },
 ]
 
+// The hardware spec and cable plan are both two-pane workspaces — a
+// configuration rail beside a persistent elevation — so they need the
+// full width to be usable.
 const CONTENT_MAX_WIDTH = {
-  hardwareSpec: 1000,
-  // The cable plan is a two-pane workspace — configuration rail plus a
-  // persistent elevation — so it needs the full width to be usable.
+  hardwareSpec: 1700,
   cablePlan:    1700,
   overpressure: 1400,
 }

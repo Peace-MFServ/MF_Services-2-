@@ -1,194 +1,220 @@
 'use client'
-import { useState, useCallback } from "react";
-import { jsPDF } from "jspdf";
-import { AutomaticSlidingDoor, ManualSwingDoor, AccessibleDoor, FireDoor } from "./DoorIllustrations";
+import { useState, useCallback, useRef } from "react";
+import RiserDoorPreview from "./RiserDoorPreview";
+import { generateHardwareSpecPDF } from "../lib/generateHardwareSpecPDF";
+import { UI, FONT, fieldStyle, focusField, blurField } from "../lib/theme";
+import {
+  PRODUCT_TYPES, SPEC_TYPES, getProduct,
+  buildInitialConfig, resolveProduct, validateSpec, specRows,
+} from "../lib/hardwareSpec";
 
-// ─── DESIGN TOKENS ────────────────────────────────────────────────────────────
-const T = {
-  navy:         "#00387B",
-  blue:         "#1470B1",
-  blueLight:    "#E8F2FA",
-  orange:       "#ED6E02",
-  orangeLight:  "#FEF3E8",
-  green:        "#B1C638",
-  greenDark:    "#8A9B2A",
-  greenLight:   "#F4F7E0",
-  red:          "#D63B3B",
-  redLight:     "#FDF0F0",
-  canvas:       "#F8F9FA",
-  surface:      "#FFFFFF",
-  surface2:     "#F2F4F7",
-  border:       "#E2E8F0",
-  borderStrong: "#C8D3E0",
-  textPrimary:  "#0F1C2E",
-  textBody:     "#374151",
-  textMuted:    "#6B7280",
-  textFaint:    "#9CA3AF",
-  white:        "#FFFFFF",
-};
+const STEPS = ["Product", "Specify", "Review"];
 
-const shadow = {
-  xs: "0 1px 2px rgba(0,56,123,0.04)",
-  sm: "0 2px 8px rgba(0,56,123,0.06), 0 1px 2px rgba(0,56,123,0.04)",
-  md: "0 4px 16px rgba(0,56,123,0.08), 0 2px 4px rgba(0,56,123,0.04)",
-  lg: "0 8px 32px rgba(0,56,123,0.10), 0 2px 8px rgba(0,56,123,0.06)",
-};
+// ─── Primitives ───────────────────────────────────────────────────
 
-// ─── PDF GENERATION ───────────────────────────────────────────────────────────
-function generateSpecPDF(doorType, hardwareSelections, projectData) {
-  const doc = new jsPDF();
-  const pageWidth = doc.internal.pageSize.getWidth();
-  const margin = 20;
-  let y = margin;
-
-  // Header
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(18);
-  doc.text("Hardware Specification", margin, y);
-  y += 10;
-
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(12);
-  doc.text(`MF Services — ${hardwareData.contact.website}`, margin, y);
-  y += 5;
-  doc.text(`Phone: ${hardwareData.contact.phone} | Email: ${hardwareData.contact.email}`, margin, y);
-  y += 15;
-
-  // Project Details
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(14);
-  doc.text("Project Details", margin, y);
-  y += 10;
-
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(10);
-  const details = [
-    `Construction Project: ${projectData.constructionProject}`,
-    `Door Number/Naming: ${projectData.doorNumberOrNaming}`,
-    `Installation Location: ${projectData.installationLocation}`,
-    `Position No. in Specifications: ${projectData.positionNumberInSpec}`,
-    `Function Description: ${projectData.functionDescription}`,
-    `Miscellaneous: ${projectData.miscellaneous}`,
-  ];
-  details.forEach(detail => {
-    doc.text(detail, margin, y);
-    y += 6;
-  });
-  y += 10;
-
-  // Door Type
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(14);
-  doc.text("Door Type", margin, y);
-  y += 10;
-
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(10);
-  doc.text(`${doorType.label} — ${doorType.description}`, margin, y);
-  y += 6;
-  doc.text(`Manufacturer: ${doorType.manufacturer}`, margin, y);
-  y += 10;
-
-  // Hardware Schedule
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(14);
-  doc.text("Hardware Schedule", margin, y);
-  y += 10;
-
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(10);
-  
-  if (doorType.id === "automatic-sliding") {
-    // LEANA hardware display
-    if (hardwareSelections.glazingOption) {
-      const glazing = doorType.glazingOptions.find(g => g.id === hardwareSelections.glazingOption);
-      doc.text(`Glazing Option: ${glazing.label}`, margin, y);
-      y += 6;
-    }
-    if (hardwareSelections.leanaOptions && hardwareSelections.leanaOptions.length > 0) {
-      doc.text("LEANA Options:", margin, y);
-      y += 6;
-      hardwareSelections.leanaOptions.forEach(optId => {
-        const opt = doorType.options.find(o => o.id === optId);
-        if (opt) {
-          doc.text(`• ${opt.label}`, margin + 5, y);
-          y += 6;
-        }
-      });
-    }
-  } else {
-    // Traditional hardware display
-    if (hardwareSelections.closer) {
-      const closer = hardwareData.hardware.doorClosers.find(c => c.id === hardwareSelections.closer);
-      const variant = hardwareSelections.closerVariant ? closer.variants.find(v => v.id === hardwareSelections.closerVariant) : null;
-      doc.text(`Door Closer: ${closer.label}${variant ? ` (${variant.label})` : ''}`, margin, y);
-      y += 6;
-      if (variant) {
-        doc.text(`Article No: ${variant.articleNo}`, margin + 10, y);
-        y += 6;
-      }
-    }
-    if (hardwareSelections.leverHandle) {
-      const handle = hardwareData.hardware.leverHandles.find(h => h.id === hardwareSelections.leverHandle);
-      doc.text(`Lever Handle: ${handle.label}`, margin, y);
-      y += 6;
-    }
-    if (hardwareSelections.panicHardware) {
-      const panic = hardwareData.hardware.panicHardware.find(p => p.id === hardwareSelections.panicHardware);
-      doc.text(`Panic Hardware: ${panic.label}`, margin, y);
-      y += 6;
-    }
-  }
-  y += 10;
-
-  // Applicable Standards
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(14);
-  doc.text("Applicable EN Standards", margin, y);
-  y += 10;
-
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(10);
-  doorType.standards.forEach(standard => {
-    doc.text(`${standard.code} — ${standard.description}`, margin, y);
-    y += 6;
-  });
-
-  // Footer
-  y = doc.internal.pageSize.getHeight() - 20;
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(8);
-  doc.text(`Generated on ${new Date().toLocaleDateString()}`, margin, y);
-
-  doc.save(`Hardware_Spec_${projectData.doorNumberOrNaming || 'Door'}.pdf`);
+function Label({ children, htmlFor }) {
+  return (
+    <label htmlFor={htmlFor} style={{
+      display: "block", fontSize: 11.5, fontWeight: 600, letterSpacing: "0.07em",
+      textTransform: "uppercase", color: UI.muted, fontFamily: FONT, marginBottom: 8,
+    }}>
+      {children}
+    </label>
+  );
 }
 
-// ─── DATA ─────────────────────────────────────────────────────────────────────
-import hardwareData from '../data/hardware-products.json';
-
-// ─── STEP INDICATOR ───────────────────────────────────────────────────────────
-const STEPS = ["Select", "Hardware", "Project", "Review"];
-
-function StepIndicator({ currentStep, setCurrentStep }) {
+function FieldError({ children }) {
+  if (!children) return null;
   return (
-    <div className="mf-step-indicator" style={{ display: "flex", alignItems: "center", marginBottom: 40, overflowX: "auto" }}>
-      {STEPS.map((label, i) => (
-        <div key={i} className={`mf-step-item${i === currentStep ? ' mf-step-current' : ''}`} onClick={i < currentStep ? () => setCurrentStep(i) : undefined} style={{ display: "flex", alignItems: "center", flex: 1, cursor: i < currentStep ? "pointer" : "default" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <div className="mf-step-circle" style={{
-              width: 34, height: 34, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center",
-              fontSize: 13, fontWeight: 700, flexShrink: 0, transition: "all 250ms",
-              background: i < currentStep ? T.green : i === currentStep ? T.navy : T.surface,
-              color: i < currentStep ? T.white : i === currentStep ? T.white : T.textMuted,
-              border: i === currentStep ? `2px solid ${T.navy}` : i < currentStep ? `2px solid ${T.green}` : `2px solid ${T.border}`,
-              boxShadow: i === currentStep ? `0 0 0 4px rgba(0,56,123,0.12)` : "none",
-            }}>
-              {i < currentStep ? "✓" : i + 1}
-            </div>
-            <span className="mf-step-label" style={{ fontWeight: i === currentStep ? 600 : 400, color: i === currentStep ? T.textPrimary : T.textMuted, whiteSpace: "nowrap" }}>{label}</span>
+    <div style={{ display: "flex", alignItems: "flex-start", gap: 8, marginTop: 7 }}>
+      <span aria-hidden="true" style={{ width: 3, height: 15, background: UI.warn, flexShrink: 0, marginTop: 1 }} />
+      <span style={{ fontSize: 12.5, lineHeight: 1.45, color: UI.warn, fontFamily: FONT }}>{children}</span>
+    </div>
+  );
+}
+
+/** Segmented selector — one row of mutually exclusive choices. */
+function Segmented({ options, value, onChange, name }) {
+  return (
+    <div role="radiogroup" aria-label={name} style={{ display: "flex", flexWrap: "wrap", gap: -1 }}>
+      {options.map((opt, i) => {
+        const on = value === opt.value;
+        return (
+          <button
+            key={opt.value} type="button" role="radio" aria-checked={on}
+            onClick={() => onChange(opt.value)}
+            style={{
+              padding: "9px 16px", fontSize: 13.5, fontWeight: on ? 600 : 400, fontFamily: FONT,
+              border: `1px solid ${on ? UI.accent : UI.ruleStrong}`,
+              background: on ? UI.accent : UI.surface,
+              color: on ? "#FFFFFF" : UI.body,
+              cursor: "pointer",
+              marginLeft: i === 0 ? 0 : -1,
+              position: "relative", zIndex: on ? 1 : 0,
+            }}
+          >
+            {opt.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+function RadioList({ choices, value, onChange, name, textValue, onTextChange }) {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>
+      {choices.map(choice => {
+        const on = value === choice.id;
+        return (
+          <div key={choice.id}>
+            <label style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }}>
+              <input
+                type="radio" name={name} checked={on}
+                onChange={() => onChange(choice.id)}
+                style={{ accentColor: UI.accent, width: 15, height: 15, margin: 0, flexShrink: 0 }}
+              />
+              <span style={{ fontSize: 13.5, color: on ? UI.ink : UI.body, fontWeight: on ? 600 : 400, fontFamily: FONT }}>
+                {choice.label}
+              </span>
+            </label>
+            {on && choice.requiresText && (
+              <input
+                type="text"
+                aria-label={choice.textLabel || "Value"}
+                placeholder={choice.textPlaceholder || ""}
+                value={textValue || ""}
+                onChange={e => onTextChange(e.target.value)}
+                style={{ ...fieldStyle, marginTop: 8, marginLeft: 25, width: "calc(100% - 25px)" }}
+                onFocus={focusField} onBlur={blurField}
+              />
+            )}
           </div>
-          {i < STEPS.length - 1 && (
-            <div className="mf-step-connector" style={{ flex: 1, height: 2, margin: "0 12px", background: i < currentStep ? T.green : T.border, borderRadius: 1, transition: "background 250ms" }} />
+        );
+      })}
+    </div>
+  );
+}
+
+function StepBar({ currentStep, setCurrentStep, furthest }) {
+  return (
+    <nav aria-label="Progress" style={{ display: "flex", borderBottom: `1px solid ${UI.rule}`, flexShrink: 0 }}>
+      {STEPS.map((label, i) => {
+        const done = i < currentStep;
+        const active = i === currentStep;
+        const reachable = i <= furthest;
+        return (
+          <button
+            key={label} type="button"
+            onClick={reachable ? () => setCurrentStep(i) : undefined}
+            aria-current={active ? "step" : undefined}
+            style={{
+              flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+              padding: "14px 8px", background: "none", border: "none",
+              borderBottom: `2px solid ${active ? UI.accent : "transparent"}`, marginBottom: -1,
+              cursor: reachable ? "pointer" : "default", fontFamily: FONT,
+              color: active ? UI.ink : reachable ? UI.body : UI.muted,
+              fontWeight: active ? 600 : 500, fontSize: 13.5,
+            }}
+          >
+            <span style={{
+              width: 20, height: 20, flexShrink: 0,
+              border: `1.5px solid ${active || done ? UI.accent : UI.ruleStrong}`,
+              background: done ? UI.accent : "transparent",
+              color: done ? "#FFFFFF" : active ? UI.accent : UI.muted,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontSize: 11, fontWeight: 600,
+            }}>
+              {done ? (
+                <svg width="10" height="8" viewBox="0 0 10 8" aria-hidden="true">
+                  <path d="M1 4L3.6 6.6L9 1.2" fill="none" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              ) : i + 1}
+            </span>
+            {label}
+          </button>
+        );
+      })}
+    </nav>
+  );
+}
+
+// ─── Step 1 — product and project ─────────────────────────────────
+
+function ProductStep({ productTypeId, setProductTypeId, specType, setSpecType, projectData, setProjectData }) {
+  return (
+    <div style={{ padding: "20px 22px" }}>
+      <Label>Product type</Label>
+      <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 26 }}>
+        {PRODUCT_TYPES.map(pt => {
+          const on = productTypeId === pt.id;
+          return (
+            <button
+              key={pt.id} type="button"
+              onClick={pt.available ? () => setProductTypeId(pt.id) : undefined}
+              disabled={!pt.available}
+              aria-pressed={on}
+              style={{
+                textAlign: "left", padding: "13px 15px", fontFamily: FONT,
+                border: `1px solid ${on ? UI.accent : UI.ruleStrong}`,
+                boxShadow: on ? `inset 0 0 0 1px ${UI.accent}` : "none",
+                background: pt.available ? UI.surface : UI.sunken,
+                cursor: pt.available ? "pointer" : "not-allowed",
+                opacity: pt.available ? 1 : 0.65,
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 10 }}>
+                <span style={{ fontSize: 14.5, fontWeight: 600, color: pt.available ? UI.ink : UI.muted }}>
+                  {pt.label}
+                </span>
+                {!pt.available && (
+                  <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: UI.muted }}>
+                    Coming soon
+                  </span>
+                )}
+              </div>
+              <div style={{ fontSize: 12.5, color: UI.body, marginTop: 4, lineHeight: 1.45 }}>
+                {pt.summary}
+              </div>
+            </button>
+          );
+        })}
+      </div>
+
+      <Label>Specification type</Label>
+      <div style={{ marginBottom: 26 }}>
+        <Segmented
+          name="Specification type"
+          options={SPEC_TYPES.map(s => ({ value: s.id, label: s.label }))}
+          value={specType}
+          onChange={setSpecType}
+        />
+        <p style={{ margin: "9px 0 0", fontSize: 12.5, lineHeight: 1.5, color: UI.body, fontFamily: FONT }}>
+          {SPEC_TYPES.find(s => s.id === specType)?.summary}
+        </p>
+      </div>
+
+      {[
+        ["projectName", "Project name"],
+        ["architecturalFirm", "Architectural firm"],
+        ["contactDetails", "Contact details"],
+      ].map(([key, label]) => (
+        <div key={key} style={{ marginBottom: 18 }}>
+          <Label htmlFor={`pd-${key}`}>{label}</Label>
+          {key === "contactDetails" ? (
+            <textarea
+              id={`pd-${key}`} rows={3} value={projectData[key]}
+              onChange={e => setProjectData(p => ({ ...p, [key]: e.target.value }))}
+              style={{ ...fieldStyle, resize: "vertical" }}
+              onFocus={focusField} onBlur={blurField}
+            />
+          ) : (
+            <input
+              id={`pd-${key}`} type="text" value={projectData[key]}
+              onChange={e => setProjectData(p => ({ ...p, [key]: e.target.value }))}
+              style={fieldStyle}
+              onFocus={focusField} onBlur={blurField}
+            />
           )}
         </div>
       ))}
@@ -196,272 +222,336 @@ function StepIndicator({ currentStep, setCurrentStep }) {
   );
 }
 
-// ─── MAIN ─────────────────────────────────────────────────────────────────────
-export default function SpecGenerator() {
-  const [currentStep, setCurrentStep] = useState(0);
-  const [selectedDoorType, setSelectedDoorType] = useState(null);
-  const [hardwareSelections, setHardwareSelections] = useState({});
-  const [projectData, setProjectData] = useState({ constructionProject: "", doorNumberOrNaming: "", installationLocation: "", positionNumberInSpec: "", functionDescription: "", miscellaneous: "" });
+// ─── Step 2 — specify ─────────────────────────────────────────────
 
-  const doorType = selectedDoorType ? hardwareData.doorTypes.find(dt => dt.id === selectedDoorType) : null;
+/** Everything still outstanding, in a neutral tone. The per-field
+ *  errors only appear once a field has been touched, so this is what
+ *  explains the "N to fix" on the footer button before then. */
+function OutstandingList({ errors }) {
+  if (errors.length === 0) {
+    return (
+      <div style={{ padding: "12px 22px", borderBottom: `1px solid ${UI.rule}`, background: UI.sunken }}>
+        <span style={{ fontSize: 13, color: UI.body, fontFamily: FONT }}>Specification complete.</span>
+      </div>
+    );
+  }
+  return (
+    <div style={{ padding: "12px 22px", borderBottom: `1px solid ${UI.rule}`, background: UI.sunken }}>
+      {errors.map((e, i) => (
+        <div key={`${e.field}-${i}`} style={{ display: "flex", alignItems: "flex-start", gap: 10, marginBottom: i < errors.length - 1 ? 6 : 0 }}>
+          <span aria-hidden="true" style={{ width: 3, height: 16, background: UI.ruleStrong, flexShrink: 0, marginTop: 1 }} />
+          <span style={{ fontSize: 13, lineHeight: 1.45, color: UI.body, fontFamily: FONT }}>{e.message}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
 
-  const handleSelectDoorType = id => { setSelectedDoorType(id); setHardwareSelections({}); };
-  const handleHardwareChange = useCallback((key, value) => { setHardwareSelections(prev => ({ ...prev, [key]: value })); }, []);
-  const handleNext = () => { setCurrentStep(s => Math.min(s + 1, STEPS.length - 1)); };
-  const handleBack = () => setCurrentStep(s => Math.max(s - 1, 0));
+function SpecifyStep({ product, config, setConfig, errorFor, markTouched }) {
+  const set = (key, value) => { markTouched(key); setConfig(c => ({ ...c, [key]: value })); };
 
   return (
-    <div style={{ fontFamily: "DM Sans, sans-serif", color: T.textBody }}>
-      <main className="mf-content-shell" style={{ maxWidth: 1000, margin: "0 auto", padding: "40px 0" }}>
-        <StepIndicator currentStep={currentStep} setCurrentStep={setCurrentStep} />
+    <div style={{ padding: "20px 22px" }}>
 
-        {/* STEP 0: Select Door Type */}
-        {currentStep === 0 && (
-          <div>
-            <h1 style={{ fontSize: 28, fontWeight: 700, color: T.textPrimary, letterSpacing: "-0.03em", marginBottom: 6 }}>Select Door Type</h1>
-            <p style={{ color: T.textMuted, fontSize: 15, marginBottom: 32 }}>Choose the door type you are generating a specification for.</p>
-          
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 16 }}>
-              {hardwareData.doorTypes.map(dt => {
-                const IllustrationComponents = {
-                  "automatic-sliding": AutomaticSlidingDoor,
-                  "manual-swing-standard": ManualSwingDoor,
-                  "manual-swing-accessible": AccessibleDoor,
-                  "fire-door": FireDoor,
-                };
-                const Illustration = IllustrationComponents[dt.id] || ManualSwingDoor;
+      <div style={{ marginBottom: 24 }}>
+        <Label>Number of leaves</Label>
+        <Segmented
+          name="Number of leaves"
+          options={product.leafOptions.map(l => ({ value: l.value, label: String(l.value) }))}
+          value={config.leaves}
+          onChange={v => set("leaves", v)}
+        />
+        <p style={{ margin: "8px 0 0", fontSize: 12.5, color: UI.body, fontFamily: FONT }}>
+          Choose the maximum for the opening.
+        </p>
+      </div>
 
-                return (
-                  <div key={dt.id} onClick={() => handleSelectDoorType(dt.id)}
-                    style={{ background: T.surface, border: `2px solid ${selectedDoorType === dt.id ? T.blue : T.border}`, borderRadius: 14, padding: 24, cursor: "pointer", transition: "all 200ms", boxShadow: selectedDoorType === dt.id ? `0 0 0 4px rgba(20,112,177,0.12), ${shadow.md}` : shadow.sm }}>
-                    <div style={{ width: "100%", marginBottom: 18 }}>
-                      <Illustration />
-                    </div>
-                    <div style={{ fontSize: 18, fontWeight: 700, color: T.textPrimary, letterSpacing: "-0.02em", marginBottom: 4 }}>{dt.label}</div>
-                    <div style={{ fontSize: 13, color: T.textMuted, marginBottom: 12 }}>{dt.description}</div>
-                    <div style={{ fontSize: 12, color: T.textFaint }}>{dt.manufacturer}</div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 24 }}>
+        <div>
+          <Label htmlFor="cfg-width">Maximum width (mm)</Label>
+          <input
+            id="cfg-width" type="number" inputMode="numeric"
+            min={product.limits.width.min} max={product.limits.width.absoluteMax}
+            value={config.width}
+            onChange={e => set("width", e.target.value)}
+            style={{ ...fieldStyle, borderColor: errorFor("width") ? UI.warn : UI.ruleStrong }}
+            onFocus={focusField}
+            onBlur={e => { markTouched("width"); e.target.style.borderColor = errorFor("width") ? UI.warn : UI.ruleStrong; e.target.style.boxShadow = "none"; }}
+          />
+          <FieldError>{errorFor("width")}</FieldError>
+        </div>
+        <div>
+          <Label htmlFor="cfg-height">Maximum height (mm)</Label>
+          <input
+            id="cfg-height" type="number" inputMode="numeric"
+            min={product.limits.height.min} max={product.limits.height.absoluteMax}
+            value={config.height}
+            onChange={e => set("height", e.target.value)}
+            style={{ ...fieldStyle, borderColor: errorFor("height") ? UI.warn : UI.ruleStrong }}
+            onFocus={focusField}
+            onBlur={e => { markTouched("height"); e.target.style.borderColor = errorFor("height") ? UI.warn : UI.ruleStrong; e.target.style.boxShadow = "none"; }}
+          />
+          <FieldError>{errorFor("height")}</FieldError>
+        </div>
+      </div>
+
+      <FieldError>{errorFor("size")}</FieldError>
+
+      <div style={{ marginBottom: 24, marginTop: 24 }}>
+        <Label>Fire rating</Label>
+        <Segmented
+          name="Fire rating"
+          options={product.fireRatings.map(r => ({ value: r.id, label: r.label }))}
+          value={config.fireRating}
+          onChange={v => set("fireRating", v)}
+        />
+      </div>
+
+      {product.options.map(opt => (
+        <div key={opt.id} style={{ marginBottom: 24 }}>
+          <Label>{opt.label}</Label>
+          <RadioList
+            name={`opt-${opt.id}`}
+            choices={opt.choices}
+            value={config[opt.id]}
+            onChange={v => set(opt.id, v)}
+            textValue={config[`${opt.id}Text`]}
+            onTextChange={v => set(`${opt.id}Text`, v)}
+          />
+          <FieldError>{errorFor(opt.id)}</FieldError>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ─── Step 3 — review ──────────────────────────────────────────────
+
+function ReviewStep({ product, config, projectData, specType, validation, onGenerate, generating, notice }) {
+  const rows = specRows(product, config);
+  const resolution = validation.resolution;
+
+  const Section = ({ title, children }) => (
+    <div style={{ marginBottom: 26 }}>
+      <div style={{
+        fontSize: 11.5, fontWeight: 600, letterSpacing: "0.07em", textTransform: "uppercase",
+        color: UI.muted, fontFamily: FONT, paddingBottom: 9, marginBottom: 12,
+        borderBottom: `1px solid ${UI.ruleStrong}`,
+      }}>{title}</div>
+      {children}
+    </div>
+  );
+
+  const Row = ({ label, value }) => (
+    <div style={{
+      display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 14,
+      padding: "9px 0", borderBottom: `1px solid ${UI.rule}`,
+    }}>
+      <span style={{ fontSize: 13.5, color: UI.body, fontFamily: FONT }}>{label}</span>
+      <span style={{ fontSize: 13.5, fontWeight: 600, color: UI.ink, fontFamily: FONT, textAlign: "right" }}>{value}</span>
+    </div>
+  );
+
+  return (
+    <div style={{ padding: "20px 22px" }}>
+      <Section title="Product">
+        <Row label="Type" value={product.label} />
+        {resolution?.status === "matched" && (
+          <>
+            <Row label="Product" value={resolution.product.name} />
+            <Row label="Code" value={resolution.product.code} />
+          </>
         )}
+        <Row label="Specification" value={SPEC_TYPES.find(s => s.id === specType)?.label ?? specType} />
+      </Section>
 
-        {/* STEP 1: Configure Hardware */}
-        {currentStep === 1 && doorType && (
-          <div>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 28, gap: 20, flexWrap: "wrap" }}>
-              <div>
-                <h1 style={{ fontSize: 28, fontWeight: 700, color: T.textPrimary, letterSpacing: "-0.03em", marginBottom: 6 }}>Configure Hardware</h1>
-                <p style={{ color: T.textMuted, fontSize: 15 }}>Select hardware components for your door specification.</p>
-              </div>
-            </div>
-            <div style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: 14, padding: 32, boxShadow: shadow.sm }}>
-              {/* LEANA-specific configuration for automatic-sliding doors */}
-              {doorType.id === "automatic-sliding" ? (
-                <>
-                  {/* Glazing Options */}
-                  <div style={{ marginBottom: 32 }}>
-                    <label style={{ fontSize: 14, fontWeight: 600, color: T.textPrimary, display: "block", marginBottom: 12 }}>Glazing Option</label>
-                    <select value={hardwareSelections.glazingOption || ""} onChange={e => handleHardwareChange("glazingOption", e.target.value)}
-                      style={{ width: "100%", background: T.surface, border: `1.5px solid ${T.border}`, borderRadius: 8, padding: "11px 14px", fontSize: 14, color: T.textPrimary, outline: "none", boxSizing: "border-box", fontFamily: "DM Sans, sans-serif", transition: "border-color 150ms" }}
-                      onFocus={e => e.target.style.borderColor = T.blue}
-                      onBlur={e => e.target.style.borderColor = T.border}
-                    >
-                      <option value="">Select Glazing Option</option>
-                      {doorType.glazingOptions?.map(g => (
-                        <option key={g.id} value={g.id}>{g.label}</option>
-                      ))}
-                    </select>
-                  </div>
+      <Section title="Specification">
+        {rows.map(r => <Row key={r.label} label={r.label} value={r.value} />)}
+      </Section>
 
-                  {/* LEANA Options */}
-                  <div style={{ marginBottom: 32 }}>
-                    <label style={{ fontSize: 14, fontWeight: 600, color: T.textPrimary, display: "block", marginBottom: 12 }}>LEANA Options</label>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                      {doorType.options?.map(opt => (
-                        <label key={opt.id} style={{ display: "flex", alignItems: "flex-start", gap: 10, cursor: "pointer" }}>
-                          <input
-                            type="checkbox"
-                            checked={(hardwareSelections.leanaOptions || []).includes(opt.id)}
-                            onChange={e => {
-                              const current = hardwareSelections.leanaOptions || [];
-                              const updated = e.target.checked ? [...current, opt.id] : current.filter(id => id !== opt.id);
-                              handleHardwareChange("leanaOptions", updated);
-                            }}
-                            style={{ marginTop: 2, cursor: "pointer", width: 18, height: 18 }}
-                          />
-                          <div>
-                            <div style={{ fontSize: 14, color: T.textPrimary, fontWeight: 500 }}>{opt.label}</div>
-                            {opt.description && <div style={{ fontSize: 12, color: T.textMuted, marginTop: 2 }}>{opt.description}</div>}
-                          </div>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-                </>
-              ) : (
-                <>
-                  {/* Door Closer */}
-                  <div style={{ marginBottom: 32 }}>
-                    <label style={{ fontSize: 14, fontWeight: 600, color: T.textPrimary, display: "block", marginBottom: 12 }}>Door Closer</label>
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
-                      <div>
-                        <label style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: T.textMuted, display: "block", marginBottom: 8 }}>Model</label>
-                        <select value={hardwareSelections.closer || doorType.recommendedCloser || ""} onChange={e => handleHardwareChange("closer", e.target.value)}
-                          style={{ width: "100%", background: T.surface, border: `1.5px solid ${T.border}`, borderRadius: 8, padding: "11px 14px", fontSize: 14, color: T.textPrimary, outline: "none", boxSizing: "border-box", fontFamily: "DM Sans, sans-serif", transition: "border-color 150ms" }}
-                          onFocus={e => e.target.style.borderColor = T.blue}
-                          onBlur={e => e.target.style.borderColor = T.border}
-                        >
-                          <option value="">Select Closer</option>
-                          {hardwareData.hardware.doorClosers.map(c => (
-                            <option key={c.id} value={c.id}>{c.label}</option>
-                          ))}
-                        </select>
-                      </div>
-                      <div>
-                        <label style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: T.textMuted, display: "block", marginBottom: 8 }}>Variant</label>
-                        <select value={hardwareSelections.closerVariant || ""} onChange={e => handleHardwareChange("closerVariant", e.target.value)}
-                          style={{ width: "100%", background: T.surface, border: `1.5px solid ${T.border}`, borderRadius: 8, padding: "11px 14px", fontSize: 14, color: T.textPrimary, outline: "none", boxSizing: "border-box", fontFamily: "DM Sans, sans-serif", transition: "border-color 150ms" }}
-                          onFocus={e => e.target.style.borderColor = T.blue}
-                          onBlur={e => e.target.style.borderColor = T.border}
-                        >
-                          <option value="">Select Variant</option>
-                          {hardwareSelections.closer && hardwareData.hardware.doorClosers.find(c => c.id === hardwareSelections.closer)?.variants.map(v => (
-                            <option key={v.id} value={v.id}>{v.label}</option>
-                          ))}
-                        </select>
-                      </div>
-                    </div>
-                  </div>
+      <Section title="Project">
+        {projectData.projectName?.trim()
+          ? <Row label="Project" value={projectData.projectName} />
+          : <p style={{ margin: 0, fontSize: 13.5, color: UI.body, fontFamily: FONT }}>No project name recorded.</p>}
+        {projectData.architecturalFirm?.trim() && <Row label="Architectural firm" value={projectData.architecturalFirm} />}
+        {projectData.contactDetails?.trim() && <Row label="Contact" value={projectData.contactDetails} />}
+      </Section>
 
-                  {/* Lever Handles */}
-                  <div style={{ marginBottom: 32 }}>
-                    <label style={{ fontSize: 14, fontWeight: 600, color: T.textPrimary, display: "block", marginBottom: 12 }}>Lever Handles</label>
-                    <select value={hardwareSelections.leverHandle || ""} onChange={e => handleHardwareChange("leverHandle", e.target.value)}
-                      style={{ width: "100%", background: T.surface, border: `1.5px solid ${T.border}`, borderRadius: 8, padding: "11px 14px", fontSize: 14, color: T.textPrimary, outline: "none", boxSizing: "border-box", fontFamily: "DM Sans, sans-serif", transition: "border-color 150ms" }}
-                      onFocus={e => e.target.style.borderColor = T.blue}
-                      onBlur={e => e.target.style.borderColor = T.border}
-                    >
-                      <option value="">Select Lever Handle</option>
-                      {hardwareData.hardware.leverHandles.map(h => (
-                        <option key={h.id} value={h.id}>{h.label}</option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {/* Panic Hardware (if applicable) */}
-                  {(doorType.id === "fire-door" || doorType.id === "manual-swing-accessible") && (
-                    <div style={{ marginBottom: 32 }}>
-                      <label style={{ fontSize: 14, fontWeight: 600, color: T.textPrimary, display: "block", marginBottom: 12 }}>Panic Hardware</label>
-                      <select value={hardwareSelections.panicHardware || ""} onChange={e => handleHardwareChange("panicHardware", e.target.value)}
-                        style={{ width: "100%", background: T.surface, border: `1.5px solid ${T.border}`, borderRadius: 8, padding: "11px 14px", fontSize: 14, color: T.textPrimary, outline: "none", boxSizing: "border-box", fontFamily: "DM Sans, sans-serif", transition: "border-color 150ms" }}
-                        onFocus={e => e.target.style.borderColor = T.blue}
-                        onBlur={e => e.target.style.borderColor = T.border}
-                      >
-                        <option value="">Select Panic Hardware</option>
-                        {hardwareData.hardware.panicHardware.map(p => (
-                          <option key={p.id} value={p.id}>{p.label}</option>
-                        ))}
-                      </select>
-                    </div>
-                  )}
-                </>
-              )}
-            </div>
+      <Section title="Standards">
+        {product.standards.map(s => (
+          <div key={s.code} style={{ padding: "8px 0", borderBottom: `1px solid ${UI.rule}` }}>
+            <div style={{ fontSize: 13.5, fontWeight: 600, color: UI.ink, fontFamily: FONT }}>{s.code}</div>
+            <div style={{ fontSize: 12.5, color: UI.body, fontFamily: FONT, marginTop: 2, lineHeight: 1.45 }}>{s.description}</div>
           </div>
-        )}
+        ))}
+      </Section>
 
-        {/* STEP 2: Project Details */}
-        {currentStep === 2 && (
-          <div>
-            <h1 style={{ fontSize: 28, fontWeight: 700, color: T.textPrimary, letterSpacing: "-0.03em", marginBottom: 6 }}>Project Details</h1>
-            <p style={{ color: T.textMuted, fontSize: 15, marginBottom: 32 }}>This information will appear on the generated PDF.</p>
-            <div style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: 14, padding: 32, boxShadow: shadow.sm }}>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
-                {[
-                  ["constructionProject", "Construction Project"],
-                  ["doorNumberOrNaming", "Door Number / Naming"],
-                  ["installationLocation", "Installation Location"],
-                  ["positionNumberInSpec", "Position No. in Specifications"],
-                  ["functionDescription", "Function Description"],
-                  ["miscellaneous", "Miscellaneous"],
-                ].map(([key, label]) => (
-                  <div key={key} style={{ gridColumn: key === "functionDescription" || key === "miscellaneous" ? "1 / -1" : "auto" }}>
-                    <label style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: T.textMuted, display: "block", marginBottom: 8 }}>{label}</label>
-                    <input type="text" value={projectData[key]} onChange={e => setProjectData(p => ({ ...p, [key]: e.target.value }))}
-                      placeholder={`Enter ${label.toLowerCase()}...`}
-                      style={{ width: "100%", background: T.surface, border: `1.5px solid ${T.border}`, borderRadius: 8, padding: "11px 14px", fontSize: 14, color: T.textPrimary, outline: "none", boxSizing: "border-box", fontFamily: "DM Sans, sans-serif", transition: "border-color 150ms" }}
-                      onFocus={e => e.target.style.borderColor = T.blue}
-                      onBlur={e => e.target.style.borderColor = T.border}
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
+      {validation.warnings.map((w, i) => (
+        <div key={i} style={{ display: "flex", gap: 10, marginBottom: 12 }}>
+          <span aria-hidden="true" style={{ width: 3, height: 17, background: UI.ruleStrong, flexShrink: 0, marginTop: 1 }} />
+          <span style={{ fontSize: 13, lineHeight: 1.5, color: UI.body, fontFamily: FONT }}>{w.message}</span>
+        </div>
+      ))}
 
-        {/* STEP 3: Review and Generate */}
-        {currentStep === 3 && doorType && (
-          <div>
-            <h1 style={{ fontSize: 28, fontWeight: 700, color: T.textPrimary, letterSpacing: "-0.03em", marginBottom: 6 }}>Review and Generate</h1>
-            <p style={{ color: T.textMuted, fontSize: 15, marginBottom: 32 }}>Review your selections and download the hardware specification PDF.</p>
-            <div style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: 14, padding: 32, boxShadow: shadow.sm, marginBottom: 32 }}>
-              <h2 style={{ fontSize: 18, fontWeight: 600, color: T.textPrimary, marginBottom: 16 }}>Door Type Summary</h2>
-              <p style={{ color: T.textBody, marginBottom: 16 }}>{doorType.label} — {doorType.description}</p>
-              <h2 style={{ fontSize: 18, fontWeight: 600, color: T.textPrimary, marginBottom: 16 }}>Hardware Schedule</h2>
-              <ul style={{ color: T.textBody, marginBottom: 16 }}>
-                {doorType.id === "automatic-sliding" ? (
-                  <>
-                    {hardwareSelections.glazingOption && (
-                      <li>Glazing Option: {doorType.glazingOptions?.find(g => g.id === hardwareSelections.glazingOption)?.label}</li>
-                    )}
-                    {hardwareSelections.leanaOptions && hardwareSelections.leanaOptions.length > 0 && (
-                      <li>
-                        Options:
-                        <ul>
-                          {hardwareSelections.leanaOptions.map(optId => {
-                            const opt = doorType.options?.find(o => o.id === optId);
-                            return <li key={optId}>{opt?.label}</li>;
-                          })}
-                        </ul>
-                      </li>
-                    )}
-                  </>
-                ) : (
-                  <>
-                    {hardwareSelections.closer && <li>Door Closer: {hardwareData.hardware.doorClosers.find(c => c.id === hardwareSelections.closer)?.label} {hardwareSelections.closerVariant && `(${hardwareData.hardware.doorClosers.find(c => c.id === hardwareSelections.closer)?.variants.find(v => v.id === hardwareSelections.closerVariant)?.label})`}</li>}
-                    {hardwareSelections.leverHandle && <li>Lever Handle: {hardwareData.hardware.leverHandles.find(h => h.id === hardwareSelections.leverHandle)?.label}</li>}
-                    {hardwareSelections.panicHardware && <li>Panic Hardware: {hardwareData.hardware.panicHardware.find(p => p.id === hardwareSelections.panicHardware)?.label}</li>}
-                  </>
-                )}
-              </ul>
-              <h2 style={{ fontSize: 18, fontWeight: 600, color: T.textPrimary, marginBottom: 16 }}>Applicable EN Standards</h2>
-              <ul style={{ color: T.textBody }}>
-                {doorType.standards.map(s => <li key={s.code}>{s.code} — {s.description}</li>)}
-              </ul>
-            </div>
-            <button onClick={() => generateSpecPDF(doorType, hardwareSelections, projectData)} style={{ background: T.blue, color: T.white, border: "none", borderRadius: 10, padding: "13px 32px", fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "DM Sans, sans-serif", transition: "all 150ms", boxShadow: shadow.sm }}>
-              Download Spec PDF
-            </button>
-          </div>
-        )}
+      <button
+        type="button" onClick={onGenerate} disabled={generating || !validation.isValid}
+        style={{
+          width: "100%", padding: "14px 20px",
+          border: `1px solid ${validation.isValid ? UI.accent : UI.ruleStrong}`,
+          fontSize: 14, fontWeight: 600, fontFamily: FONT,
+          background: validation.isValid ? UI.accent : UI.sunken,
+          color: validation.isValid ? "#FFFFFF" : UI.muted,
+          cursor: generating ? "progress" : validation.isValid ? "pointer" : "not-allowed",
+        }}
+      >
+        {generating ? "Generating" : validation.isValid ? "Download specification (PDF)" : `${validation.errors.length} to fix`}
+      </button>
 
-        {/* ── NAV BUTTONS ── */}
-        <div style={{ display: "flex", justifyContent: "space-between", marginTop: 40, paddingTop: 24, borderTop: `1px solid ${T.border}` }}>
-          <button onClick={handleBack} disabled={currentStep === 0}
-            style={{ background: T.surface, color: T.textBody, border: `1.5px solid ${T.border}`, borderRadius: 10, padding: "13px 28px", fontSize: 14, fontWeight: 500, cursor: currentStep === 0 ? "not-allowed" : "pointer", opacity: currentStep === 0 ? 0.4 : 1, fontFamily: "DM Sans, sans-serif", transition: "all 150ms" }}>
-            ← Previous
-          </button>
-          {currentStep < STEPS.length - 1 && (
-            <button onClick={handleNext} disabled={currentStep === 0 && !selectedDoorType}
-              style={{ background: (currentStep === 0 && !selectedDoorType) ? T.borderStrong : T.blue, color: T.white, border: "none", borderRadius: 10, padding: "13px 32px", fontSize: 14, fontWeight: 600, cursor: (currentStep === 0 && !selectedDoorType) ? "not-allowed" : "pointer", fontFamily: "DM Sans, sans-serif", transition: "all 150ms", boxShadow: (currentStep === 0 && !selectedDoorType) ? "none" : shadow.sm }}>
-              Next Step →
-            </button>
+      {notice && (
+        <p style={{ margin: "12px 0 0", fontSize: 13, lineHeight: 1.5, textAlign: "center", fontFamily: FONT, color: notice.error ? UI.warn : UI.body }}>
+          {notice.text}
+        </p>
+      )}
+    </div>
+  );
+}
+
+// ─── Main ─────────────────────────────────────────────────────────
+
+export default function SpecGenerator() {
+  const [currentStep, setCurrentStep] = useState(0);
+  const [furthest, setFurthest] = useState(0);
+  const [productTypeId, setProductTypeId] = useState("riser-doors");
+  const [specType, setSpecType] = useState("branded");
+  const [projectData, setProjectData] = useState({ projectName: "", architecturalFirm: "", contactDetails: "" });
+
+  const product = getProduct(productTypeId);
+  const [config, setConfig] = useState(() => buildInitialConfig(getProduct("riser-doors")));
+  const [generating, setGenerating] = useState(false);
+  const [notice, setNotice] = useState(null);
+
+  const railRef = useRef(null);
+
+  const validation = validateSpec(product, config, projectData);
+  const resolution = resolveProduct(product, config);
+
+  // A field only turns red once it has been touched — arriving on the
+  // step with everything already flagged reads as broken. What is still
+  // outstanding is listed neutrally above the fields instead.
+  const [touched, setTouched] = useState(() => new Set());
+  const markTouched = useCallback(field => {
+    setTouched(t => (t.has(field) ? t : new Set(t).add(field)));
+  }, []);
+  const errorFor = useCallback(
+    field => (touched.has(field) ? validation.errors.find(e => e.field === field)?.message : undefined),
+    [touched, validation.errors],
+  );
+
+  const goNext = () => {
+    const next = Math.min(currentStep + 1, STEPS.length - 1);
+    setCurrentStep(next);
+    setFurthest(f => Math.max(f, next));
+    if (railRef.current) railRef.current.scrollTop = 0;
+  };
+  const goBack = () => {
+    setCurrentStep(s => Math.max(s - 1, 0));
+    if (railRef.current) railRef.current.scrollTop = 0;
+  };
+
+  const handleGenerate = async () => {
+    setGenerating(true); setNotice(null);
+    try {
+      const filename = await generateHardwareSpecPDF({ product, config, projectData, specType, resolution });
+      setNotice({ text: `Saved as ${filename}` });
+    } catch (err) {
+      setNotice({ text: err?.message || "Could not generate the PDF.", error: true });
+    } finally {
+      setGenerating(false);
+    }
+  };
+
+  const nextBlocked = currentStep === 1 && !validation.isValid;
+
+  return (
+    <div style={{
+      display: "flex", height: "calc(100vh - 190px)", minHeight: 640,
+      border: `1px solid ${UI.ruleStrong}`, background: UI.surface,
+      fontFamily: FONT, color: UI.body, overflow: "hidden",
+    }}>
+
+      <aside style={{
+        width: 424, flexShrink: 0, display: "flex", flexDirection: "column",
+        borderRight: `1px solid ${UI.ruleStrong}`, minHeight: 0,
+      }}>
+        <header style={{ padding: "18px 22px 16px", borderBottom: `1px solid ${UI.rule}`, flexShrink: 0 }}>
+          <h1 style={{ margin: 0, fontSize: 19, fontWeight: 600, letterSpacing: "-0.01em", color: UI.ink, lineHeight: 1.3 }}>
+            Hardware specification
+          </h1>
+          <p style={{ margin: "6px 0 0", fontSize: 13, color: UI.body, lineHeight: 1.5 }}>
+            Choose a product, set the dimensions, download the specification.
+          </p>
+        </header>
+
+        <StepBar currentStep={currentStep} setCurrentStep={setCurrentStep} furthest={furthest} />
+
+        {currentStep === 1 && <OutstandingList errors={validation.errors} />}
+
+        <div ref={railRef} style={{ flex: 1, minHeight: 0, overflowY: "auto" }}>
+          {currentStep === 0 && (
+            <ProductStep
+              productTypeId={productTypeId} setProductTypeId={setProductTypeId}
+              specType={specType} setSpecType={setSpecType}
+              projectData={projectData} setProjectData={setProjectData}
+            />
+          )}
+          {currentStep === 1 && product && (
+            <SpecifyStep product={product} config={config} setConfig={setConfig}
+              errorFor={errorFor} markTouched={markTouched} />
+          )}
+          {currentStep === 2 && product && (
+            <ReviewStep
+              product={product} config={config} projectData={projectData} specType={specType}
+              validation={validation} onGenerate={handleGenerate} generating={generating} notice={notice}
+            />
           )}
         </div>
-      </main>
+
+        <footer style={{
+          display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12,
+          padding: "14px 22px", borderTop: `1px solid ${UI.ruleStrong}`, flexShrink: 0,
+        }}>
+          <button
+            type="button" onClick={goBack} disabled={currentStep === 0}
+            style={{
+              padding: "10px 18px", fontSize: 13.5, fontWeight: 500, fontFamily: FONT,
+              border: `1px solid ${UI.ruleStrong}`, background: UI.surface,
+              color: currentStep === 0 ? UI.muted : UI.ink,
+              cursor: currentStep === 0 ? "not-allowed" : "pointer",
+              opacity: currentStep === 0 ? 0.5 : 1,
+            }}
+          >
+            Back
+          </button>
+          {currentStep < STEPS.length - 1 && (
+            <button
+              type="button" onClick={goNext} disabled={nextBlocked}
+              style={{
+                padding: "10px 26px", fontSize: 13.5, fontWeight: 600, fontFamily: FONT,
+                border: `1px solid ${nextBlocked ? UI.ruleStrong : UI.accent}`,
+                background: nextBlocked ? UI.sunken : UI.accent,
+                color: nextBlocked ? UI.muted : "#FFFFFF",
+                cursor: nextBlocked ? "not-allowed" : "pointer",
+              }}
+            >
+              {nextBlocked ? `${validation.errors.length} to fix` : "Next"}
+            </button>
+          )}
+        </footer>
+      </aside>
+
+      <section style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column" }}>
+        <RiserDoorPreview product={product} config={config} resolution={resolution} />
+      </section>
     </div>
   );
 }
