@@ -313,32 +313,72 @@ function OutstandingList({ errors }) {
   );
 }
 
-function SpecifyStep({ product, config, setConfig, errorFor, markTouched, specType, setSpecType, projectData, setProjectData }) {
+/** What the opening works out to. Everything here is derived — the
+ *  reader supplies the hole in the wall, the tool supplies the doorset
+ *  that closes it and says how well the size is backed up. */
+function DerivedOpening({ product, clearOpening, resolution }) {
+  if (!clearOpening) return null;
+  const leaves = resolution?.leaves;
+  const leafW = leaves ? Math.round(clearOpening.width / leaves) : null;
+
+  const Line = ({ label, value }) => (
+    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 12, marginTop: 5 }}>
+      <span style={{ fontSize: 13, color: UI.body }}>{label}</span>
+      <span style={{ fontSize: 13.5, fontWeight: 700, color: UI.ink }}>{value}</span>
+    </div>
+  );
+
+  const evidenced = resolution?.status === "evidenced";
+
+  return (
+    <div style={{
+      marginTop: 4, padding: "13px 15px", background: UI.sunken,
+      borderLeft: `3px solid ${evidenced ? UI.accent : UI.warn}`, fontFamily: FONT,
+    }}>
+      <div style={{
+        fontSize: 11.5, fontWeight: 600, letterSpacing: "0.07em",
+        textTransform: "uppercase", color: UI.muted, marginBottom: 2,
+      }}>
+        This opening needs
+      </div>
+      {leaves != null && (
+        <Line label="Leaves" value={`${leaves} ${leaves === 1 ? "leaf" : "leaves"}`} />
+      )}
+      {leafW != null && <Line label="Leaf size" value={`${leafW} × ${clearOpening.height} mm`} />}
+      <Line label="Clear opening" value={`${clearOpening.width} × ${clearOpening.height} mm`} />
+
+      {resolution?.basis && (
+        <p style={{ margin: "9px 0 0", fontSize: 12, lineHeight: 1.5, color: UI.muted }}>
+          {resolution.basis}
+        </p>
+      )}
+      {resolution?.reason && (
+        <p style={{ margin: "9px 0 0", fontSize: 12.5, lineHeight: 1.5, color: UI.body }}>
+          {resolution.reason}
+        </p>
+      )}
+      {product.structuralAllowance?.note && (
+        <p style={{ margin: "9px 0 0", fontSize: 12, lineHeight: 1.45, color: UI.muted }}>
+          {product.structuralAllowance.note}
+        </p>
+      )}
+    </div>
+  );
+}
+
+function SpecifyStep({ product, config, setConfig, errorFor, markTouched, specType, setSpecType, projectData, setProjectData, resolution }) {
   const set = (key, value) => { markTouched(key); setConfig(c => ({ ...c, [key]: value })); };
   const clearOpening = getClearOpening(product, config);
 
   return (
     <div style={{ padding: "20px 22px" }}>
 
-      <div style={{ marginBottom: 24 }}>
-        <Label>Number of leaves</Label>
-        <Segmented
-          name="Number of leaves"
-          options={product.leafOptions.map(l => ({ value: l.value, label: String(l.value) }))}
-          value={config.leaves}
-          onChange={v => set("leaves", v)}
-        />
-        <p style={{ margin: "8px 0 0", fontSize: 12.5, color: UI.body, fontFamily: FONT }}>
-          Choose the maximum for the opening.
-        </p>
-      </div>
-
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 24 }}>
         <div>
           <Label htmlFor="cfg-width">Structural width (mm)</Label>
           <input
             id="cfg-width" type="number" inputMode="numeric"
-            min={product.limits.width.min} max={product.limits.width.absoluteMax}
+            min={product.statedLimits.width.min} max={product.statedLimits.width.absoluteMax}
             value={config.width}
             onChange={e => set("width", e.target.value)}
             style={{ ...fieldStyle, borderColor: errorFor("width") ? UI.warn : UI.ruleStrong }}
@@ -351,7 +391,7 @@ function SpecifyStep({ product, config, setConfig, errorFor, markTouched, specTy
           <Label htmlFor="cfg-height">Structural height (mm)</Label>
           <input
             id="cfg-height" type="number" inputMode="numeric"
-            min={product.limits.height.min} max={product.limits.height.absoluteMax}
+            min={product.statedLimits.height.min} max={product.statedLimits.height.absoluteMax}
             value={config.height}
             onChange={e => set("height", e.target.value)}
             style={{ ...fieldStyle, borderColor: errorFor("height") ? UI.warn : UI.ruleStrong }}
@@ -364,24 +404,7 @@ function SpecifyStep({ product, config, setConfig, errorFor, markTouched, specTy
 
       <FieldError>{errorFor("size")}</FieldError>
 
-      {clearOpening && (
-        <div style={{
-          marginTop: 4, padding: "11px 13px", background: UI.sunken,
-          borderLeft: `3px solid ${UI.ruleStrong}`, fontFamily: FONT,
-        }}>
-          <div style={{ fontSize: 13, color: UI.body, lineHeight: 1.5 }}>
-            Clear opening{" "}
-            <strong style={{ color: UI.ink, fontWeight: 700 }}>
-              {clearOpening.width} × {clearOpening.height} mm
-            </strong>
-          </div>
-          {product.structuralAllowance?.note && (
-            <div style={{ fontSize: 12.5, color: UI.muted, lineHeight: 1.45, marginTop: 4 }}>
-              {product.structuralAllowance.note}
-            </div>
-          )}
-        </div>
-      )}
+      <DerivedOpening product={product} clearOpening={clearOpening} resolution={resolution} />
 
       <div style={{ marginBottom: 24, marginTop: 24 }}>
         <Label>Fire rating</Label>
@@ -478,8 +501,8 @@ function SpecifyStep({ product, config, setConfig, errorFor, markTouched, specTy
 // ─── Step 3 — review ──────────────────────────────────────────────
 
 function ReviewStep({ product, config, projectData, specType, validation, onGenerate, generating, notice }) {
-  const rows = specRows(product, config);
   const resolution = validation.resolution;
+  const rows = specRows(product, config, resolution);
 
   const Section = ({ title, children }) => (
     <div style={{ marginBottom: 26 }}>
@@ -506,11 +529,15 @@ function ReviewStep({ product, config, projectData, specType, validation, onGene
     <div style={{ padding: "20px 22px" }}>
       <Section title="Doorset">
         <Row label="Type" value={product.label} />
-        {resolution?.status === "matched"
-          ? <Row label="Configuration" value={resolution.product.name} />
-          : resolution?.status !== "incomplete" && (
-              <Row label="Configuration" value="Bespoke enquiry" accent={UI.warn} />
-            )}
+        {resolution?.status === "evidenced" && (
+          <Row label="Size" value="Covered by test evidence" />
+        )}
+        {resolution?.status === "stated" && (
+          <Row label="Size" value="Test report to confirm" accent={UI.warn} />
+        )}
+        {resolution?.status === "over-limit" && (
+          <Row label="Size" value="Bespoke enquiry" accent={UI.warn} />
+        )}
         <Row label="Document" value={SPEC_TYPES.find(s => s.id === specType)?.label ?? specType} />
       </Section>
 
@@ -719,6 +746,7 @@ export default function SpecGenerator() {
               errorFor={errorFor} markTouched={markTouched}
               specType={specType} setSpecType={setSpecType}
               projectData={projectData} setProjectData={setProjectData}
+              resolution={resolution}
             />
           )}
           {currentStep === 2 && product && (
