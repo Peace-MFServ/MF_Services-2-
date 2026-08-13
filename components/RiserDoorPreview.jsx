@@ -16,9 +16,7 @@ export default function RiserDoorPreview({ product, config, resolution }) {
   const w = Number(config.width)
   const h = Number(config.height)
   const hasSize = Number.isFinite(w) && Number.isFinite(h) && w > 0 && h > 0
-  // Derived, not chosen — the elevation redraws itself with the right
-  // number of leaves as soon as the opening is entered.
-  const leaves = resolution?.leaves || 1
+  const leaves = config.leaves || 1
 
   const boxW = VB.w - PAD.left - PAD.right
   const boxH = VB.h - PAD.top - PAD.bottom

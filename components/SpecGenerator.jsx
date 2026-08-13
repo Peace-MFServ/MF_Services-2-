@@ -313,9 +313,8 @@ function OutstandingList({ errors }) {
   );
 }
 
-/** What the opening works out to. Everything here is derived — the
- *  reader supplies the hole in the wall, the tool supplies the doorset
- *  that closes it and says how well the size is backed up. */
+/** What the entered opening works out to, and how well the size is
+ *  backed up by a test report. */
 function DerivedOpening({ product, clearOpening, resolution }) {
   if (!clearOpening) return null;
   const leaves = resolution?.leaves;
@@ -339,13 +338,10 @@ function DerivedOpening({ product, clearOpening, resolution }) {
         fontSize: 11.5, fontWeight: 600, letterSpacing: "0.07em",
         textTransform: "uppercase", color: UI.muted, marginBottom: 2,
       }}>
-        This opening needs
+        This opening works out to
       </div>
-      {leaves != null && (
-        <Line label="Leaves" value={`${leaves} ${leaves === 1 ? "leaf" : "leaves"}`} />
-      )}
-      {leafW != null && <Line label="Leaf size" value={`${leafW} × ${clearOpening.height} mm`} />}
       <Line label="Clear opening" value={`${clearOpening.width} × ${clearOpening.height} mm`} />
+      {leafW != null && <Line label="Leaf size" value={`${leafW} × ${clearOpening.height} mm`} />}
 
       {resolution?.basis && (
         <p style={{ margin: "9px 0 0", fontSize: 12, lineHeight: 1.5, color: UI.muted }}>
@@ -370,8 +366,26 @@ function SpecifyStep({ product, config, setConfig, errorFor, markTouched, specTy
   const set = (key, value) => { markTouched(key); setConfig(c => ({ ...c, [key]: value })); };
   const clearOpening = getClearOpening(product, config);
 
+  const maxLeaves = product.statedLimits.maxLeaves ?? 6;
+  const suggested = resolution?.suggestedLeaves;
+
   return (
     <div style={{ padding: "20px 22px" }}>
+
+      <div style={{ marginBottom: 24 }}>
+        <Label>Number of leaves</Label>
+        <Segmented
+          name="Number of leaves"
+          options={Array.from({ length: maxLeaves }, (_, i) => ({ value: i + 1, label: String(i + 1) }))}
+          value={config.leaves}
+          onChange={v => set("leaves", v)}
+        />
+        <p style={{ margin: "8px 0 0", fontSize: 12.5, color: UI.body, fontFamily: FONT }}>
+          {suggested != null && suggested !== config.leaves
+            ? `${suggested} would keep each leaf inside our test evidence.`
+            : "Choose the maximum for the opening."}
+        </p>
+      </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 24 }}>
         <div>
@@ -502,7 +516,7 @@ function SpecifyStep({ product, config, setConfig, errorFor, markTouched, specTy
 
 function ReviewStep({ product, config, projectData, specType, validation, onGenerate, generating, notice }) {
   const resolution = validation.resolution;
-  const rows = specRows(product, config, resolution);
+  const rows = specRows(product, config);
 
   const Section = ({ title, children }) => (
     <div style={{ marginBottom: 26 }}>
