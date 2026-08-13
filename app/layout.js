@@ -17,7 +17,15 @@ export const viewport = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body style={{ margin: 0, padding: 0, background: '#F8F9FA' }}>
+      {/* Browser extensions commonly tag the body before React hydrates,
+          which React then reports as a mismatch against the server HTML.
+          Suppressing it here covers the body element only — it does not
+          reach any child, so a genuine mismatch inside the app is still
+          reported. */}
+      <body
+        suppressHydrationWarning
+        style={{ margin: 0, padding: 0, background: '#F8F9FA' }}
+      >
         {children}
       </body>
     </html>
