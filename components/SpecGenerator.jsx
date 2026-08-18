@@ -313,8 +313,8 @@ function OutstandingList({ errors }) {
   );
 }
 
-/** What the entered opening works out to, and how well the size is
- *  backed up by a test report. */
+/** What the entered opening works out to. The evidence status behind
+ *  it stays internal — the sales team explains sourcing in person. */
 function DerivedOpening({ product, clearOpening, resolution }) {
   // The matched doorset's own frame figures win over the category's
   // indicative deduction — those are the numbers the sheet will carry.
@@ -330,12 +330,10 @@ function DerivedOpening({ product, clearOpening, resolution }) {
     </div>
   );
 
-  const evidenced = resolution?.status === "evidenced";
-
   return (
     <div style={{
       marginTop: 4, padding: "13px 15px", background: UI.sunken,
-      borderLeft: `3px solid ${evidenced ? UI.accent : UI.warn}`, fontFamily: FONT,
+      borderLeft: `3px solid ${UI.accent}`, fontFamily: FONT,
     }}>
       <div style={{
         fontSize: 11.5, fontWeight: 600, letterSpacing: "0.07em",
@@ -346,21 +344,6 @@ function DerivedOpening({ product, clearOpening, resolution }) {
       <Line label="Clear opening" value={`${clear.width} × ${clear.height} mm`} />
       {leafW != null && <Line label="Leaf size" value={`${leafW} × ${clear.height} mm`} />}
 
-      {resolution?.clearNote && (
-        <p style={{ margin: "9px 0 0", fontSize: 12, lineHeight: 1.45, color: UI.muted }}>
-          {resolution.clearNote}
-        </p>
-      )}
-      {resolution?.basis && (
-        <p style={{ margin: "9px 0 0", fontSize: 12, lineHeight: 1.5, color: UI.muted }}>
-          {resolution.basis}
-        </p>
-      )}
-      {resolution?.reason && (
-        <p style={{ margin: "9px 0 0", fontSize: 12.5, lineHeight: 1.5, color: UI.body }}>
-          {resolution.reason}
-        </p>
-      )}
       {product.structuralAllowance?.note && (
         <p style={{ margin: "9px 0 0", fontSize: 12, lineHeight: 1.45, color: UI.muted }}>
           {product.structuralAllowance.note}
@@ -375,7 +358,6 @@ function SpecifyStep({ product, config, setConfig, errorFor, markTouched, specTy
   const clearOpening = getClearOpening(product, config);
 
   const maxLeaves = product.statedLimits.maxLeaves ?? 4;
-  const suggested = resolution?.suggestedLeaves;
 
   return (
     <div style={{ padding: "20px 22px" }}>
@@ -389,9 +371,7 @@ function SpecifyStep({ product, config, setConfig, errorFor, markTouched, specTy
           onChange={v => set("leaves", v)}
         />
         <p style={{ margin: "8px 0 0", fontSize: 12.5, color: UI.body, fontFamily: FONT }}>
-          {suggested != null && suggested !== config.leaves
-            ? `${suggested} would keep each leaf inside our test evidence.`
-            : "Choose the maximum for the opening."}
+          Choose the maximum for the opening.
         </p>
       </div>
 
@@ -551,15 +531,6 @@ function ReviewStep({ product, config, projectData, specType, validation, onGene
     <div style={{ padding: "20px 22px" }}>
       <Section title="Doorset">
         <Row label="Type" value={product.label} />
-        {resolution?.status === "evidenced" && (
-          <Row label="Size" value="Covered by test evidence" />
-        )}
-        {resolution?.status === "stated" && (
-          <Row label="Size" value="Test report to confirm" accent={UI.warn} />
-        )}
-        {resolution?.status === "over-limit" && (
-          <Row label="Size" value="Bespoke enquiry" accent={UI.warn} />
-        )}
         <Row label="Document" value={SPEC_TYPES.find(s => s.id === specType)?.label ?? specType} />
       </Section>
 
@@ -589,13 +560,6 @@ function ReviewStep({ product, config, projectData, specType, validation, onGene
           </div>
         ))}
       </Section>
-
-      {validation.warnings.map((w, i) => (
-        <div key={i} style={{ display: "flex", gap: 10, marginBottom: 12 }}>
-          <span aria-hidden="true" style={{ width: 3, height: 17, background: UI.ruleStrong, flexShrink: 0, marginTop: 1 }} />
-          <span style={{ fontSize: 13, lineHeight: 1.5, color: UI.body, fontFamily: FONT }}>{w.message}</span>
-        </div>
-      ))}
 
       <button
         type="button" onClick={onGenerate} disabled={generating || !validation.isValid}

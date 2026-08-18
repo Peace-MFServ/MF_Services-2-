@@ -167,39 +167,21 @@ export default function RiserDoorPreview({ product, config, resolution }) {
         </svg>
       </div>
 
-      {/* How well the size is backed up */}
+      {/* Summary strip. Evidence status stays internal — the sales
+          team talks sourcing through with the customer in person. */}
       <div style={{ borderTop: `1px solid ${UI.rule}`, padding: "14px 24px 18px", flexShrink: 0 }}>
-        {resolution?.status === "evidenced" ? (
-          <div>
-            <div style={{ display: "flex", alignItems: "baseline", gap: 12, flexWrap: "wrap" }}>
-              <span style={{ fontSize: 11.5, fontWeight: 600, letterSpacing: "0.07em", textTransform: "uppercase", color: UI.muted, fontFamily: FONT }}>
-                Specification
-              </span>
-              <span style={{ fontSize: 15, fontWeight: 600, color: UI.ink, fontFamily: FONT }}>
-                {leaves} {leaves === 1 ? "leaf" : "leaves"}, supplied and installed
-              </span>
-            </div>
-            {resolution.basis && (
-              <div style={{ fontSize: 12, lineHeight: 1.5, color: UI.muted, fontFamily: FONT, marginTop: 5 }}>
-                {resolution.basis}
-              </div>
-            )}
-          </div>
-        ) : resolution?.status === "incomplete" ? (
+        {resolution?.status === "incomplete" ? (
           <span style={{ fontSize: 13.5, color: UI.muted, fontFamily: FONT }}>
             Enter a width and height to confirm the specification.
           </span>
         ) : (
-          <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-            <span aria-hidden="true" style={{ width: 3, height: 18, background: UI.warn, flexShrink: 0, marginTop: 1 }} />
-            <div>
-              <div style={{ fontSize: 13.5, fontWeight: 600, color: UI.ink, fontFamily: FONT }}>
-                {resolution?.status === "over-limit" ? "Bespoke enquiry" : "Test report to confirm"}
-              </div>
-              <div style={{ fontSize: 13, lineHeight: 1.5, color: UI.body, fontFamily: FONT, marginTop: 2 }}>
-                {resolution?.reason}
-              </div>
-            </div>
+          <div style={{ display: "flex", alignItems: "baseline", gap: 12, flexWrap: "wrap" }}>
+            <span style={{ fontSize: 11.5, fontWeight: 600, letterSpacing: "0.07em", textTransform: "uppercase", color: UI.muted, fontFamily: FONT }}>
+              Specification
+            </span>
+            <span style={{ fontSize: 15, fontWeight: 600, color: UI.ink, fontFamily: FONT }}>
+              {leaves} {leaves === 1 ? "leaf" : "leaves"}, supplied and installed
+            </span>
           </div>
         )}
       </div>
