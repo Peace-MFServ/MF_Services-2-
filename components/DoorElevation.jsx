@@ -1,13 +1,17 @@
 'use client'
 
 import {
-  VIEW, GEO, CONTROLLER, ANCHORS, DRAW, UI, FONT,
+  UI, FONT, DRAW,
   resolveCable, activeCableLegend,
   flattenComponents, buildInclusionMap, isMandatoryForSystem,
 } from '../lib/cablePlanSpec'
 
 const R_MAIN = 11
 const R_SUB  = 9.5
+
+// Hinge positions as fractions of the leaf height, so any leaf span
+// gets three sensibly spaced knuckles.
+const HINGE_FRACTIONS = [0.13, 0.49, 0.86]
 
 /** Point on a device symbol that a leader line should terminate at. */
 function deviceAnchor(device, bubble) {
@@ -71,14 +75,23 @@ function DeviceSymbol({ device, stroke, fill }) {
 }
 
 export default function DoorElevation({ system, componentStates, activeId, onSelect }) {
-  if (!system) return null
+  if (!system?.drawing) return null
 
+  const { view, geo, controller, anchors } = system.drawing
   const flat = flattenComponents(system)
   const inclusion = buildInclusionMap(system, componentStates)
   const legend = activeCableLegend(
     flat.map(f => f.comp),
     Object.fromEntries(flat.map(f => [f.comp.id, inclusion[f.comp.id] ? componentStates[f.comp.id] : null])),
   )
+
+  const opL = geo.leaves[0].l
+  const opR = geo.leaves[geo.leaves.length - 1].r
+  const activeLeaf = geo.leaves.find(lf => lf.active) ?? geo.leaves[0]
+  // The leading edge is the one away from the hinges — where the
+  // handle, cylinder and (on fire doors) the intumescent strip sit.
+  const leadingX = activeLeaf.hinge === "left" ? activeLeaf.r : activeLeaf.l
+  const leadDir = activeLeaf.hinge === "left" ? -1 : 1   // into the leaf
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%", minHeight: 0, background: UI.surface }}>
@@ -96,7 +109,7 @@ export default function DoorElevation({ system, componentStates, activeId, onSel
       {/* ── Elevation ── */}
       <div style={{ flex: 1, minHeight: 0, padding: "16px 24px 8px" }}>
         <svg
-          viewBox={`${VIEW.x} ${VIEW.y} ${VIEW.w} ${VIEW.h}`}
+          viewBox={`${view.x} ${view.y} ${view.w} ${view.h}`}
           preserveAspectRatio="xMidYMid meet"
           style={{ display: "block", width: "100%", height: "100%" }}
           role="img"
@@ -105,62 +118,77 @@ export default function DoorElevation({ system, componentStates, activeId, onSel
           {/* Frame, drawn as a section. The assembly floats on white —
               no wall or ceiling fill, matching the reference sheets. */}
           <g stroke={DRAW.frameEdge} strokeWidth="1.2" fill={DRAW.frame}>
-            <rect x={GEO.openL} y={GEO.headY} width={GEO.openR - GEO.openL} height={GEO.jambW} />
-            <rect x={GEO.openL} y={GEO.headY} width={GEO.jambW} height={GEO.floorY - GEO.headY} />
-            <rect x={GEO.openR - GEO.jambW} y={GEO.headY} width={GEO.jambW} height={GEO.floorY - GEO.headY} />
-            <rect x={GEO.openL} y={GEO.floorY - 7} width={GEO.openR - GEO.openL} height={7} />
+            <rect x={geo.openL} y={geo.headY} width={geo.openR - geo.openL} height={geo.jambW} />
+            <rect x={geo.openL} y={geo.headY} width={geo.jambW} height={geo.floorY - geo.headY} />
+            <rect x={geo.openR - geo.jambW} y={geo.headY} width={geo.jambW} height={geo.floorY - geo.headY} />
+            <rect x={geo.openL} y={geo.floorY - 7} width={geo.openR - geo.openL} height={7} />
           </g>
 
           {/* Concealed route through the frame */}
           <rect
-            x={GEO.openL + 5} y={GEO.headY + 5}
-            width={GEO.openR - GEO.openL - 10} height={GEO.floorY - GEO.headY - 10}
+            x={geo.openL + 5} y={geo.headY + 5}
+            width={geo.openR - geo.openL - 10} height={geo.floorY - geo.headY - 10}
             fill="none" stroke="#2E9E4F" strokeWidth="1" strokeDasharray="6 4"
           />
 
-          {/* Operator */}
-          <rect x={GEO.leafL} y={GEO.opTop} width={GEO.leafR - GEO.leafL} height={GEO.opBot - GEO.opTop}
+          {/* Operator, spanning the leaves */}
+          <rect x={opL} y={geo.opTop} width={opR - opL} height={geo.opBot - geo.opTop}
             fill="#FFFFFF" stroke={DRAW.frameEdge} strokeWidth="1.3" />
-          <text x={GEO.leafL + 10} y={GEO.opTop + 14} fontSize="11" fontWeight="600"
+          <text x={opL + 10} y={geo.opTop + 14} fontSize="11" fontWeight="600"
             fontFamily={FONT} fill={DRAW.label}>
             {system.systemVariant || system.name}
           </text>
 
-          {/* Leaf */}
-          <rect x={GEO.leafL} y={GEO.leafTop} width={GEO.leafR - GEO.leafL} height={GEO.leafBot - GEO.leafTop}
-            fill={DRAW.leaf} stroke={DRAW.leafEdge} strokeWidth="1.3" />
-          {/* Stile / rail relief */}
-          <rect x={GEO.leafL + 14} y={GEO.leafTop + 14} width={GEO.leafR - GEO.leafL - 28} height={GEO.leafBot - GEO.leafTop - 28}
-            fill="none" stroke={DRAW.leafEdge} strokeWidth="0.6" opacity="0.45" />
-
-          {[212, 360, 508].map(hy => (
-            <rect key={hy} x={GEO.leafL - 5} y={hy} width={10} height={30}
-              fill={DRAW.hardware} stroke={DRAW.frameEdge} strokeWidth="1" />
+          {/* Leaves */}
+          {geo.leaves.map((leaf, i) => (
+            <g key={i}>
+              <rect x={leaf.l} y={geo.leafTop} width={leaf.r - leaf.l} height={geo.leafBot - geo.leafTop}
+                fill={DRAW.leaf} stroke={DRAW.leafEdge} strokeWidth="1.3" />
+              {/* Stile / rail relief */}
+              <rect x={leaf.l + 14} y={geo.leafTop + 14} width={leaf.r - leaf.l - 28} height={geo.leafBot - geo.leafTop - 28}
+                fill="none" stroke={DRAW.leafEdge} strokeWidth="0.6" opacity="0.45" />
+              {/* Hinges on this leaf's hinge side */}
+              {HINGE_FRACTIONS.map(f => {
+                const hy = geo.leafTop + (geo.leafBot - geo.leafTop) * f
+                const hx = leaf.hinge === "left" ? leaf.l - 5 : leaf.r - 5
+                return (
+                  <rect key={f} x={hx} y={hy} width={10} height={30}
+                    fill={DRAW.hardware} stroke={DRAW.frameEdge} strokeWidth="1" />
+                )
+              })}
+            </g>
           ))}
 
+          {/* Intumescent strip on the active leaf's leading edge */}
           {system.isFireDoor && (
-            <rect x={GEO.leafR - 4} y={GEO.leafTop + 4} width={3} height={GEO.leafBot - GEO.leafTop - 8}
-              fill="#B4470E" />
+            <rect
+              x={leadDir === -1 ? leadingX - 4 : leadingX + 1}
+              y={geo.leafTop + 4} width={3} height={geo.leafBot - geo.leafTop - 8}
+              fill="#B4470E"
+            />
           )}
 
-          {/* Lever handle and cylinder */}
-          <circle cx={GEO.leafR - 26} cy={368} r={6.5} fill={DRAW.hardware} stroke={DRAW.frameEdge} strokeWidth="1.1" />
-          <rect x={GEO.leafR - 72} y={365} width={44} height={6} fill={DRAW.hardware} stroke={DRAW.frameEdge} strokeWidth="1.1" />
-          <rect x={GEO.leafR - 31} y={392} width={10} height={16} fill={DRAW.hardware} stroke={DRAW.frameEdge} strokeWidth="1" />
+          {/* Lever handle and cylinder on the active leaf */}
+          <circle cx={leadingX + leadDir * 26} cy={368} r={6.5} fill={DRAW.hardware} stroke={DRAW.frameEdge} strokeWidth="1.1" />
+          <rect x={leadDir === -1 ? leadingX - 72 : leadingX + 28} y={365} width={44} height={6}
+            fill={DRAW.hardware} stroke={DRAW.frameEdge} strokeWidth="1.1" />
+          <rect x={leadingX + leadDir * 26 - 5} y={392} width={10} height={16}
+            fill={DRAW.hardware} stroke={DRAW.frameEdge} strokeWidth="1" />
 
-          {system.leafType === "double-leaf" && (
+          {/* Active-leaf marker on double doors */}
+          {geo.leaves.length > 1 && (
             <>
-              <circle cx={450} cy={300} r={20} fill="none" stroke={DRAW.leafEdge} strokeWidth="1.3" />
-              <text x={450} y={306} textAnchor="middle" fontSize="15" fontWeight="500"
+              <circle cx={(activeLeaf.l + activeLeaf.r) / 2} cy={300} r={20} fill="none" stroke={DRAW.leafEdge} strokeWidth="1.3" />
+              <text x={(activeLeaf.l + activeLeaf.r) / 2} y={306} textAnchor="middle" fontSize="15" fontWeight="500"
                 fontFamily={FONT} fill={DRAW.label}>GF</text>
             </>
           )}
 
-          <circle cx={CONTROLLER.x} cy={CONTROLLER.y} r={2.6} fill={DRAW.outline} />
+          <circle cx={controller.x} cy={controller.y} r={2.6} fill={DRAW.outline} />
 
           {/* Cable runs */}
           {flat.map(({ comp }) => {
-            const a = ANCHORS[comp.id]
+            const a = anchors[comp.id]
             if (!a) return null
             const included = inclusion[comp.id]
             const { color } = resolveCable(componentStates[comp.id])
@@ -180,7 +208,7 @@ export default function DoorElevation({ system, componentStates, activeId, onSel
 
           {/* Devices and callouts */}
           {flat.map(({ comp, depth }) => {
-            const a = ANCHORS[comp.id]
+            const a = anchors[comp.id]
             if (!a) return null
             const included = inclusion[comp.id]
             const mandatory = isMandatoryForSystem(comp, system)

@@ -8,50 +8,34 @@ import {
   isMandatoryForSystem, getRemarksOverride, validateConfiguration,
 } from "../lib/cablePlanSpec";
 
-// ─── System definition ────────────────────────────────────────────
-// Physical anchor points and cable routing for each position live in
-// lib/cablePlanSpec.js (ANCHORS), keyed by component id.
-const SYSTEMS = {
-  "ets64r-single": {
-    id: "ets64r-single", name: "ETS 64-R", leafType: "single-leaf", isFireDoor: true, systemVariant: "ETS 64-R",
-    components: [
-      { id: "comp-1", position: "1", label: "Voltage supply", type: "power_supply", mandatory: true, cable: { defaultCable: "NYM 3 x 1.5 mm²", allowedCables: ["NYM 3 x 1.5 mm²"], allowOther: true }, remarks: "Motor must be supplied with 230 V" },
-      { id: "comp-2", position: "2", label: "24 V DC E-opener, 100% ED, protective diode", type: "e_opener", mandatory: true, cable: { defaultCable: "J-Y(ST)Y 4 x 0.6 mm²", allowedCables: ["J-Y(ST)Y 4 x 0.6 mm²", "J-Y(ST)Y 4 x 0.8 mm²"], allowOther: true }, remarks: "" },
-      { id: "comp-3", position: "3", label: "Bolt switch contact", type: "bolt_switch", mandatory: true, cable: { defaultCable: "J-Y(ST)Y 4 x 0.8 mm²", allowedCables: ["J-Y(ST)Y 4 x 0.8 mm²"], allowOther: true }, remarks: "" },
-      { id: "comp-4", position: "4", label: "Concealed cable connection", type: "cable_transition", mandatory: false, optional: true, cable: { defaultCable: "(integrated)", allowedCables: [], allowOther: false }, remarks: "Optional, in building" },
-      { id: "comp-5", position: "5", label: "Flatscan set", type: "sensor_strip", mandatory: true, cable: { defaultCable: "Cables through ECO", allowedCables: ["Cables through ECO"], allowOther: true }, remarks: "Concealed cable laying in building, otherwise surface-mounted",
-        subComponents: [
-          { id: "comp-5-1", position: "5.1", label: "Sensor strips set", type: "sensor_strip", mandatory: true, cable: { defaultCable: "Cables through ECO", allowedCables: ["Cables through ECO"], allowOther: true }, remarks: "Concealed cable laying in building" }
-        ]
-      },
-      { id: "comp-6", position: "6", label: "Flip switch (inside)", type: "flip_switch", mandatory: false, optional: true, cable: { defaultCable: "J-Y(ST)Y 4 x 0.6 mm²", allowedCables: ["J-Y(ST)Y 4 x 0.6 mm²", "J-Y(ST)Y 4 x 0.8 mm²"], allowOther: true }, remarks: "In-wall socket, cable laying in building",
-        subComponents: [
-          { id: "comp-6-1", position: "6.1", label: "Flip switch (outside)", type: "flip_switch", mandatory: false, optional: true, cable: { defaultCable: "J-Y(ST)Y 4 x 0.6 mm²", allowedCables: ["J-Y(ST)Y 4 x 0.6 mm²", "J-Y(ST)Y 4 x 0.8 mm²"], allowOther: true }, remarks: "In-wall socket, cable laying in building" }
-        ]
-      },
-      { id: "comp-7", position: "7", label: "Radar sensor (inside)", type: "radar_sensor", mandatory: false, optional: true, cable: { defaultCable: "J-Y(ST)Y 4 x 0.6 mm²", allowedCables: ["J-Y(ST)Y 4 x 0.6 mm²", "J-Y(ST)Y 4 x 0.8 mm²"], allowOther: true }, remarks: "Cable laying in building (in-wall if necessary)",
-        subComponents: [
-          { id: "comp-7-1", position: "7.1", label: "Radar sensor (outside)", type: "radar_sensor", mandatory: false, optional: true, cable: { defaultCable: "J-Y(ST)Y 4 x 0.6 mm²", allowedCables: ["J-Y(ST)Y 4 x 0.6 mm²", "J-Y(ST)Y 4 x 0.8 mm²"], allowOther: true }, remarks: "Cable laying in building (in-wall if necessary)" }
-        ]
-      },
-      { id: "comp-8", position: "8", label: "Bedix program selection switch", type: "program_switch", mandatory: false, optional: true, cable: { defaultCable: "J-Y(ST)Y 4 x 0.6 mm²", allowedCables: ["J-Y(ST)Y 4 x 0.6 mm²", "J-Y(ST)Y 4 x 0.8 mm²"], allowOther: true }, remarks: "In-wall socket, cable laying in building" },
-      { id: "comp-9", position: "9", label: "‘Close door’ manual release button", type: "manual_release_button", mandatory: true, cable: { defaultCable: "J-Y(ST)Y 4 x 0.8 mm²", allowedCables: ["J-Y(ST)Y 4 x 0.8 mm²"], allowOther: true }, remarks: "Cable laying in building; button outside the door's pivot range",
-        conditions: [{ if: { property: "isFireDoor", equals: true }, then: { mandatory: true, remarksOverride: "Mandatory per DIGt approval. Button must be outside the door's pivot range." } }]
-      },
-      { id: "comp-11", position: "11", label: "Ceiling smoke detector", type: "smoke_detector", mandatory: false, optional: true, cable: { defaultCable: "J-Y(ST)Y 4 x 0.8 mm²", allowedCables: ["J-Y(ST)Y 4 x 0.8 mm²"], allowOther: true }, remarks: "Cable laying in building as per approval" },
-      { id: "comp-12", position: "12", label: "Lintel-mounted smoke detector", type: "smoke_detector", mandatory: false, optional: true, cable: { defaultCable: "J-Y(ST)Y 4 x 0.8 mm²", allowedCables: ["J-Y(ST)Y 4 x 0.8 mm²"], allowOther: true }, remarks: "Cable laying in building as per approval" },
-    ],
-  },
-};
+// ─── System definitions ───────────────────────────────────────────
+// One JSON file per system in data/cable-systems/ — the component
+// schedule and the drawing geometry travel together, so the elevation,
+// the schedule and the PDF can never disagree. Adding a system is a
+// data change, not a code change.
+import ets64rSingle from "../data/cable-systems/ets64r-single-leaf.json";
+import ets64rDouble from "../data/cable-systems/ets64r-double-leaf.json";
+
+const SYSTEMS = Object.fromEntries(
+  [ets64rSingle, ets64rDouble].map(sys => [sys.id, sys])
+);
+
+// Systems the range will grow into — shown so the tool reads as a
+// range, the same way the door gallery does.
+const COMING_SOON = [
+  { id: "hold-open", label: "Hold-open system", summary: "Free-swing and hold-open closers with detection, for fire and smoke doors." },
+  { id: "sliding",   label: "Sliding operator", summary: "Automatic sliding door drive with safety sensors." },
+];
 
 const TYPE_LABELS = {
   power_supply: "Power supply", e_opener: "Electric opener", bolt_switch: "Bolt switch",
   cable_transition: "Cable transition", sensor_strip: "Sensor", flip_switch: "Flip switch",
   radar_sensor: "Radar sensor", program_switch: "Program switch",
   manual_release_button: "Release button", smoke_detector: "Smoke detector",
+  sequence_controller: "Closing sequence",
 };
 
-const STEPS = ["Components", "Project", "Review"];
+const STEPS = ["System", "Components", "Project", "Review"];
 
 const fieldStyle = {
   width: "100%", boxSizing: "border-box",
@@ -138,6 +122,97 @@ function StepBar({ currentStep, setCurrentStep, furthest }) {
         );
       })}
     </nav>
+  );
+}
+
+// ─── System selection ─────────────────────────────────────────────
+
+/** Miniature elevation for the system cards — one or two leaves under
+ *  an operator band, matching the drawing style of the plan itself. */
+function SystemArt({ leaves }) {
+  const openL = 14, openR = 106, top = 12, floor = 74;
+  const innerL = openL + 5, innerR = openR - 5;
+  const leafTop = 30;
+  const leafViews = leaves === 2
+    ? [[innerL, 59], [61, innerR]]
+    : [[innerL, innerR]];
+  return (
+    <svg viewBox="0 0 120 84" width="100%" height="100%" aria-hidden="true" style={{ display: "block" }}>
+      <rect x={openL} y={top} width={openR - openL} height={floor - top} fill="#8895A3" stroke="#3C4956" strokeWidth="1" />
+      <rect x={innerL} y={top + 5} width={innerR - innerL} height={floor - top - 8} fill="#FFFFFF" stroke="none" />
+      <rect x={innerL} y={top + 5} width={innerR - innerL} height={leafTop - top - 5} fill="#FFFFFF" stroke="#3C4956" strokeWidth="0.8" />
+      {leafViews.map(([l, r], i) => (
+        <rect key={i} x={l} y={leafTop} width={r - l} height={floor - leafTop - 3} fill="#CBD5DF" stroke="#3C4956" strokeWidth="0.9" />
+      ))}
+    </svg>
+  );
+}
+
+function SystemCard({ system, selected, comingSoon, onSelect }) {
+  const live = !comingSoon;
+  return (
+    <button
+      type="button"
+      onClick={live ? onSelect : undefined}
+      disabled={!live}
+      aria-pressed={selected}
+      style={{
+        display: "flex", gap: 14, alignItems: "stretch", textAlign: "left", width: "100%",
+        padding: 14, fontFamily: FONT, background: UI.surface,
+        border: `1px solid ${selected ? UI.accent : UI.rule}`,
+        boxShadow: selected ? `inset 0 0 0 2px ${UI.accent}` : "none",
+        cursor: live ? "pointer" : "not-allowed",
+        marginBottom: 12,
+      }}
+    >
+      <div style={{ width: 96, flexShrink: 0, background: "#F4F6F8", opacity: live ? 1 : 0.6 }}>
+        <SystemArt leaves={system.leafType === "double-leaf" ? 2 : 1} />
+      </div>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ display: "flex", alignItems: "baseline", gap: 8, flexWrap: "wrap" }}>
+          <span style={{ fontSize: 14.5, fontWeight: 600, color: live ? UI.ink : UI.muted }}>
+            {system.label}
+          </span>
+          {!live && (
+            <span style={{
+              fontSize: 10, fontWeight: 700, letterSpacing: "0.07em", textTransform: "uppercase",
+              background: UI.ink, color: "#FFFFFF", padding: "2px 6px",
+            }}>
+              Coming soon
+            </span>
+          )}
+        </div>
+        <p style={{ margin: "5px 0 0", fontSize: 12.5, lineHeight: 1.5, color: UI.body }}>
+          {system.summary}
+        </p>
+        {live && (
+          <div style={{ marginTop: 8, fontSize: 12, fontWeight: 600, color: selected ? UI.accent : UI.muted }}>
+            {selected ? "Selected — the prepared plan is on the right" : "Select this system →"}
+          </div>
+        )}
+      </div>
+    </button>
+  );
+}
+
+function SystemStep({ selectedSystemId, onChoose }) {
+  return (
+    <div style={{ padding: "20px 22px" }}>
+      <p style={{ margin: "0 0 18px", fontSize: 13.5, lineHeight: 1.6, color: UI.body, fontFamily: FONT }}>
+        Choose a door system. Each comes as a prepared plan — mandatory
+        positions already included — which you then customise.
+      </p>
+      {Object.values(SYSTEMS).map(sys => (
+        <SystemCard
+          key={sys.id} system={sys}
+          selected={selectedSystemId === sys.id}
+          onSelect={() => onChoose(sys.id)}
+        />
+      ))}
+      {COMING_SOON.map(sys => (
+        <SystemCard key={sys.id} system={{ ...sys, leafType: "single-leaf" }} comingSoon />
+      ))}
+    </div>
   );
 }
 
@@ -387,19 +462,32 @@ export default function CablePlanConfigurator() {
     setComponentStates(prev => ({ ...prev, [compId]: { ...prev[compId], ...updates } }));
   }, []);
 
+  const chooseSystem = useCallback(id => {
+    setSelectedSystemId(prev => {
+      // A different system means a different component schedule —
+      // rebuild the state rather than carrying the old plan across.
+      if (prev !== id) {
+        setComponentStates(buildInitialState(SYSTEMS[id]));
+        setActiveId(null);
+      }
+      return id;
+    });
+    setFurthest(f => Math.max(f, 1));
+  }, []);
+
   const handleSelectFromDrawing = useCallback(compId => {
     setActiveId(compId);
-    setCurrentStep(0);
+    setCurrentStep(1);
   }, []);
 
   useEffect(() => {
-    if (currentStep !== 0 || !activeId) return;
+    if (currentStep !== 1 || !activeId) return;
     const node = entryRefs.current[activeId];
     if (node) node.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }, [activeId, currentStep]);
 
   const goNext = () => {
-    if (currentStep === 0 && !validation.isValid) return;
+    if (currentStep === 1 && !validation.isValid) return;
     const next = Math.min(currentStep + 1, STEPS.length - 1);
     setCurrentStep(next);
     setFurthest(f => Math.max(f, next));
@@ -410,7 +498,7 @@ export default function CablePlanConfigurator() {
     if (railRef.current) railRef.current.scrollTop = 0;
   };
 
-  const nextDisabled = currentStep === 0 && !validation.isValid;
+  const nextDisabled = currentStep === 1 && !validation.isValid;
 
   return (
     <div style={{
@@ -448,10 +536,14 @@ export default function CablePlanConfigurator() {
 
         <StepBar currentStep={currentStep} setCurrentStep={setCurrentStep} furthest={furthest} />
 
-        {currentStep === 0 && <IssueList validation={validation} />}
+        {currentStep === 1 && <IssueList validation={validation} />}
 
         <div ref={railRef} style={{ flex: 1, minHeight: 0, overflowY: "auto" }}>
-          {currentStep === 0 && flat.map(({ comp, depth }) => (
+          {currentStep === 0 && (
+            <SystemStep selectedSystemId={selectedSystemId} onChoose={chooseSystem} />
+          )}
+
+          {currentStep === 1 && flat.map(({ comp, depth }) => (
             <ComponentEntry
               key={comp.id} comp={comp} depth={depth} system={system}
               componentStates={componentStates} inclusion={inclusion}
@@ -462,9 +554,9 @@ export default function CablePlanConfigurator() {
             />
           ))}
 
-          {currentStep === 1 && <ProjectDetails projectData={projectData} setProjectData={setProjectData} />}
+          {currentStep === 2 && <ProjectDetails projectData={projectData} setProjectData={setProjectData} />}
 
-          {currentStep === 2 && (
+          {currentStep === 3 && (
             <ReviewAndGenerate
               system={system} componentStates={componentStates} projectData={projectData}
               validation={validation} inclusion={inclusion}

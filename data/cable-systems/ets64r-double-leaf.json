@@ -1,0 +1,139 @@
+{
+  "id": "ets64r-double",
+  "name": "ETS 64-R",
+  "label": "ETS 64-R · Double leaf",
+  "summary": "Twin-operator swing door system for double doors, with closing sequence control for fire doors.",
+  "leafType": "double-leaf",
+  "isFireDoor": true,
+  "systemVariant": "ETS 64-R / 64-R",
+  "available": true,
+
+  "_note": "INTERNAL. Double-leaf variant authored from the single-leaf sheet plus standard double-door practice: a fire-rated double door must close its passive leaf before the active leaf, so position 10 is the closing sequence controller (integrated in the operator) and the sensor strips repeat on the passive leaf (5.2). CONFIRM the position numbering and the passive-leaf drive arrangement against the manufacturer's double-leaf reference sheet before first customer issue — this file is drawn to standard practice, not to a sighted reference.",
+
+  "components": [
+    { "id": "comp-1", "position": "1", "label": "Voltage supply", "type": "power_supply", "mandatory": true, "cable": { "defaultCable": "NYM 3 x 1.5 mm²", "allowedCables": ["NYM 3 x 1.5 mm²"], "allowOther": true }, "remarks": "Motor must be supplied with 230 V" },
+    { "id": "comp-2", "position": "2", "label": "24 V DC E-opener, 100% ED, protective diode", "type": "e_opener", "mandatory": true, "cable": { "defaultCable": "J-Y(ST)Y 4 x 0.6 mm²", "allowedCables": ["J-Y(ST)Y 4 x 0.6 mm²", "J-Y(ST)Y 4 x 0.8 mm²"], "allowOther": true }, "remarks": "" },
+    { "id": "comp-3", "position": "3", "label": "Bolt switch contact", "type": "bolt_switch", "mandatory": true, "cable": { "defaultCable": "J-Y(ST)Y 4 x 0.8 mm²", "allowedCables": ["J-Y(ST)Y 4 x 0.8 mm²"], "allowOther": true }, "remarks": "" },
+    { "id": "comp-4", "position": "4", "label": "Concealed cable connection", "type": "cable_transition", "mandatory": false, "optional": true, "cable": { "defaultCable": "(integrated)", "allowedCables": [], "allowOther": false }, "remarks": "Optional, in building" },
+    { "id": "comp-5", "position": "5", "label": "Flatscan set (active leaf)", "type": "sensor_strip", "mandatory": true, "cable": { "defaultCable": "Cables supplied with operator", "allowedCables": ["Cables supplied with operator"], "allowOther": true }, "remarks": "Concealed cable laying in building, otherwise surface-mounted",
+      "subComponents": [
+        { "id": "comp-5-1", "position": "5.1", "label": "Sensor strips set (active leaf)", "type": "sensor_strip", "mandatory": true, "cable": { "defaultCable": "Cables supplied with operator", "allowedCables": ["Cables supplied with operator"], "allowOther": true }, "remarks": "Concealed cable laying in building" },
+        { "id": "comp-5-2", "position": "5.2", "label": "Sensor strips set (passive leaf)", "type": "sensor_strip", "mandatory": true, "cable": { "defaultCable": "Cables supplied with operator", "allowedCables": ["Cables supplied with operator"], "allowOther": true }, "remarks": "Concealed cable laying in building" }
+      ]
+    },
+    { "id": "comp-6", "position": "6", "label": "Flip switch (inside)", "type": "flip_switch", "mandatory": false, "optional": true, "cable": { "defaultCable": "J-Y(ST)Y 4 x 0.6 mm²", "allowedCables": ["J-Y(ST)Y 4 x 0.6 mm²", "J-Y(ST)Y 4 x 0.8 mm²"], "allowOther": true }, "remarks": "In-wall socket, cable laying in building",
+      "subComponents": [
+        { "id": "comp-6-1", "position": "6.1", "label": "Flip switch (outside)", "type": "flip_switch", "mandatory": false, "optional": true, "cable": { "defaultCable": "J-Y(ST)Y 4 x 0.6 mm²", "allowedCables": ["J-Y(ST)Y 4 x 0.6 mm²", "J-Y(ST)Y 4 x 0.8 mm²"], "allowOther": true }, "remarks": "In-wall socket, cable laying in building" }
+      ]
+    },
+    { "id": "comp-7", "position": "7", "label": "Radar sensor (inside)", "type": "radar_sensor", "mandatory": false, "optional": true, "cable": { "defaultCable": "J-Y(ST)Y 4 x 0.6 mm²", "allowedCables": ["J-Y(ST)Y 4 x 0.6 mm²", "J-Y(ST)Y 4 x 0.8 mm²"], "allowOther": true }, "remarks": "Cable laying in building (in-wall if necessary)",
+      "subComponents": [
+        { "id": "comp-7-1", "position": "7.1", "label": "Radar sensor (outside)", "type": "radar_sensor", "mandatory": false, "optional": true, "cable": { "defaultCable": "J-Y(ST)Y 4 x 0.6 mm²", "allowedCables": ["J-Y(ST)Y 4 x 0.6 mm²", "J-Y(ST)Y 4 x 0.8 mm²"], "allowOther": true }, "remarks": "Cable laying in building (in-wall if necessary)" }
+      ]
+    },
+    { "id": "comp-8", "position": "8", "label": "Bedix program selection switch", "type": "program_switch", "mandatory": false, "optional": true, "cable": { "defaultCable": "J-Y(ST)Y 4 x 0.6 mm²", "allowedCables": ["J-Y(ST)Y 4 x 0.6 mm²", "J-Y(ST)Y 4 x 0.8 mm²"], "allowOther": true }, "remarks": "In-wall socket, cable laying in building" },
+    { "id": "comp-9", "position": "9", "label": "‘Close door’ manual release button", "type": "manual_release_button", "mandatory": true, "cable": { "defaultCable": "J-Y(ST)Y 4 x 0.8 mm²", "allowedCables": ["J-Y(ST)Y 4 x 0.8 mm²"], "allowOther": true }, "remarks": "Cable laying in building; button outside the door's pivot range",
+      "conditions": [{ "if": { "property": "isFireDoor", "equals": true }, "then": { "mandatory": true, "remarksOverride": "Mandatory per hold-open device approval. Button must be outside the door's pivot range." } }]
+    },
+    { "id": "comp-10", "position": "10", "label": "Closing sequence controller", "type": "sequence_controller", "mandatory": true, "cable": { "defaultCable": "(integrated)", "allowedCables": [], "allowOther": false }, "remarks": "Integrated in the operator. Closes the passive leaf before the active leaf — required on double-leaf fire doors." },
+    { "id": "comp-11", "position": "11", "label": "Ceiling smoke detector", "type": "smoke_detector", "mandatory": false, "optional": true, "cable": { "defaultCable": "J-Y(ST)Y 4 x 0.8 mm²", "allowedCables": ["J-Y(ST)Y 4 x 0.8 mm²"], "allowOther": true }, "remarks": "Cable laying in building as per approval" },
+    { "id": "comp-12", "position": "12", "label": "Lintel-mounted smoke detector", "type": "smoke_detector", "mandatory": false, "optional": true, "cable": { "defaultCable": "J-Y(ST)Y 4 x 0.8 mm²", "allowedCables": ["J-Y(ST)Y 4 x 0.8 mm²"], "allowOther": true }, "remarks": "Cable laying in building as per approval" }
+  ],
+
+  "drawing": {
+    "view": { "x": 118, "y": 22, "w": 686, "h": 568 },
+    "geo": {
+      "headY": 110, "frameHeadB": 126,
+      "opTop": 126, "opBot": 160,
+      "leafTop": 160, "leafBot": 566, "floorY": 572,
+      "openL": 250, "openR": 650, "jambW": 16,
+      "leaves": [
+        { "l": 266, "r": 448, "hinge": "left", "active": false },
+        { "l": 452, "r": 634, "hinge": "right", "active": true }
+      ]
+    },
+    "controller": { "x": 450, "y": 152, "w": 118, "h": 22 },
+    "anchors": {
+      "comp-1": {
+        "device": { "kind": "box", "x": 138, "y": 490, "w": 36, "h": 48 },
+        "bubble": { "x": 156, "y": 460 },
+        "route": [[156, 538], [156, 552], [236, 552], [236, 152], [444, 152]]
+      },
+      "comp-2": {
+        "device": { "kind": "jamb", "x": 634, "y": 296, "w": 16, "h": 44 },
+        "bubble": { "x": 700, "y": 300 },
+        "route": [[642, 296], [642, 152], [456, 152]]
+      },
+      "comp-3": {
+        "device": { "kind": "jamb", "x": 634, "y": 368, "w": 16, "h": 30 },
+        "bubble": { "x": 700, "y": 372 },
+        "route": [[646, 368], [646, 152], [456, 152]]
+      },
+      "comp-4": {
+        "device": { "kind": "jamb", "x": 250, "y": 196, "w": 16, "h": 34 },
+        "bubble": { "x": 205, "y": 180 },
+        "route": [[258, 196], [258, 152], [444, 152]]
+      },
+      "comp-5": {
+        "device": { "kind": "bar", "x": 470, "y": 166, "w": 110, "h": 9 },
+        "bubble": { "x": 525, "y": 214 },
+        "route": [[525, 166], [525, 152], [456, 152]]
+      },
+      "comp-5-1": {
+        "device": { "kind": "strip", "x": 624, "y": 210, "w": 7, "h": 190 },
+        "bubble": { "x": 700, "y": 236 },
+        "route": [[627, 210], [627, 152], [456, 152]]
+      },
+      "comp-5-2": {
+        "device": { "kind": "strip", "x": 272, "y": 210, "w": 7, "h": 190 },
+        "bubble": { "x": 205, "y": 232 },
+        "route": [[275, 210], [275, 152], [444, 152]]
+      },
+      "comp-6": {
+        "device": { "kind": "box", "x": 186, "y": 296, "w": 30, "h": 44 },
+        "bubble": { "x": 201, "y": 266 },
+        "route": [[201, 296], [201, 96], [244, 96], [244, 152], [444, 152]]
+      },
+      "comp-6-1": {
+        "device": { "kind": "box", "x": 700, "y": 296, "w": 30, "h": 44 },
+        "bubble": { "x": 715, "y": 266 },
+        "route": [[715, 296], [715, 96], [656, 96], [656, 152], [456, 152]]
+      },
+      "comp-7": {
+        "device": { "kind": "sensor", "x": 380, "y": 76 },
+        "bubble": { "x": 380, "y": 44 },
+        "route": [[380, 86], [380, 126]]
+      },
+      "comp-7-1": {
+        "device": { "kind": "sensor", "x": 520, "y": 76 },
+        "bubble": { "x": 520, "y": 44 },
+        "route": [[520, 86], [520, 126]]
+      },
+      "comp-8": {
+        "device": { "kind": "box", "x": 745, "y": 292, "w": 34, "h": 48 },
+        "bubble": { "x": 762, "y": 262 },
+        "route": [[762, 292], [762, 88], [660, 88], [660, 152], [456, 152]]
+      },
+      "comp-9": {
+        "device": { "kind": "box", "x": 136, "y": 296, "w": 30, "h": 44 },
+        "bubble": { "x": 151, "y": 266 },
+        "route": [[151, 296], [151, 88], [240, 88], [240, 152], [444, 152]]
+      },
+      "comp-10": {
+        "device": { "kind": "box", "x": 300, "y": 132, "w": 34, "h": 20 },
+        "bubble": { "x": 262, "y": 100 },
+        "route": [[334, 142], [380, 142], [380, 152], [444, 152]]
+      },
+      "comp-11": {
+        "device": { "kind": "disc", "x": 226, "y": 44 },
+        "bubble": { "x": 180, "y": 44 },
+        "route": [[226, 52], [226, 78], [296, 78], [296, 152], [444, 152]]
+      },
+      "comp-12": {
+        "device": { "kind": "disc", "x": 450, "y": 78 },
+        "bubble": { "x": 450, "y": 44 },
+        "route": [[450, 86], [450, 126]]
+      }
+    }
+  }
+}
