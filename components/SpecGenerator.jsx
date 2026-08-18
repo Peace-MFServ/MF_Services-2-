@@ -1,5 +1,5 @@
 'use client'
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import RiserDoorPreview from "./RiserDoorPreview";
 import { PRODUCT_ART } from "./ProductIllustrations";
 import { generateHardwareSpecPDF } from "../lib/generateHardwareSpecPDF";
@@ -316,9 +316,12 @@ function OutstandingList({ errors }) {
 /** What the entered opening works out to, and how well the size is
  *  backed up by a test report. */
 function DerivedOpening({ product, clearOpening, resolution }) {
-  if (!clearOpening) return null;
+  // The matched doorset's own frame figures win over the category's
+  // indicative deduction — those are the numbers the sheet will carry.
+  const clear = resolution?.clear ?? clearOpening;
+  if (!clear) return null;
   const leaves = resolution?.leaves;
-  const leafW = leaves ? Math.round(clearOpening.width / leaves) : null;
+  const leafW = resolution?.leaf?.width ?? (leaves ? Math.round(clear.width / leaves) : null);
 
   const Line = ({ label, value }) => (
     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 12, marginTop: 5 }}>
@@ -340,9 +343,14 @@ function DerivedOpening({ product, clearOpening, resolution }) {
       }}>
         This opening works out to
       </div>
-      <Line label="Clear opening" value={`${clearOpening.width} × ${clearOpening.height} mm`} />
-      {leafW != null && <Line label="Leaf size" value={`${leafW} × ${clearOpening.height} mm`} />}
+      <Line label="Clear opening" value={`${clear.width} × ${clear.height} mm`} />
+      {leafW != null && <Line label="Leaf size" value={`${leafW} × ${clear.height} mm`} />}
 
+      {resolution?.clearNote && (
+        <p style={{ margin: "9px 0 0", fontSize: 12, lineHeight: 1.45, color: UI.muted }}>
+          {resolution.clearNote}
+        </p>
+      )}
       {resolution?.basis && (
         <p style={{ margin: "9px 0 0", fontSize: 12, lineHeight: 1.5, color: UI.muted }}>
           {resolution.basis}
@@ -366,7 +374,7 @@ function SpecifyStep({ product, config, setConfig, errorFor, markTouched, specTy
   const set = (key, value) => { markTouched(key); setConfig(c => ({ ...c, [key]: value })); };
   const clearOpening = getClearOpening(product, config);
 
-  const maxLeaves = product.statedLimits.maxLeaves ?? 6;
+  const maxLeaves = product.statedLimits.maxLeaves ?? 4;
   const suggested = resolution?.suggestedLeaves;
 
   return (
@@ -516,7 +524,7 @@ function SpecifyStep({ product, config, setConfig, errorFor, markTouched, specTy
 
 function ReviewStep({ product, config, projectData, specType, validation, onGenerate, generating, notice }) {
   const resolution = validation.resolution;
-  const rows = specRows(product, config);
+  const rows = specRows(product, config, resolution);
 
   const Section = ({ title, children }) => (
     <div style={{ marginBottom: 26 }}>
@@ -614,6 +622,12 @@ function ReviewStep({ product, config, projectData, specType, validation, onGene
 
 // ─── Main ─────────────────────────────────────────────────────────
 
+// Everything the user has typed, persisted so a refresh or an
+// accidental tab close does not cost them the configuration. Loaded
+// after mount (not in the initial render) so server and client HTML
+// stay identical.
+const STORAGE_KEY = "mf-hardware-spec-v1";
+
 export default function SpecGenerator() {
   const [currentStep, setCurrentStep] = useState(0);
   const [furthest, setFurthest] = useState(0);
@@ -630,6 +644,47 @@ export default function SpecGenerator() {
   const [notice, setNotice] = useState(null);
 
   const railRef = useRef(null);
+  const restored = useRef(false);
+
+  useEffect(() => {
+    try {
+      const raw = window.localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const saved = JSON.parse(raw);
+        if (saved.productTypeId && getProduct(saved.productTypeId)) {
+          setProductTypeId(saved.productTypeId);
+          // Merge over a fresh config so options added since the save
+          // still get their defaults rather than arriving undefined.
+          setConfig({ ...buildInitialConfig(getProduct(saved.productTypeId)), ...(saved.config ?? {}) });
+        }
+        if (saved.specType) setSpecType(saved.specType);
+        if (saved.projectData) setProjectData(pd => ({ ...pd, ...saved.projectData }));
+        if (typeof saved.furthest === "number") setFurthest(saved.furthest);
+        if (typeof saved.currentStep === "number") setCurrentStep(saved.currentStep);
+      }
+    } catch { /* corrupt or unavailable storage is not worth breaking the tool over */ }
+    restored.current = true;
+  }, []);
+
+  useEffect(() => {
+    if (!restored.current) return;
+    try {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        productTypeId, config, specType, projectData, currentStep, furthest,
+      }));
+    } catch { /* storage full or blocked — persistence is best-effort */ }
+  }, [productTypeId, config, specType, projectData, currentStep, furthest]);
+
+  const startOver = useCallback(() => {
+    try { window.localStorage.removeItem(STORAGE_KEY); } catch { /* best-effort */ }
+    setProductTypeId("riser-doors");
+    setConfig(buildInitialConfig(getProduct("riser-doors")));
+    setSpecType("branded");
+    setProjectData({ businessName: "", contactName: "", email: "", phone: "", projectName: "", architecturalFirm: "" });
+    setCurrentStep(0);
+    setFurthest(0);
+    setNotice(null);
+  }, []);
 
   const validation = validateSpec(product, config, projectData);
   const resolution = resolveProduct(product, config);
@@ -647,7 +702,12 @@ export default function SpecGenerator() {
   );
 
   const chooseProduct = useCallback(id => {
-    setProductTypeId(id);
+    setProductTypeId(prev => {
+      // A different product means a different option set — carrying the
+      // old configuration across would silently corrupt the new one.
+      if (prev !== id) setConfig(buildInitialConfig(getProduct(id)));
+      return id;
+    });
     setCurrentStep(1);
     setFurthest(f => Math.max(f, 1));
     if (railRef.current) railRef.current.scrollTop = 0;
@@ -688,18 +748,30 @@ export default function SpecGenerator() {
       display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12,
       padding: "14px 22px", borderTop: `1px solid ${UI.ruleStrong}`, flexShrink: 0,
     }}>
-      <button
-        type="button" onClick={goBack} disabled={currentStep === 0}
-        style={{
-          padding: "10px 18px", fontSize: 13.5, fontWeight: 500, fontFamily: FONT,
-          border: `1px solid ${UI.ruleStrong}`, background: UI.surface,
-          color: currentStep === 0 ? UI.muted : UI.ink,
-          cursor: currentStep === 0 ? "not-allowed" : "pointer",
-          opacity: currentStep === 0 ? 0.5 : 1,
-        }}
-      >
-        Back
-      </button>
+      <span style={{ display: "flex", gap: 10 }}>
+        <button
+          type="button" onClick={goBack} disabled={currentStep === 0}
+          style={{
+            padding: "10px 18px", fontSize: 13.5, fontWeight: 500, fontFamily: FONT,
+            border: `1px solid ${UI.ruleStrong}`, background: UI.surface,
+            color: currentStep === 0 ? UI.muted : UI.ink,
+            cursor: currentStep === 0 ? "not-allowed" : "pointer",
+            opacity: currentStep === 0 ? 0.5 : 1,
+          }}
+        >
+          Back
+        </button>
+        <button
+          type="button" onClick={startOver}
+          style={{
+            padding: "10px 12px", fontSize: 12.5, fontWeight: 500, fontFamily: FONT,
+            border: "none", background: "none", color: UI.muted, cursor: "pointer",
+            textDecoration: "underline",
+          }}
+        >
+          Start over
+        </button>
+      </span>
       {currentStep < STEPS.length - 1 && (
         <button
           type="button" onClick={goNext} disabled={nextBlocked}

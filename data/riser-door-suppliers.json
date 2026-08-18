@@ -1,0 +1,90 @@
+{
+  "_note": "INTERNAL. One entry per supplier product the business can source a riser doorset against. internalName and _source are for the sales team and must NEVER be rendered customer-side — the customer sees an MF Services doorset; which supplier fulfils it is resolved by the matching engine from what the customer asks for. Evidence is referenced by report id into fire-test-reports.json. priority breaks ties when more than one product matches at the same evidence level (lower number wins).",
+
+  "products": [
+    {
+      "id": "rd-heavy",
+      "internalName": "Profab INTEGRA 4000 FR",
+      "_source": "integra4000frpafmda360r2 datasheet + fire test reports XL070-17&18 / XL070-13&14 (Access 360 sponsored).",
+      "priority": 2,
+      "fireMinutes": [30, 60, 90, 120],
+      "maxLeaves": 4,
+      "acousticDb": null,
+      "_acoustic": "All-in-one acoustic/intumescent/smoke seal fitted; no dB figure published on the datasheet. Acoustic requirements route to enquiry for this product until a certificate is held.",
+      "smokeStated": true,
+      "smokeStandard": "BS 476-31.1",
+      "statedLimits": {
+        "leafHeightMax": 3100,
+        "_source": "Datasheet: 'maximum leaf height of 3100 mm'. No stated width cap published; width past evidence is treated as stated-only, and past 1400 mm per leaf as enquiry.",
+        "leafWidthMax": 1400
+      },
+      "clearOpening": {
+        "widthDeduction": 120,
+        "heightDeduction": 120,
+        "confirmed": false,
+        "_source": "Datasheet CAD: structural opening = X + 15, clear opening = X − 120 (width). Height deduction not legible on the sheet — assumed equal and flagged unconfirmed; confirm against the manufacturing drawing before order."
+      },
+      "frames": ["picture", "beaded", "deep-plaster", "dutch-folded"],
+      "locks": ["3pl", "3hs", "3hs-concealed"],
+      "hinge": "Concealed continuous piano hinge",
+      "construction": "1.5 mm frame and 1.2 mm door in electro-galvanised mild steel. Fully welded frame with factory-applied intumescent strips. Rockwool core door leaf with 12.5 mm fire board backing. All-in-one acoustic, intumescent and smoke seal. Concealed continuous piano hinge. Concealed multi-point locking.",
+      "evidence": ["XL070-17&18", "XL070-13&14"]
+    },
+    {
+      "id": "rd-light",
+      "internalName": "Profab VEGA 1500 FR",
+      "_source": "vega1500seriesdatasheet. No test report for this product is held — its stated maxima (2750 mm @ 938 wide / 1035 wide @ 2493 high) are Annex-B-shaped corners from a report we have requested and do not hold.",
+      "priority": 3,
+      "fireMinutes": [30, 60],
+      "maxLeaves": 2,
+      "acousticDb": 35,
+      "smokeStated": true,
+      "smokeStandard": "BS 476-31.1",
+      "statedLimits": {
+        "leafHeightMax": 2750,
+        "leafWidthMax": 1035,
+        "leafAreaMax": 2.58,
+        "_source": "Datasheet corners: max height 2750 @ 938 wide, max width 1035 @ 2493 high. Encoded as linear caps plus an area cap so the corner shape is respected."
+      },
+      "clearOpening": {
+        "widthDeduction": 70,
+        "heightDeduction": 70,
+        "confirmed": false,
+        "_source": "Datasheet CAD: structural opening = X + 10, clear opening = X − 70 (width). Height assumed equal and flagged unconfirmed."
+      },
+      "frames": ["picture", "beaded"],
+      "locks": ["3pl", "3hs"],
+      "hinge": "Quick-release pivot hinge with retractable flush bolt",
+      "construction": "1.2 mm door and frame in electro-galvanised mild steel. Fully welded four-sided frame with factory-applied intumescent strips. Lightweight Rockwool core door leaf (24 kg/m²). All-in-one acoustic, intumescent and smoke seal. Quick-release pivot hinge with retractable flush bolt. Multi-point locking.",
+      "evidence": []
+    },
+    {
+      "id": "rd-standard",
+      "internalName": "Original loaded supplier (riser-doors.json literature)",
+      "_source": "The supplier literature the tool was originally built from. Its published corner (938 × 2750) matches the VEGA sheet and its specimen matches report XL070-17&18, so it is very likely the same product family rebadged — confirm with the supplier. Until then it keeps its own limits and the one report whose specimen it quotes.",
+      "priority": 1,
+      "fireMinutes": [30, 60, 90, 120],
+      "maxLeaves": 4,
+      "acousticDb": 47,
+      "acousticOptionsDb": [43, 47],
+      "smokeStated": true,
+      "smokeStandard": "BS EN 1634-3:2004",
+      "statedLimits": {
+        "structuralWidthMax": 4169,
+        "structuralHeightMax": 2755,
+        "structuralWidthMin": 300,
+        "structuralHeightMin": 300
+      },
+      "clearOpening": {
+        "widthDeduction": 201,
+        "heightDeduction": 75,
+        "confirmed": true
+      },
+      "frames": ["picture", "perforated", "beaded"],
+      "locks": ["euro-concealed", "concealed", "euro", "fully-concealed", "3pl"],
+      "hinge": "Quick-release heavy-duty pivot hinges welded into the door trays",
+      "construction": "Steel skins to both faces over an insulated strengthened core, 100 mm thick. Door tray and frame in 1.0 and 1.2 mm Zintec electro-galvanised mild steel. Quick-release heavy-duty pivot hinges welded into the door trays. Multiple-point locking to the active leaf.",
+      "evidence": ["XL070-17&18"]
+    }
+  ]
+}

@@ -67,10 +67,21 @@ export default function RiserDoorPreview({ product, config, resolution }) {
           {/* Frame */}
           <rect x={x0} y={y0} width={drawW} height={drawH} fill={FRAME} stroke={EDGE} strokeWidth="1.3" />
 
-          {/* Leaves */}
+          {/* Leaves. Handing decides which edge hinges: the active leaf
+              sits on the handing side (viewed from the access side), and
+              each leaf hinges towards its nearer jamb so multi-leaf sets
+              read as folding outward. */}
           {Array.from({ length: leaves }, (_, i) => {
             const lx = x0 + frameT + i * leafW
             const inset = 1
+            const rightHand = config.handing === "right"
+            // Which edge of THIS leaf carries the hinges.
+            const hingesRight = leaves === 1 ? rightHand : i >= leaves / 2
+            const hingeX = hingesRight ? lx + leafW - 4 : lx - 1
+            // The active (locking) leaf is the outermost on the handing side.
+            const isActive = leaves === 1 || (rightHand ? i === leaves - 1 : i === 0)
+            const lockX = hingesRight ? lx + 6 : lx + leafW - 11
+            const euroVisible = ["euro", "euro-concealed", "high-security"].includes(config.lockType)
             return (
               <g key={i}>
                 <rect
@@ -78,13 +89,31 @@ export default function RiserDoorPreview({ product, config, resolution }) {
                   width={leafW - inset * 2} height={innerH - inset * 2}
                   fill={LEAF} stroke={EDGE} strokeWidth="1.1"
                 />
-                {/* Lock / handle indication on the leading edge of each leaf */}
-                {leafW > 26 && innerH > 40 && (
+                {/* Hinge knuckles */}
+                {leafW > 26 && innerH > 60 && [0.16, 0.5, 0.84].map(f => (
                   <rect
-                    x={lx + leafW - 11} y={y0 + frameT + innerH / 2 - 7}
+                    key={f}
+                    x={hingeX} y={y0 + frameT + innerH * f - 7}
                     width={5} height={14} rx={1}
-                    fill="#8E9BA8" stroke={EDGE} strokeWidth="0.8"
+                    fill="#6D7A88" stroke={EDGE} strokeWidth="0.7"
                   />
+                ))}
+                {/* Lock on the active leaf's leading edge; a visible
+                    euro cylinder gets its own mark below the lock case. */}
+                {isActive && leafW > 26 && innerH > 40 && (
+                  <g>
+                    <rect
+                      x={lockX} y={y0 + frameT + innerH / 2 - 7}
+                      width={5} height={14} rx={1}
+                      fill="#8E9BA8" stroke={EDGE} strokeWidth="0.8"
+                    />
+                    {euroVisible && (
+                      <circle
+                        cx={lockX + 2.5} cy={y0 + frameT + innerH / 2 + 16}
+                        r={3} fill="#F4F6F8" stroke={EDGE} strokeWidth="0.8"
+                      />
+                    )}
+                  </g>
                 )}
               </g>
             )
@@ -102,6 +131,15 @@ export default function RiserDoorPreview({ product, config, resolution }) {
           >
             {hasSize ? `${w} mm` : "width —"}
           </text>
+          {/* Clear opening — the number the architect actually needs */}
+          {hasSize && resolution?.clear && (
+            <text
+              x={x0 + drawW / 2} y={y0 + drawH + 59} textAnchor="middle"
+              fontFamily={FONT} fontSize="12" fill={UI.muted}
+            >
+              clear opening {resolution.clear.width} × {resolution.clear.height} mm
+            </text>
+          )}
 
           {/* Height dimension, left */}
           <g stroke={DIM} strokeWidth="0.9" fill="none">
