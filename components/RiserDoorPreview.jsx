@@ -7,16 +7,26 @@ import { UI, FONT } from '../lib/theme'
 const VB = { w: 660, h: 520 }
 const PAD = { top: 44, right: 76, bottom: 64, left: 78 }
 
-const FRAME = "#8895A3"
 const EDGE  = "#3C4956"
 const LEAF  = "#CBD5DF"
+const BAND  = "#D8DFE7"   // architrave — powder-coated, a shade off the leaf
 const DIM   = "#57646F"
+
+// Architrave width on screen when a frame style is chosen. The real
+// integral architrave is 20–70 mm; a fixed drawing width keeps the
+// band legible at any door size.
+const BAND_W = 14
 
 export default function RiserDoorPreview({ product, config, resolution }) {
   const w = Number(config.width)
   const h = Number(config.height)
   const hasSize = Number.isFinite(w) && Number.isFinite(h) && w > 0 && h > 0
   const leaves = config.leaves || 1
+
+  // Flush is the standard: no frame, no surround — just the leaves.
+  // A chosen frame style draws its real architrave and nothing else.
+  const flush = !config.frameStyle || config.frameStyle === "flush"
+  const bandW = flush ? 0 : BAND_W
 
   const boxW = VB.w - PAD.left - PAD.right
   const boxH = VB.h - PAD.top - PAD.bottom
@@ -25,19 +35,13 @@ export default function RiserDoorPreview({ product, config, resolution }) {
   // before anything is entered, rather than collapsing.
   const dw = hasSize ? w : 900
   const dh = hasSize ? h : 2100
-  const scale = Math.min(boxW / dw, boxH / dh)
+  const scale = Math.min((boxW - 2 * bandW) / dw, (boxH - 2 * bandW) / dh)
   const drawW = dw * scale
   const drawH = dh * scale
   const x0 = PAD.left + (boxW - drawW) / 2
   const y0 = PAD.top + (boxH - drawH) / 2
 
-  // Flush is the standard: no frame, no surround, no outline — just
-  // the leaves. A chosen frame style brings the visible surround.
-  const flush = !config.frameStyle || config.frameStyle === "flush"
-  const frameT = flush ? 0 : Math.max(4, Math.min(11, drawW * 0.022))
-  const innerW = drawW - frameT * 2
-  const innerH = drawH - frameT * 2
-  const leafW = innerW / leaves
+  const leafW = drawW / leaves
 
   const finishChoice = product?.options
     ?.find(o => o.id === "finish")?.choices
@@ -67,20 +71,33 @@ export default function RiserDoorPreview({ product, config, resolution }) {
             ? `Elevation, ${leaves} leaf doorset, ${w} by ${h} millimetres`
             : "Doorset elevation, dimensions not yet entered"}
         >
-          {/* Architrave — drawn only when a visible frame style is
-              chosen; the flush standard reads as part of the wall. */}
+          {/* Architrave — the chosen frame's real face, one coherent
+              band around the leaves:
+                picture         flat band
+                raised-picture  flat band with the 8 mm raised return
+                framesmart      flat band with the adjustable liner joint */}
           {!flush && (
-            <rect
-              x={x0 - 6} y={y0 - 6} width={drawW + 12} height={drawH + 12}
-              fill="none" stroke={EDGE} strokeWidth={config.frameStyle === "raised-picture" ? 3 : 2}
-              opacity="0.75"
-            />
-          )}
-
-          {/* Frame band — only when a frame style is chosen. Flush
-              draws nothing here: the leaf edges ARE the perimeter. */}
-          {!flush && (
-            <rect x={x0} y={y0} width={drawW} height={drawH} fill={FRAME} stroke={EDGE} strokeWidth="1.3" />
+            <g>
+              <rect
+                x={x0 - bandW} y={y0 - bandW}
+                width={drawW + 2 * bandW} height={drawH + 2 * bandW}
+                fill={BAND} stroke={EDGE} strokeWidth="1.2"
+              />
+              {config.frameStyle === "raised-picture" && (
+                <rect
+                  x={x0 - bandW * 0.6} y={y0 - bandW * 0.6}
+                  width={drawW + 2 * bandW * 0.6} height={drawH + 2 * bandW * 0.6}
+                  fill="none" stroke={EDGE} strokeWidth="0.9"
+                />
+              )}
+              {config.frameStyle === "framesmart" && (
+                <rect
+                  x={x0 - bandW * 0.5} y={y0 - bandW * 0.5}
+                  width={drawW + bandW} height={drawH + bandW}
+                  fill="none" stroke={EDGE} strokeWidth="0.6" strokeDasharray="5 4" opacity="0.7"
+                />
+              )}
+            </g>
           )}
 
           {/* Leaves. Christo doors are pivot-hung — no hinges. Handing
@@ -89,25 +106,23 @@ export default function RiserDoorPreview({ product, config, resolution }) {
               towards its nearer jamb so multi-leaf sets read as folding
               outward. */}
           {Array.from({ length: leaves }, (_, i) => {
-            const lx = x0 + frameT + i * leafW
+            const lx = x0 + i * leafW
             const inset = 1
             const rightHand = config.handing === "right"
-            // Which edge of THIS leaf carries the pivots.
             const pivotsRight = leaves === 1 ? rightHand : i >= leaves / 2
-            const pivotX = pivotsRight ? lx + leafW - 7 : lx + 2
-            // The active (locking) leaf is the outermost on the handing side.
+            const pivotX = pivotsRight ? lx + leafW - 8 : lx + 3
             const isActive = leaves === 1 || (rightHand ? i === leaves - 1 : i === 0)
-            const lockX = pivotsRight ? lx + 6 : lx + leafW - 11
+            const lockX = pivotsRight ? lx + 7 : lx + leafW - 12
             const euroVisible = !!config.lockType && config.lockType !== "slik-concealed"
             return (
               <g key={i}>
                 <rect
-                  x={lx + inset} y={y0 + frameT + inset}
-                  width={leafW - inset * 2} height={innerH - inset * 2}
+                  x={lx + inset} y={y0 + inset}
+                  width={leafW - inset * 2} height={drawH - inset * 2}
                   fill={LEAF} stroke={EDGE} strokeWidth="1.1"
                 />
                 {/* Pivot pins, top and bottom of the pivot edge */}
-                {leafW > 26 && innerH > 40 && [y0 + frameT + 3, y0 + frameT + innerH - 9].map(py => (
+                {leafW > 26 && drawH > 40 && [y0 + 4, y0 + drawH - 10].map(py => (
                   <rect
                     key={py}
                     x={pivotX} y={py} width={6} height={6}
@@ -116,16 +131,16 @@ export default function RiserDoorPreview({ product, config, resolution }) {
                 ))}
                 {/* Lock on the active leaf's leading edge: the SLIK slot,
                     plus a cylinder mark when the face carries one. */}
-                {isActive && leafW > 26 && innerH > 40 && (
+                {isActive && leafW > 26 && drawH > 40 && (
                   <g>
                     <rect
-                      x={lockX} y={y0 + frameT + innerH / 2 - 7}
+                      x={lockX} y={y0 + drawH / 2 - 7}
                       width={5} height={14} rx={2.5}
                       fill="none" stroke={EDGE} strokeWidth="1"
                     />
                     {euroVisible && (
                       <circle
-                        cx={lockX + 2.5} cy={y0 + frameT + innerH / 2 + 16}
+                        cx={lockX + 2.5} cy={y0 + drawH / 2 + 16}
                         r={3} fill="#F4F6F8" stroke={EDGE} strokeWidth="0.8"
                       />
                     )}
@@ -137,12 +152,12 @@ export default function RiserDoorPreview({ product, config, resolution }) {
 
           {/* Width dimension, below */}
           <g stroke={DIM} strokeWidth="0.9" fill="none">
-            <line x1={x0} y1={y0 + drawH + 16} x2={x0} y2={y0 + drawH + 30} />
-            <line x1={x0 + drawW} y1={y0 + drawH + 16} x2={x0 + drawW} y2={y0 + drawH + 30} />
-            <line x1={x0} y1={y0 + drawH + 24} x2={x0 + drawW} y2={y0 + drawH + 24} />
+            <line x1={x0} y1={y0 + drawH + bandW + 16} x2={x0} y2={y0 + drawH + bandW + 30} />
+            <line x1={x0 + drawW} y1={y0 + drawH + bandW + 16} x2={x0 + drawW} y2={y0 + drawH + bandW + 30} />
+            <line x1={x0} y1={y0 + drawH + bandW + 24} x2={x0 + drawW} y2={y0 + drawH + bandW + 24} />
           </g>
           <text
-            x={x0 + drawW / 2} y={y0 + drawH + 44} textAnchor="middle"
+            x={x0 + drawW / 2} y={y0 + drawH + bandW + 44} textAnchor="middle"
             fontFamily={FONT} fontSize="15" fontWeight="600" fill={hasSize ? UI.ink : UI.muted}
           >
             {hasSize ? `${w} mm` : "width —"}
@@ -150,7 +165,7 @@ export default function RiserDoorPreview({ product, config, resolution }) {
           {/* Clear opening — the number the architect actually needs */}
           {hasSize && resolution?.clear && (
             <text
-              x={x0 + drawW / 2} y={y0 + drawH + 59} textAnchor="middle"
+              x={x0 + drawW / 2} y={y0 + drawH + bandW + 59} textAnchor="middle"
               fontFamily={FONT} fontSize="12" fill={UI.muted}
             >
               clear opening {resolution.clear.width} × {resolution.clear.height} mm
@@ -159,21 +174,21 @@ export default function RiserDoorPreview({ product, config, resolution }) {
 
           {/* Height dimension, left */}
           <g stroke={DIM} strokeWidth="0.9" fill="none">
-            <line x1={x0 - 30} y1={y0} x2={x0 - 16} y2={y0} />
-            <line x1={x0 - 30} y1={y0 + drawH} x2={x0 - 16} y2={y0 + drawH} />
-            <line x1={x0 - 23} y1={y0} x2={x0 - 23} y2={y0 + drawH} />
+            <line x1={x0 - bandW - 30} y1={y0} x2={x0 - bandW - 16} y2={y0} />
+            <line x1={x0 - bandW - 30} y1={y0 + drawH} x2={x0 - bandW - 16} y2={y0 + drawH} />
+            <line x1={x0 - bandW - 23} y1={y0} x2={x0 - bandW - 23} y2={y0 + drawH} />
           </g>
           <text
-            x={x0 - 34} y={y0 + drawH / 2} textAnchor="middle"
+            x={x0 - bandW - 34} y={y0 + drawH / 2} textAnchor="middle"
             fontFamily={FONT} fontSize="15" fontWeight="600" fill={hasSize ? UI.ink : UI.muted}
-            transform={`rotate(-90 ${x0 - 34} ${y0 + drawH / 2})`}
+            transform={`rotate(-90 ${x0 - bandW - 34} ${y0 + drawH / 2})`}
           >
             {hasSize ? `${h} mm` : "height —"}
           </text>
 
           {/* Leaf count, above */}
           <text
-            x={x0 + drawW / 2} y={y0 - 16} textAnchor="middle"
+            x={x0 + drawW / 2} y={y0 - bandW - 16} textAnchor="middle"
             fontFamily={FONT} fontSize="13" fill={UI.muted}
           >
             {leaves} {leaves === 1 ? "leaf" : "leaves"}
