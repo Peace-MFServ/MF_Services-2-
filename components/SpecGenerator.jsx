@@ -346,12 +346,6 @@ function DerivedOpening({ product, resolution }) {
       </div>
       <Line label="Clear opening" value={`${clear.width} × ${clear.height} mm`} />
       {leafW != null && <Line label="Leaf size" value={`${leafW} × ${clear.height} mm`} />}
-
-      {product.structuralAllowance?.note && (
-        <p style={{ margin: "9px 0 0", fontSize: 12, lineHeight: 1.45, color: UI.muted }}>
-          {product.structuralAllowance.note}
-        </p>
-      )}
     </div>
   );
 }
