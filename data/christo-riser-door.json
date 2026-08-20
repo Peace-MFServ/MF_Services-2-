@@ -1,0 +1,86 @@
+{
+  "id": "christo",
+  "internalName": "Simplis Christo Riser Doors",
+  "_source": "Kiwa Fire Safety Compliance Field of Application Report PAR/21319/01 Revision E (issued 23 Feb 2026, expires 13 Jan 2031). Approved sizes, frames, locks and supporting constructions all come from that report. INTERNAL: internalName is never rendered customer-side.",
+
+  "approval": {
+    "reference": "PAR/21319/01 Revision E",
+    "body": "Kiwa Fire Safety Compliance",
+    "standard": "BS 476: Part 22: 1987",
+    "maxMinutes": 120,
+    "bidirectional": true,
+    "issued": "2026-02-23",
+    "expires": "2031-01-13"
+  },
+
+  "clearOpening": {
+    "widthDeduction": 201,
+    "heightDeduction": 75,
+    "note": "Clear opening is the structural opening less 201 mm on width and 75 mm on height."
+  },
+
+  "structuralAllowance": {
+    "oversize": 16,
+    "note": "Prepare the structural opening 16 mm larger than the ordered door. The frame provides in-frame adjustment, so no packers or mastic are needed."
+  },
+
+  "maxLeaves": 6,
+  "minLeafWidth": 250,
+  "_minLeafWidth": "The report permits unlimited size reduction, but the smallest leaf in a multi-leaf set shall not be less than 250 mm for vertical stability.",
+
+  "envelopes": {
+    "_note": "Approved LEAF envelopes per leaf count, from report section 4.2. Each envelope is a corner pair [[w1,h1],[w2,h2]]: max height h1 up to width w1, sloping to h2 at max width w2. A leaf count is approved when the implied leaf fits ANY of its envelopes. Counts with two entries carry two evidence bases (4.2.2 solid+dashed; 4.2.4/4.2.5 configuration options 1 and 2).",
+    "1": [ [[931, 2700], [1026, 2492]] ],
+    "2": [ [[777, 2747], [856, 2492]], [[929, 2512], [1024, 2280]] ],
+    "3": [ [[656, 2564], [691, 2434]] ],
+    "4": [ [[671, 2743], [739, 2489]], [[656, 2564], [691, 2434]] ],
+    "5": [ [[656, 2564], [691, 2434]] ],
+    "6": [ [[656, 2564], [691, 2434]] ]
+  },
+
+  "walls": [
+    { "id": "timber-stud", "label": "Timber stud partition", "maxLeaves": 6,
+      "summary": "Timber stud plasterboard partition. Approved for all configurations." },
+    { "id": "steel-stud", "label": "Steel stud partition", "maxLeaves": 6,
+      "summary": "Steel stud plasterboard partition. Approved for all configurations." },
+    { "id": "masonry", "label": "Masonry / blockwork", "maxLeaves": 2,
+      "summary": "Blockwork, brickwork or concrete. Approved for single and double leaf assemblies only." },
+    { "id": "shaftwall", "label": "Shaftwall", "maxLeaves": 6,
+      "summary": "Steel stud shaftwall, installed in the plane of the corridor lining. Approved for all configurations." },
+    { "id": "masonry-lined", "label": "Masonry with lining system", "maxLeaves": 6,
+      "summary": "Masonry wall with a plasterboard lining; the doorset sits in the plane of the lining on a steel liner system. Approved for all configurations." }
+  ],
+
+  "frames": [
+    { "id": "flush", "label": "Flush (standard)", "default": true,
+      "summary": "Simulated edge bead — the doorset reads as part of the wall." },
+    { "id": "picture", "label": "Picture frame",
+      "summary": "Visible flat architrave around the opening." },
+    { "id": "raised-picture", "label": "Raised picture frame",
+      "summary": "Visible architrave with an 8 mm raised return." },
+    { "id": "framesmart", "label": "FrameSmart adjustable",
+      "summary": "Adjustable-depth frame system for a faster, packer-free installation." }
+  ],
+
+  "locks": [
+    { "id": "slik-plus-euro", "label": "SLIK+ with euro cylinder",
+      "summary": "Spring-loaded invisible keyhole with a euro cylinder." },
+    { "id": "slik-plus-thumb", "label": "SLIK+ with thumb turn",
+      "summary": "Spring-loaded invisible keyhole; metal thumb turn to the rear of the door." },
+    { "id": "slik-euro", "label": "SLIK and euro cylinder",
+      "summary": "Invisible keyhole alongside a visible euro cylinder." },
+    { "id": "slik-euro-thumb", "label": "SLIK and euro thumb turn",
+      "summary": "Invisible keyhole with a euro thumb-turn cylinder." },
+    { "id": "slik-concealed", "label": "Fully concealed SLIK point",
+      "summary": "Square-drive key operates the deadlocks; the smallest cut-out, protected by the SLIK." }
+  ],
+  "passiveLeafLockNote": "Multi-leaf sets: the active leaf carries the 3-point lock; passive leaves carry a 2-point lock as standard.",
+
+  "construction": "Steel riser doorset with 1.2 mm Zintec steel leaf skins and stiffeners over a 75 mm Rockwool RS45 mineral wool core, 93 mm leaf thickness. Pivot-hung on welded steel pivot and spring pin systems — no visible hinges. Multi-point locking with spring-loaded invisible keyhole. Intumescent fire seals fitted as standard to stiles, head and threshold.",
+
+  "standards": [
+    { "code": "BS 476: Part 22: 1987", "description": "Fire resistance of non-loadbearing elements of construction — up to 120 minutes, both directions of exposure" },
+    { "code": "BS EN 1634-1", "description": "Fire resistance tests for door and shutter assemblies — supporting test evidence" },
+    { "code": "BS EN ISO 140-3:2010", "description": "Laboratory measurement of airborne sound insulation" }
+  ]
+}

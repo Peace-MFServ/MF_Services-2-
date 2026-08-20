@@ -2,26 +2,25 @@
   "id": "riser-doors",
   "label": "Riser Doors",
   "summary": "Fire-rated steel access doors to service risers and shafts, supplied and installed.",
-  "construction": "Steel doorset with insulated core, supplied pre-hung with multi-point locking. Exact construction follows the doorset matched to the stated requirement and is confirmed on the order drawing.",
 
-  "_PROVISIONAL": "INTERNAL NOTE — never rendered in the interface or the PDF. This file describes the riser door CATEGORY: what the customer can ask for. Which supplier product fulfils a given requirement is resolved by lib/riserMatch.js against data/riser-door-suppliers.json and data/fire-test-reports.json — supplier identities never reach the customer. The statedLimits here are the UNION across suppliers (they drive input hints and the bespoke-enquiry wording); per-supplier limits live in the suppliers file. clearOpening here is indicative only, used when no supplier match exists; matched resolutions carry the matched product's own deductions. Still unconfirmed: whether E and EI classifications are offered (neither held test report states any EN 13501-2 classification), and the height deductions for the two newer supplier products.",
+  "_PROVISIONAL": "INTERNAL NOTE — never rendered in the interface or the PDF. This file describes the riser door CATEGORY as the customer configures it: the fields on the Specify page. Approved sizes, walls, frames and locks live in data/christo-riser-door.json (from the Kiwa Field of Application report) and are resolved by lib/riserMatch.js. Fire ratings keep the EW labels for now at the business's request; the Kiwa report itself evidences integrity to BS 476: Part 22.",
 
   "statedLimits": {
-    "width":  { "min": 300, "absoluteMax": 4169, "unit": "mm" },
-    "height": { "min": 300, "absoluteMax": 3220, "unit": "mm" },
-    "maxLeaves": 4,
-    "source": "Union of supplier envelopes. Leaf count capped at 4 — the largest configuration any supplier manufactures (quad door)."
+    "width":  { "min": 300, "absoluteMax": 4347, "unit": "mm" },
+    "height": { "min": 300, "absoluteMax": 2822, "unit": "mm" },
+    "maxLeaves": 6,
+    "source": "Derived from the largest approved leaf envelopes in PAR/21319/01 plus the frame deductions. The report permits unlimited size reduction; the minimum here is a form-sanity floor only."
   },
 
   "clearOpening": {
     "widthDeduction": 201,
     "heightDeduction": 75,
-    "note": "Indicative clear opening — the exact frame deduction depends on the doorset matched to the requirement and is confirmed on the order drawing."
+    "note": "Clear opening is the structural opening less 201 mm on width and 75 mm on height."
   },
 
   "structuralAllowance": {
     "oversize": 16,
-    "note": "Prepare the structural opening slightly larger than the ordered door; adjustable frames take up the tolerance, so no packers or mastic are needed."
+    "note": "Prepare the structural opening 16 mm larger than the ordered door. The frame provides in-frame adjustment, so no packers or mastic are needed."
   },
 
   "fireRatings": [
@@ -33,7 +32,7 @@
 
   "defaultFireRating": "EW120",
 
-  "fireClassificationNote": "EW adds control of radiated heat to integrity, reducing the risk of fire spreading by radiation and allowing safer passage past an open riser door on an escape route. Fire integrity is bi-directionally tested; the sheet states exactly what the held test evidence covers.",
+  "fireClassificationNote": "Approved for up to 120 minutes fire resistance, tested from both directions of exposure.",
 
   "options": [
     {
@@ -47,70 +46,14 @@
       ]
     },
     {
-      "id": "wallType",
-      "label": "Wall construction",
-      "required": true,
-      "note": "The fire rating depends on the partition meeting the required fire performance. Wall construction also guides the frame profile below.",
-      "choices": [
-        { "id": "studwork", "label": "Studwork" },
-        { "id": "masonry",  "label": "Masonry / blockwork" },
-        { "id": "shaftwall", "label": "Shaftwall" }
-      ]
-    },
-    {
-      "id": "frameType",
-      "label": "Frame",
-      "required": true,
-      "choices": [
-        { "id": "picture",      "label": "Picture frame", "note": "Suits retrofitting and finished areas." },
-        { "id": "beaded",       "label": "Beaded frame", "note": "Suits tape-and-joint or skim-coat plastering." },
-        { "id": "perforated",   "label": "60 mm perforated frame" },
-        { "id": "deep-plaster", "label": "Deep plaster frame", "note": "Suits wet plastering / float and set." },
-        { "id": "dutch-folded", "label": "Dutch folded frame", "note": "Suits masonry and blockwork." }
-      ]
-    },
-    {
-      "id": "lockType",
-      "label": "Lock and keyhole",
-      "required": true,
-      "choices": [
-        { "id": "euro-concealed",  "label": "Euro-cylinder and concealed keyhole", "note": "Most popular — handles are rarely fitted to flush doors." },
-        { "id": "concealed",       "label": "Concealed keyhole only", "note": "Square-drive T-key. The keyhole sits behind a spring-loaded flap." },
-        { "id": "euro",            "label": "Euro-cylinder only", "note": "Cylinder visible; the last turn of the key operates the latch." },
-        { "id": "fully-concealed", "label": "Fully concealed", "note": "Keyhole and euro-cylinder both behind a magnet-held flush flap." },
-        { "id": "high-security",   "label": "High-security three-point lock", "note": "Euro profile cylinder with secondary locking, engaging top, bottom and lock sides." }
-      ]
-    },
-    {
       "id": "acoustic",
       "label": "Acoustic requirement",
       "required": true,
-      "note": "State the rating the Acoustic Report asks for; sound-rated doorsets need certified perimeter and threshold seals.",
+      "note": "State the rating the Acoustic Report asks for.",
       "choices": [
         { "id": "none",     "label": "No specific requirement" },
-        { "id": "db35",     "label": "35 dB Rw" },
         { "id": "standard", "label": "43 dB Rw" },
         { "id": "enhanced", "label": "47 dB Rw" }
-      ]
-    },
-    {
-      "id": "smokeControl",
-      "label": "Smoke control",
-      "required": true,
-      "note": "Smoke-sealed doorsets carry tested compression seals in addition to the intumescent fire seals.",
-      "choices": [
-        { "id": "no",  "label": "Not required" },
-        { "id": "yes", "label": "Required — tested smoke seals" }
-      ]
-    },
-    {
-      "id": "guardrails",
-      "label": "Riser guardrails",
-      "required": true,
-      "note": "Two demountable horizontal tubular guardrails are the standard provision behind riser doors on most project specifications.",
-      "choices": [
-        { "id": "yes", "label": "Include demountable guardrails" },
-        { "id": "no",  "label": "Not required" }
       ]
     },
     {
@@ -133,13 +76,5 @@
         { "id": "wallpaper", "label": "Wallpapered", "note": "Enquire — subject to specification." }
       ]
     }
-  ],
-
-  "standards": [
-    { "code": "EN 1634-1:2014+A1:2018", "description": "Fire resistance tests for door and shutter assemblies" },
-    { "code": "BS 476-22:1987",        "description": "Fire resistance of non-loadbearing elements of construction" },
-    { "code": "BS 476-31.1",           "description": "Smoke control test — smoke seal performance" },
-    { "code": "BS EN 1634-3:2004",     "description": "Smoke control test — S-rating achieved" },
-    { "code": "BS EN ISO 140-3:2010",  "description": "Laboratory measurement of airborne sound insulation" }
   ]
 }

@@ -5,11 +5,18 @@ import { PRODUCT_ART } from "./ProductIllustrations";
 import { generateHardwareSpecPDF } from "../lib/generateHardwareSpecPDF";
 import { UI, FONT, fieldStyle, focusField, blurField } from "../lib/theme";
 import {
-  PRODUCT_TYPES, SPEC_TYPES, getProduct,
-  buildInitialConfig, resolveProduct, validateSpec, specRows, getClearOpening, REQUIRE_ENQUIRY_DETAILS,
+  PRODUCT_TYPES, SPEC_TYPES, CHRISTO, getProduct,
+  buildInitialConfig, resolveProduct, validateSpec, specRows, REQUIRE_ENQUIRY_DETAILS,
 } from "../lib/hardwareSpec";
 
-const STEPS = ["Product", "Specify", "Review"];
+// The opening comes first; the leaf counts on offer are the ones the
+// approval covers for that opening. Wall construction and lock get
+// their own visual steps.
+const STEPS = ["Product", "Specify", "Wall", "Lock & key", "Review"];
+
+// Which validation errors belong to which step, so each step only
+// gates on its own fields.
+const SPECIFY_FIELDS = new Set(["width", "height", "handing", "acoustic", "doorRestrictor", "finish"]);
 
 // ─── Primitives ───────────────────────────────────────────────────
 
@@ -80,16 +87,20 @@ function Segmented({ options, value, onChange, name }) {
     <div role="radiogroup" aria-label={name} style={{ display: "flex", flexWrap: "wrap", gap: -1 }}>
       {options.map((opt, i) => {
         const on = value === opt.value;
+        const disabled = !!opt.disabled;
         return (
           <button
             key={opt.value} type="button" role="radio" aria-checked={on}
-            onClick={() => onChange(opt.value)}
+            disabled={disabled}
+            title={disabled ? opt.disabledReason : undefined}
+            onClick={disabled ? undefined : () => onChange(opt.value)}
             style={{
               padding: "9px 16px", fontSize: 13.5, fontWeight: on ? 600 : 400, fontFamily: FONT,
               border: `1px solid ${on ? UI.accent : UI.ruleStrong}`,
-              background: on ? UI.accent : UI.surface,
-              color: on ? "#FFFFFF" : UI.body,
-              cursor: "pointer",
+              background: on ? UI.accent : disabled ? UI.sunken : UI.surface,
+              color: on ? "#FFFFFF" : disabled ? UI.muted : UI.body,
+              cursor: disabled ? "not-allowed" : "pointer",
+              opacity: disabled ? 0.55 : 1,
               marginLeft: i === 0 ? 0 : -1,
               position: "relative", zIndex: on ? 1 : 0,
             }}
@@ -158,21 +169,21 @@ function StepBar({ currentStep, setCurrentStep, furthest }) {
             onClick={reachable ? () => setCurrentStep(i) : undefined}
             aria-current={active ? "step" : undefined}
             style={{
-              flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-              padding: "14px 8px", background: "none", border: "none",
+              flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 7,
+              padding: "13px 4px", background: "none", border: "none",
               borderBottom: `2px solid ${active ? UI.accent : "transparent"}`, marginBottom: -1,
               cursor: reachable ? "pointer" : "default", fontFamily: FONT,
               color: active ? UI.ink : reachable ? UI.body : UI.muted,
-              fontWeight: active ? 600 : 500, fontSize: 13.5,
+              fontWeight: active ? 600 : 500, fontSize: 12.5,
             }}
           >
             <span style={{
-              width: 20, height: 20, flexShrink: 0,
+              width: 19, height: 19, flexShrink: 0,
               border: `1.5px solid ${active || done ? UI.accent : UI.ruleStrong}`,
               background: done ? UI.accent : "transparent",
               color: done ? "#FFFFFF" : active ? UI.accent : UI.muted,
               display: "flex", alignItems: "center", justifyContent: "center",
-              fontSize: 11, fontWeight: 600,
+              fontSize: 10.5, fontWeight: 600,
             }}>
               {done ? (
                 <svg width="10" height="8" viewBox="0 0 10 8" aria-hidden="true">
@@ -188,7 +199,7 @@ function StepBar({ currentStep, setCurrentStep, furthest }) {
   );
 }
 
-// ─── Step 1 — product and project ─────────────────────────────────
+// ─── Step 1 — product ─────────────────────────────────────────────
 
 /** Product card — the illustration carries it, the text supports it. */
 function ProductCard({ product, selected, onSelect }) {
@@ -216,13 +227,10 @@ function ProductCard({ product, selected, onSelect }) {
         overflow: "hidden",
       }}
     >
-      {/* Illustration */}
       <div style={{
         position: "relative", width: "100%", aspectRatio: "4 / 3",
         borderBottom: `1px solid ${selected ? UI.accent : UI.rule}`,
         background: "#F4F6F8",
-        // Unavailable products stay legible — they are still selling the
-        // range. The badge does the work of saying they aren't ready.
         opacity: live ? 1 : 0.78,
       }}>
         {Art ? <Art /> : null}
@@ -238,7 +246,6 @@ function ProductCard({ product, selected, onSelect }) {
         )}
       </div>
 
-      {/* Caption */}
       <div style={{ padding: "14px 16px 16px", flex: 1, display: "flex", flexDirection: "column" }}>
         <div style={{
           fontSize: 16, fontWeight: 600, letterSpacing: "-0.01em",
@@ -290,9 +297,7 @@ function ProductStep({ productTypeId, onChoose }) {
 
 // ─── Step 2 — specify ─────────────────────────────────────────────
 
-/** Everything still outstanding, in a neutral tone. The per-field
- *  errors only appear once a field has been touched, so this is what
- *  explains the "N to fix" on the footer button before then. */
+/** Everything still outstanding on THIS step, in a neutral tone. */
 function OutstandingList({ errors }) {
   if (errors.length === 0) {
     return (
@@ -313,12 +318,9 @@ function OutstandingList({ errors }) {
   );
 }
 
-/** What the entered opening works out to. The evidence status behind
- *  it stays internal — the sales team explains sourcing in person. */
-function DerivedOpening({ product, clearOpening, resolution }) {
-  // The matched doorset's own frame figures win over the category's
-  // indicative deduction — those are the numbers the sheet will carry.
-  const clear = resolution?.clear ?? clearOpening;
+/** What the entered opening works out to. */
+function DerivedOpening({ product, resolution }) {
+  const clear = resolution?.clear;
   if (!clear) return null;
   const leaves = resolution?.leaves;
   const leafW = resolution?.leaf?.width ?? (leaves ? Math.round(clear.width / leaves) : null);
@@ -355,25 +357,32 @@ function DerivedOpening({ product, clearOpening, resolution }) {
 
 function SpecifyStep({ product, config, setConfig, errorFor, markTouched, specType, setSpecType, projectData, setProjectData, resolution }) {
   const set = (key, value) => { markTouched(key); setConfig(c => ({ ...c, [key]: value })); };
-  const clearOpening = getClearOpening(product, config);
 
-  const maxLeaves = product.statedLimits.maxLeaves ?? 4;
+  const maxLeaves = product.statedLimits.maxLeaves ?? 6;
+  const hasDims = resolution?.status !== "incomplete";
+  const allowed = resolution?.allowedLeaves ?? [];
+
+  // The measurements decide the leaf counts on offer. Before any
+  // dimensions: nothing to choose. With dimensions: only approved
+  // counts are enabled — unless nothing is approved, in which case the
+  // choice is free and the sheet issues as a bespoke enquiry.
+  const leafOptions = Array.from({ length: maxLeaves }, (_, i) => {
+    const n = i + 1;
+    const disabled = !hasDims || (allowed.length > 0 && !allowed.includes(n));
+    return {
+      value: n, label: String(n), disabled,
+      disabledReason: !hasDims ? "Enter the opening first" : "Not an approved size at this leaf count",
+    };
+  });
+
+  const leafNote = !hasDims
+    ? "Enter the opening above — the approved leaf counts appear here."
+    : allowed.length > 0
+      ? `Approved for this opening: ${allowed.join(", ")} ${allowed.length === 1 ? "leaf" : "leaves"}.`
+      : "No pre-approved configuration at this size — the specification will be issued as a bespoke enquiry.";
 
   return (
     <div style={{ padding: "20px 22px" }}>
-
-      <div style={{ marginBottom: 24 }}>
-        <Label>Number of leaves</Label>
-        <Segmented
-          name="Number of leaves"
-          options={Array.from({ length: maxLeaves }, (_, i) => ({ value: i + 1, label: String(i + 1) }))}
-          value={config.leaves}
-          onChange={v => set("leaves", v)}
-        />
-        <p style={{ margin: "8px 0 0", fontSize: 12.5, color: UI.body, fontFamily: FONT }}>
-          Choose the maximum for the opening.
-        </p>
-      </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 24 }}>
         <div>
@@ -404,9 +413,20 @@ function SpecifyStep({ product, config, setConfig, errorFor, markTouched, specTy
         </div>
       </div>
 
-      <FieldError>{errorFor("size")}</FieldError>
+      <div style={{ marginBottom: 24 }}>
+        <Label>Number of leaves</Label>
+        <Segmented
+          name="Number of leaves"
+          options={leafOptions}
+          value={config.leaves}
+          onChange={v => set("leaves", v)}
+        />
+        <p style={{ margin: "8px 0 0", fontSize: 12.5, color: UI.body, fontFamily: FONT }}>
+          {leafNote}
+        </p>
+      </div>
 
-      <DerivedOpening product={product} clearOpening={clearOpening} resolution={resolution} />
+      <DerivedOpening product={product} resolution={resolution} />
 
       <div style={{ marginBottom: 24, marginTop: 24 }}>
         <Label>Fire rating</Label>
@@ -500,7 +520,233 @@ function SpecifyStep({ product, config, setConfig, errorFor, markTouched, specTy
   );
 }
 
-// ─── Step 3 — review ──────────────────────────────────────────────
+// ─── Step 3 — wall construction (visual) ──────────────────────────
+
+/** Miniature plan-sections, one per wall construction. Abstract but
+ *  distinct at a glance — boards, studs, block, shaft, lined block. */
+function WallArt({ id }) {
+  const board = "#C4CCD4", stud = "#9AA5B1", timber = "#C9A876", block = "#B4B9BE";
+  const W = 120, H = 62, boardH = 8;
+  const Boards = () => (
+    <>
+      <rect x="4" y="6" width={W - 8} height={boardH} fill={board} stroke="#57646F" strokeWidth="0.8" />
+      <rect x="4" y={H - 6 - boardH} width={W - 8} height={boardH} fill={board} stroke="#57646F" strokeWidth="0.8" />
+    </>
+  );
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} width="100%" aria-hidden="true" style={{ display: "block" }}>
+      {id === "timber-stud" && (
+        <>
+          <Boards />
+          {[18, 52, 86].map(x => (
+            <rect key={x} x={x} y={15} width={16} height={H - 30} fill={timber} stroke="#8A6B3F" strokeWidth="0.8" />
+          ))}
+        </>
+      )}
+      {id === "steel-stud" && (
+        <>
+          <Boards />
+          {[18, 52, 86].map(x => (
+            <path key={x} d={`M${x + 14} 15 H${x} V${H - 15} H${x + 14}`} fill="none" stroke={stud} strokeWidth="2.4" />
+          ))}
+        </>
+      )}
+      {id === "masonry" && (
+        <>
+          {[0, 1, 2].map(r => (
+            <g key={r}>
+              {[0, 1, 2].map(c => (
+                <rect key={c} x={4 + c * 38 - (r % 2 ? 19 : 0)} y={8 + r * 16} width={36} height={14}
+                  fill={block} stroke="#57646F" strokeWidth="0.8" />
+              ))}
+            </g>
+          ))}
+        </>
+      )}
+      {id === "shaftwall" && (
+        <>
+          <rect x="4" y="6" width={W - 8} height={boardH} fill={board} stroke="#57646F" strokeWidth="0.8" />
+          <rect x="4" y={H - 6 - boardH * 2} width={W - 8} height={boardH} fill={board} stroke="#57646F" strokeWidth="0.8" />
+          <rect x="4" y={H - 6 - boardH} width={W - 8} height={boardH} fill={board} stroke="#57646F" strokeWidth="0.8" />
+          {[24, 62, 100].map(x => (
+            <path key={x} d={`M${x - 6} 16 H${x + 6} M${x} 16 V${H - 24}`} fill="none" stroke={stud} strokeWidth="2.2" />
+          ))}
+        </>
+      )}
+      {id === "masonry-lined" && (
+        <>
+          {[0, 1].map(r => (
+            <g key={r}>
+              {[0, 1, 2].map(c => (
+                <rect key={c} x={4 + c * 38 - (r % 2 ? 19 : 0)} y={6 + r * 16} width={36} height={14}
+                  fill={block} stroke="#57646F" strokeWidth="0.8" />
+              ))}
+            </g>
+          ))}
+          <rect x="4" y={H - 20} width={W - 8} height={6} fill="none" stroke={stud} strokeWidth="1.4" />
+          <rect x="4" y={H - 12} width={W - 8} height={boardH} fill={board} stroke="#57646F" strokeWidth="0.8" />
+        </>
+      )}
+    </svg>
+  );
+}
+
+/** Jamb-profile miniatures for the frame appearance choice. */
+function FrameArt({ id }) {
+  const wall = "#C4CCD4", steel = "#3C4956";
+  return (
+    <svg viewBox="0 0 120 46" width="100%" aria-hidden="true" style={{ display: "block" }}>
+      <rect x="0" y="18" width="120" height="12" fill={wall} stroke="#57646F" strokeWidth="0.8" />
+      {id === "flush" && (
+        <path d="M40 18 V30 M80 18 V30" stroke={steel} strokeWidth="1.6" fill="none" />
+      )}
+      {id === "picture" && (
+        <path d="M34 16 H86 M34 16 V18 M86 16 V18" stroke={steel} strokeWidth="2.4" fill="none" />
+      )}
+      {id === "raised-picture" && (
+        <path d="M34 13 H86 M34 13 V18 M86 13 V18" stroke={steel} strokeWidth="2.4" fill="none" />
+      )}
+      {id === "framesmart" && (
+        <>
+          <path d="M34 16 H86" stroke={steel} strokeWidth="2.4" fill="none" />
+          <circle cx="48" cy="24" r="2.2" fill={steel} />
+          <circle cx="72" cy="24" r="2.2" fill={steel} />
+        </>
+      )}
+    </svg>
+  );
+}
+
+function ChoiceCard({ art, label, summary, selected, disabled, disabledNote, onSelect }) {
+  return (
+    <button
+      type="button"
+      onClick={disabled ? undefined : onSelect}
+      disabled={disabled}
+      aria-pressed={selected}
+      style={{
+        display: "flex", gap: 14, alignItems: "center", textAlign: "left", width: "100%",
+        padding: 13, fontFamily: FONT, background: disabled ? UI.sunken : UI.surface,
+        border: `1px solid ${selected ? UI.accent : UI.rule}`,
+        boxShadow: selected ? `inset 0 0 0 2px ${UI.accent}` : "none",
+        cursor: disabled ? "not-allowed" : "pointer",
+        opacity: disabled ? 0.6 : 1,
+        marginBottom: 10,
+      }}
+    >
+      <div style={{ width: 108, flexShrink: 0, background: "#F4F6F8", padding: 4, border: `1px solid ${UI.rule}` }}>
+        {art}
+      </div>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ fontSize: 14, fontWeight: 600, color: disabled ? UI.muted : UI.ink }}>{label}</div>
+        {summary && (
+          <p style={{ margin: "4px 0 0", fontSize: 12.5, lineHeight: 1.45, color: UI.body }}>{summary}</p>
+        )}
+        {disabled && disabledNote && (
+          <p style={{ margin: "4px 0 0", fontSize: 12, lineHeight: 1.4, color: UI.warn }}>{disabledNote}</p>
+        )}
+      </div>
+    </button>
+  );
+}
+
+function WallStep({ config, setConfig, leaves }) {
+  return (
+    <div style={{ padding: "20px 22px" }}>
+      <p style={{ margin: "0 0 18px", fontSize: 13.5, lineHeight: 1.6, color: UI.body, fontFamily: FONT }}>
+        What is the doorset going into? The fire rating depends on the
+        wall meeting the required performance.
+      </p>
+
+      {CHRISTO.walls.map(w => {
+        const disabled = leaves > w.maxLeaves;
+        return (
+          <ChoiceCard
+            key={w.id}
+            art={<WallArt id={w.id} />}
+            label={w.label}
+            summary={w.summary}
+            selected={config.wallType === w.id}
+            disabled={disabled}
+            disabledNote={`Approved for single and double leaf sets only — this configuration has ${leaves} leaves.`}
+            onSelect={() => setConfig(c => ({ ...c, wallType: w.id }))}
+          />
+        );
+      })}
+
+      <RailSection title="Frame appearance" note="Riser doors are flush as standard. Choose a frame style only if the design calls for a visible architrave — the drawing follows your choice.">
+        {CHRISTO.frames.map(f => (
+          <ChoiceCard
+            key={f.id}
+            art={<FrameArt id={f.id} />}
+            label={f.label}
+            summary={f.summary}
+            selected={config.frameStyle === f.id}
+            onSelect={() => setConfig(c => ({ ...c, frameStyle: f.id }))}
+          />
+        ))}
+      </RailSection>
+    </div>
+  );
+}
+
+// ─── Step 4 — lock & key (visual) ─────────────────────────────────
+
+/** Lock face miniatures: SLIK slot, euro cylinder, thumb turn. */
+function LockArt({ id }) {
+  const steel = "#3C4956", face = "#E8ECEF";
+  const plus = id.startsWith("slik-plus");
+  const thumb = id.includes("thumb");
+  const euro = id.includes("euro") || plus;
+  const concealed = id === "slik-concealed";
+  return (
+    <svg viewBox="0 0 120 62" width="100%" aria-hidden="true" style={{ display: "block" }}>
+      {/* Leaf face */}
+      <rect x="30" y="4" width="60" height="54" fill={face} stroke={steel} strokeWidth="1" />
+      {/* SLIK — spring-loaded invisible keyhole: a discreet slot */}
+      <rect x="57" y="12" width="6" height="14" rx="3" fill="none" stroke={steel} strokeWidth="1.4" />
+      {concealed && <circle cx="60" cy="42" r="1.6" fill={steel} />}
+      {!concealed && euro && (
+        <g>
+          <circle cx="60" cy="42" r="7" fill="none" stroke={steel} strokeWidth="1.4" />
+          {thumb
+            ? <rect x="56.5" y="40.4" width="7" height="3.2" rx="1.6" fill={steel} />
+            : <path d="M60 37.5 V44 M58.6 44 H61.4 V47.5 H58.6 Z" fill={steel} stroke="none" />}
+        </g>
+      )}
+    </svg>
+  );
+}
+
+function LockStep({ config, setConfig, leaves }) {
+  return (
+    <div style={{ padding: "20px 22px" }}>
+      <p style={{ margin: "0 0 18px", fontSize: 13.5, lineHeight: 1.6, color: UI.body, fontFamily: FONT }}>
+        All options use the same tested 3-point lock with a spring-loaded
+        invisible keyhole — the choice is how it appears on the door face.
+      </p>
+
+      {CHRISTO.locks.map(l => (
+        <ChoiceCard
+          key={l.id}
+          art={<LockArt id={l.id} />}
+          label={l.label}
+          summary={l.summary}
+          selected={config.lockType === l.id}
+          onSelect={() => setConfig(c => ({ ...c, lockType: l.id }))}
+        />
+      ))}
+
+      {leaves > 1 && (
+        <p style={{ margin: "14px 0 0", fontSize: 12.5, lineHeight: 1.5, color: UI.muted, fontFamily: FONT }}>
+          {CHRISTO.passiveLeafLockNote}
+        </p>
+      )}
+    </div>
+  );
+}
+
+// ─── Step 5 — review ──────────────────────────────────────────────
 
 function ReviewStep({ product, config, projectData, specType, validation, onGenerate, generating, notice }) {
   const resolution = validation.resolution;
@@ -553,7 +799,7 @@ function ReviewStep({ product, config, projectData, specType, validation, onGene
       </Section>
 
       <Section title="Standards">
-        {product.standards.map(s => (
+        {CHRISTO.standards.map(s => (
           <div key={s.code} style={{ padding: "8px 0", borderBottom: `1px solid ${UI.rule}` }}>
             <div style={{ fontSize: 13.5, fontWeight: 600, color: UI.ink, fontFamily: FONT }}>{s.code}</div>
             <div style={{ fontSize: 12.5, color: UI.body, fontFamily: FONT, marginTop: 2, lineHeight: 1.45 }}>{s.description}</div>
@@ -587,10 +833,10 @@ function ReviewStep({ product, config, projectData, specType, validation, onGene
 // ─── Main ─────────────────────────────────────────────────────────
 
 // Everything the user has typed, persisted so a refresh or an
-// accidental tab close does not cost them the configuration. Loaded
-// after mount (not in the initial render) so server and client HTML
-// stay identical.
-const STORAGE_KEY = "mf-hardware-spec-v1";
+// accidental tab close does not cost them the configuration. v2:
+// the Christo restructure changed the option ids, so older saves are
+// ignored rather than merged.
+const STORAGE_KEY = "mf-hardware-spec-v2";
 
 export default function SpecGenerator() {
   const [currentStep, setCurrentStep] = useState(0);
@@ -617,8 +863,6 @@ export default function SpecGenerator() {
         const saved = JSON.parse(raw);
         if (saved.productTypeId && getProduct(saved.productTypeId)) {
           setProductTypeId(saved.productTypeId);
-          // Merge over a fresh config so options added since the save
-          // still get their defaults rather than arriving undefined.
           setConfig({ ...buildInitialConfig(getProduct(saved.productTypeId)), ...(saved.config ?? {}) });
         }
         if (saved.specType) setSpecType(saved.specType);
@@ -651,11 +895,20 @@ export default function SpecGenerator() {
   }, []);
 
   const validation = validateSpec(product, config, projectData);
-  const resolution = resolveProduct(product, config);
+  const resolution = validation.resolution ?? resolveProduct(product, config);
 
-  // A field only turns red once it has been touched — arriving on the
-  // step with everything already flagged reads as broken. What is still
-  // outstanding is listed neutrally above the fields instead.
+  // The measurements decide the leaf counts — when the entered opening
+  // stops approving the current count, snap to the smallest approved one.
+  const allowedKey = (resolution?.allowedLeaves ?? []).join(",");
+  useEffect(() => {
+    const allowed = resolution?.allowedLeaves ?? [];
+    if (allowed.length > 0 && !allowed.includes(config.leaves)) {
+      setConfig(c => ({ ...c, leaves: allowed[0] }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [allowedKey]);
+
+  // A field only turns red once it has been touched.
   const [touched, setTouched] = useState(() => new Set());
   const markTouched = useCallback(field => {
     setTouched(t => (t.has(field) ? t : new Set(t).add(field)));
@@ -667,8 +920,6 @@ export default function SpecGenerator() {
 
   const chooseProduct = useCallback(id => {
     setProductTypeId(prev => {
-      // A different product means a different option set — carrying the
-      // old configuration across would silently corrupt the new one.
       if (prev !== id) setConfig(buildInitialConfig(getProduct(id)));
       return id;
     });
@@ -700,7 +951,19 @@ export default function SpecGenerator() {
     }
   };
 
-  const nextBlocked = currentStep === 1 && !validation.isValid;
+  // Each step gates on its own fields only.
+  const specifyErrors = validation.errors.filter(e => SPECIFY_FIELDS.has(e.field));
+  const stepBlocked =
+    currentStep === 1 ? specifyErrors.length > 0
+    : currentStep === 2 ? (!config.wallType || resolution?.wallConflict)
+    : currentStep === 3 ? !config.lockType
+    : false;
+  const nextLabel =
+    currentStep === 0 ? `Specify ${product?.label ?? "product"}`
+    : currentStep === 1 && stepBlocked ? `${specifyErrors.length} to fix`
+    : currentStep === 2 && stepBlocked ? "Choose a wall"
+    : currentStep === 3 && stepBlocked ? "Choose a lock"
+    : "Next";
 
   const shell = {
     border: `1px solid ${UI.ruleStrong}`, background: UI.surface,
@@ -738,16 +1001,16 @@ export default function SpecGenerator() {
       </span>
       {currentStep < STEPS.length - 1 && (
         <button
-          type="button" onClick={goNext} disabled={nextBlocked}
+          type="button" onClick={goNext} disabled={stepBlocked}
           style={{
             padding: "10px 26px", fontSize: 13.5, fontWeight: 600, fontFamily: FONT,
-            border: `1px solid ${nextBlocked ? UI.ruleStrong : UI.accent}`,
-            background: nextBlocked ? UI.sunken : UI.accent,
-            color: nextBlocked ? UI.muted : "#FFFFFF",
-            cursor: nextBlocked ? "not-allowed" : "pointer",
+            border: `1px solid ${stepBlocked ? UI.ruleStrong : UI.accent}`,
+            background: stepBlocked ? UI.sunken : UI.accent,
+            color: stepBlocked ? UI.muted : "#FFFFFF",
+            cursor: stepBlocked ? "not-allowed" : "pointer",
           }}
         >
-          {nextBlocked ? `${validation.errors.length} to fix` : currentStep === 0 ? `Specify ${product?.label ?? "product"}` : "Next"}
+          {nextLabel}
         </button>
       )}
     </footer>
@@ -787,7 +1050,7 @@ export default function SpecGenerator() {
 
         <StepBar currentStep={currentStep} setCurrentStep={setCurrentStep} furthest={furthest} />
 
-        {currentStep === 1 && <OutstandingList errors={validation.errors} />}
+        {currentStep === 1 && <OutstandingList errors={specifyErrors} />}
 
         <div ref={railRef} style={{ flex: 1, minHeight: 0, overflowY: "auto" }}>
           {currentStep === 1 && product && (
@@ -799,7 +1062,13 @@ export default function SpecGenerator() {
               resolution={resolution}
             />
           )}
-          {currentStep === 2 && product && (
+          {currentStep === 2 && (
+            <WallStep config={config} setConfig={setConfig} leaves={config.leaves || 1} />
+          )}
+          {currentStep === 3 && (
+            <LockStep config={config} setConfig={setConfig} leaves={config.leaves || 1} />
+          )}
+          {currentStep === 4 && product && (
             <ReviewStep
               product={product} config={config} projectData={projectData} specType={specType}
               validation={validation} onGenerate={handleGenerate} generating={generating} notice={notice}

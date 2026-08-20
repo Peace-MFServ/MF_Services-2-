@@ -64,24 +64,35 @@ export default function RiserDoorPreview({ product, config, resolution }) {
             ? `Elevation, ${leaves} leaf doorset, ${w} by ${h} millimetres`
             : "Doorset elevation, dimensions not yet entered"}
         >
+          {/* Architrave — drawn only when a visible frame style is
+              chosen; the flush standard reads as part of the wall. */}
+          {config.frameStyle && config.frameStyle !== "flush" && (
+            <rect
+              x={x0 - 6} y={y0 - 6} width={drawW + 12} height={drawH + 12}
+              fill="none" stroke={EDGE} strokeWidth={config.frameStyle === "raised-picture" ? 3 : 2}
+              opacity="0.75"
+            />
+          )}
+
           {/* Frame */}
           <rect x={x0} y={y0} width={drawW} height={drawH} fill={FRAME} stroke={EDGE} strokeWidth="1.3" />
 
-          {/* Leaves. Handing decides which edge hinges: the active leaf
-              sits on the handing side (viewed from the access side), and
-              each leaf hinges towards its nearer jamb so multi-leaf sets
-              read as folding outward. */}
+          {/* Leaves. Christo doors are pivot-hung — no hinges. Handing
+              decides the pivot edge: the active leaf sits on the handing
+              side (viewed from the access side), and each leaf pivots
+              towards its nearer jamb so multi-leaf sets read as folding
+              outward. */}
           {Array.from({ length: leaves }, (_, i) => {
             const lx = x0 + frameT + i * leafW
             const inset = 1
             const rightHand = config.handing === "right"
-            // Which edge of THIS leaf carries the hinges.
-            const hingesRight = leaves === 1 ? rightHand : i >= leaves / 2
-            const hingeX = hingesRight ? lx + leafW - 4 : lx - 1
+            // Which edge of THIS leaf carries the pivots.
+            const pivotsRight = leaves === 1 ? rightHand : i >= leaves / 2
+            const pivotX = pivotsRight ? lx + leafW - 7 : lx + 2
             // The active (locking) leaf is the outermost on the handing side.
             const isActive = leaves === 1 || (rightHand ? i === leaves - 1 : i === 0)
-            const lockX = hingesRight ? lx + 6 : lx + leafW - 11
-            const euroVisible = ["euro", "euro-concealed", "high-security"].includes(config.lockType)
+            const lockX = pivotsRight ? lx + 6 : lx + leafW - 11
+            const euroVisible = !!config.lockType && config.lockType !== "slik-concealed"
             return (
               <g key={i}>
                 <rect
@@ -89,23 +100,22 @@ export default function RiserDoorPreview({ product, config, resolution }) {
                   width={leafW - inset * 2} height={innerH - inset * 2}
                   fill={LEAF} stroke={EDGE} strokeWidth="1.1"
                 />
-                {/* Hinge knuckles */}
-                {leafW > 26 && innerH > 60 && [0.16, 0.5, 0.84].map(f => (
+                {/* Pivot pins, top and bottom of the pivot edge */}
+                {leafW > 26 && innerH > 40 && [y0 + frameT + 3, y0 + frameT + innerH - 9].map(py => (
                   <rect
-                    key={f}
-                    x={hingeX} y={y0 + frameT + innerH * f - 7}
-                    width={5} height={14} rx={1}
+                    key={py}
+                    x={pivotX} y={py} width={6} height={6}
                     fill="#6D7A88" stroke={EDGE} strokeWidth="0.7"
                   />
                 ))}
-                {/* Lock on the active leaf's leading edge; a visible
-                    euro cylinder gets its own mark below the lock case. */}
+                {/* Lock on the active leaf's leading edge: the SLIK slot,
+                    plus a cylinder mark when the face carries one. */}
                 {isActive && leafW > 26 && innerH > 40 && (
                   <g>
                     <rect
                       x={lockX} y={y0 + frameT + innerH / 2 - 7}
-                      width={5} height={14} rx={1}
-                      fill="#8E9BA8" stroke={EDGE} strokeWidth="0.8"
+                      width={5} height={14} rx={2.5}
+                      fill="none" stroke={EDGE} strokeWidth="1"
                     />
                     {euroVisible && (
                       <circle
