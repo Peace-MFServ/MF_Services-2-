@@ -473,7 +473,11 @@ export default function CablePlanConfigurator() {
       }
       return id;
     });
+    // Choosing IS the step — move straight on to the components,
+    // the same way the door gallery works.
     setFurthest(f => Math.max(f, 1));
+    setCurrentStep(1);
+    if (railRef.current) railRef.current.scrollTop = 0;
   }, []);
 
   const handleSelectFromDrawing = useCallback(compId => {
@@ -503,7 +507,7 @@ export default function CablePlanConfigurator() {
 
   return (
     <div style={{
-      display: "flex", height: "calc(100vh - 112px)", minHeight: 640,
+      display: "flex", height: "calc(100vh - 136px)", minHeight: 640,
       borderTop: `1px solid ${UI.rule}`, background: UI.surface,
       fontFamily: FONT, color: UI.body, overflow: "hidden",
     }}>

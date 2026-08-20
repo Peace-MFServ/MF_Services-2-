@@ -1028,7 +1028,7 @@ export default function SpecGenerator() {
   // of the step, and they do not read at rail width.
   if (currentStep === 0) {
     return (
-      <div style={{ ...shell, display: "flex", flexDirection: "column", minHeight: "calc(100vh - 112px)" }}>
+      <div style={{ ...shell, display: "flex", flexDirection: "column", minHeight: "calc(100vh - 136px)" }}>
         <StepBar currentStep={currentStep} setCurrentStep={setCurrentStep} furthest={furthest} />
         <div style={{ flex: 1 }}>
           <ProductStep productTypeId={productTypeId} onChoose={chooseProduct} />
@@ -1039,7 +1039,7 @@ export default function SpecGenerator() {
 
   return (
     <div style={{
-      ...shell, display: "flex", height: "calc(100vh - 112px)",
+      ...shell, display: "flex", height: "calc(100vh - 136px)",
       minHeight: 640, overflow: "hidden",
     }}>
       <aside style={{
