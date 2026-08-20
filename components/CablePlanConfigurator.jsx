@@ -13,11 +13,11 @@ import {
 // schedule and the drawing geometry travel together, so the elevation,
 // the schedule and the PDF can never disagree. Adding a system is a
 // data change, not a code change.
-import ets64rSingle from "../data/cable-systems/ets64r-single-leaf.json";
-import ets64rDouble from "../data/cable-systems/ets64r-double-leaf.json";
+import ets73Single from "../data/cable-systems/ets73-single-leaf.json";
+import ets73Double from "../data/cable-systems/ets73-double-leaf.json";
 
 const SYSTEMS = Object.fromEntries(
-  [ets64rSingle, ets64rDouble].map(sys => [sys.id, sys])
+  [ets73Single, ets73Double].map(sys => [sys.id, sys])
 );
 
 // Systems the range will grow into — shown so the tool reads as a
@@ -32,7 +32,8 @@ const TYPE_LABELS = {
   cable_transition: "Cable transition", sensor_strip: "Sensor", flip_switch: "Flip switch",
   radar_sensor: "Radar sensor", program_switch: "Program switch",
   manual_release_button: "Release button", smoke_detector: "Smoke detector",
-  sequence_controller: "Closing sequence",
+  sequence_controller: "Door coordinator", operating_element: "Operating element",
+  cladding: "Cladding", system_cable: "System cable",
 };
 
 const STEPS = ["System", "Components", "Project", "Review"];
@@ -441,8 +442,8 @@ function ProjectDetails({ projectData, setProjectData }) {
 export default function CablePlanConfigurator() {
   const [currentStep, setCurrentStep] = useState(0);
   const [furthest, setFurthest] = useState(0);
-  const [selectedSystemId, setSelectedSystemId] = useState("ets64r-single");
-  const [componentStates, setComponentStates] = useState(() => buildInitialState(SYSTEMS["ets64r-single"]));
+  const [selectedSystemId, setSelectedSystemId] = useState("ets73-single");
+  const [componentStates, setComponentStates] = useState(() => buildInitialState(SYSTEMS["ets73-single"]));
   const [projectData, setProjectData] = useState({
     constructionProject: "", doorNumberOrNaming: "", installationLocation: "",
     positionNumberInSpec: "", functionDescription: "", miscellaneous: "",
