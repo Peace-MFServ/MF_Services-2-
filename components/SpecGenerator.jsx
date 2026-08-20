@@ -12,7 +12,7 @@ import {
 // The opening comes first; the leaf counts on offer are the ones the
 // approval covers for that opening. Wall construction and lock get
 // their own visual steps.
-const STEPS = ["Product", "Specify", "Wall", "Lock & key", "Review"];
+const STEPS = ["Product", "Specify", "Wall", "Lock & key", "Project", "Review"];
 
 // Which validation errors belong to which step, so each step only
 // gates on its own fields. Finish lives on the Wall step with the
@@ -706,51 +706,11 @@ function LockStep({ config, setConfig, leaves }) {
 
 // ─── Step 5 — review ──────────────────────────────────────────────
 
-function ReviewStep({ product, config, projectData, setProjectData, specType, setSpecType, validation, onGenerate, generating, notice, markTouched, errorFor }) {
-  const resolution = validation.resolution;
-  const rows = specRows(product, config, resolution);
-
-  const Section = ({ title, children }) => (
-    <div style={{ marginBottom: 26 }}>
-      <div style={{
-        fontSize: 11.5, fontWeight: 600, letterSpacing: "0.07em", textTransform: "uppercase",
-        color: UI.muted, fontFamily: FONT, paddingBottom: 9, marginBottom: 12,
-        borderBottom: `1px solid ${UI.ruleStrong}`,
-      }}>{title}</div>
-      {children}
-    </div>
-  );
-
-  const Row = ({ label, value, accent }) => (
-    <div style={{
-      display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 14,
-      padding: "9px 0", borderBottom: `1px solid ${UI.rule}`,
-    }}>
-      <span style={{ fontSize: 13.5, color: UI.body, fontFamily: FONT }}>{label}</span>
-      <span style={{ fontSize: 13.5, fontWeight: 600, color: accent || UI.ink, fontFamily: FONT, textAlign: "right" }}>{value}</span>
-    </div>
-  );
-
+/** Who the specification is for and which project it belongs to —
+ *  its own step, the same as on the cable plan. */
+function ProjectStep({ projectData, setProjectData, specType, setSpecType, markTouched, errorFor }) {
   return (
     <div style={{ padding: "20px 22px" }}>
-      <Section title="Doorset">
-        <Row label="Type" value={product.label} />
-        <Row label="Document" value={SPEC_TYPES.find(s => s.id === specType)?.label ?? specType} />
-      </Section>
-
-      <Section title="Specification">
-        {rows.map(r => <Row key={r.label} label={r.label} value={r.value} />)}
-      </Section>
-
-      <Section title="Standards">
-        {CHRISTO.standards.map(s => (
-          <div key={s.code} style={{ padding: "8px 0", borderBottom: `1px solid ${UI.rule}` }}>
-            <div style={{ fontSize: 13.5, fontWeight: 600, color: UI.ink, fontFamily: FONT }}>{s.code}</div>
-            <div style={{ fontSize: 12.5, color: UI.body, fontFamily: FONT, marginTop: 2, lineHeight: 1.45 }}>{s.description}</div>
-          </div>
-        ))}
-      </Section>
-
       <RailSection title="Specification type">
         <Segmented
           name="Specification type"
@@ -804,6 +764,54 @@ function ReviewStep({ product, config, projectData, setProjectData, specType, se
           onChange={v => setProjectData(pd => ({ ...pd, architecturalFirm: v }))}
         />
       </RailSection>
+    </div>
+  );
+}
+
+function ReviewStep({ product, config, specType, validation, onGenerate, generating, notice }) {
+  const resolution = validation.resolution;
+  const rows = specRows(product, config, resolution);
+
+  const Section = ({ title, children }) => (
+    <div style={{ marginBottom: 26 }}>
+      <div style={{
+        fontSize: 11.5, fontWeight: 600, letterSpacing: "0.07em", textTransform: "uppercase",
+        color: UI.muted, fontFamily: FONT, paddingBottom: 9, marginBottom: 12,
+        borderBottom: `1px solid ${UI.ruleStrong}`,
+      }}>{title}</div>
+      {children}
+    </div>
+  );
+
+  const Row = ({ label, value, accent }) => (
+    <div style={{
+      display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 14,
+      padding: "9px 0", borderBottom: `1px solid ${UI.rule}`,
+    }}>
+      <span style={{ fontSize: 13.5, color: UI.body, fontFamily: FONT }}>{label}</span>
+      <span style={{ fontSize: 13.5, fontWeight: 600, color: accent || UI.ink, fontFamily: FONT, textAlign: "right" }}>{value}</span>
+    </div>
+  );
+
+  return (
+    <div style={{ padding: "20px 22px" }}>
+      <Section title="Doorset">
+        <Row label="Type" value={product.label} />
+        <Row label="Document" value={SPEC_TYPES.find(s => s.id === specType)?.label ?? specType} />
+      </Section>
+
+      <Section title="Specification">
+        {rows.map(r => <Row key={r.label} label={r.label} value={r.value} />)}
+      </Section>
+
+      <Section title="Standards">
+        {CHRISTO.standards.map(s => (
+          <div key={s.code} style={{ padding: "8px 0", borderBottom: `1px solid ${UI.rule}` }}>
+            <div style={{ fontSize: 13.5, fontWeight: 600, color: UI.ink, fontFamily: FONT }}>{s.code}</div>
+            <div style={{ fontSize: 12.5, color: UI.body, fontFamily: FONT, marginTop: 2, lineHeight: 1.45 }}>{s.description}</div>
+          </div>
+        ))}
+      </Section>
 
       <div style={{ height: 18 }} />
 
@@ -1078,13 +1086,17 @@ export default function SpecGenerator() {
           {currentStep === 3 && (
             <LockStep config={config} setConfig={setConfig} leaves={config.leaves || 1} />
           )}
-          {currentStep === 4 && product && (
-            <ReviewStep
-              product={product} config={config}
+          {currentStep === 4 && (
+            <ProjectStep
               projectData={projectData} setProjectData={setProjectData}
               specType={specType} setSpecType={setSpecType}
-              validation={validation} onGenerate={handleGenerate} generating={generating} notice={notice}
               markTouched={markTouched} errorFor={errorFor}
+            />
+          )}
+          {currentStep === 5 && product && (
+            <ReviewStep
+              product={product} config={config} specType={specType}
+              validation={validation} onGenerate={handleGenerate} generating={generating} notice={notice}
             />
           )}
         </div>
