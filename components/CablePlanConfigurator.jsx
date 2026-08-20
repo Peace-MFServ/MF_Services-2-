@@ -502,8 +502,8 @@ export default function CablePlanConfigurator() {
 
   return (
     <div style={{
-      display: "flex", height: "calc(100vh - 190px)", minHeight: 640,
-      border: `1px solid ${UI.ruleStrong}`, background: UI.surface,
+      display: "flex", height: "calc(100vh - 112px)", minHeight: 640,
+      borderTop: `1px solid ${UI.rule}`, background: UI.surface,
       fontFamily: FONT, color: UI.body, overflow: "hidden",
     }}>
 

@@ -11,14 +11,14 @@ const TABS = [
   { id: 'overpressure', label: 'Overpressure' },
 ]
 
-// The hardware spec and cable plan are both two-pane workspaces — a
-// configuration rail beside a persistent elevation — so they need the
-// full width to be usable.
+// The hardware spec and cable plan are two-pane workspaces — a
+// configuration rail beside a persistent elevation — and they run
+// full-bleed: the whole browser width is theirs. Only the calculator
+// keeps a reading width.
 const CONTENT_MAX_WIDTH = {
-  hardwareSpec: 1700,
-  cablePlan:    1700,
   overpressure: 1400,
 }
+const FULL_BLEED = new Set(["hardwareSpec", "cablePlan"])
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState('hardwareSpec')
@@ -28,7 +28,7 @@ export default function Home() {
 
       {/* ── GLOBAL HEADER ── */}
       <header style={{ background: '#00387B', borderBottom: '3px solid #ED6E02' }}>
-        <div style={{ maxWidth: CONTENT_MAX_WIDTH[activeTab] ?? 1000, margin: '0 auto', padding: '0 32px', display: 'flex', alignItems: 'center', height: 60, gap: 14 }}>
+        <div style={{ margin: '0 auto', padding: '0 24px', display: 'flex', alignItems: 'center', height: 60, gap: 14 }}>
           <img src="/linkedin.jpg" alt="MF Services" style={{ height: 34, width: 'auto', borderRadius: 3, flexShrink: 0 }} />
           <div>
             <div style={{ color: '#fff', fontWeight: 700, fontSize: 14, letterSpacing: '-0.01em', lineHeight: 1.2 }}>MF Services</div>
@@ -38,10 +38,8 @@ export default function Home() {
       </header>
 
       {/* ── TAB NAV ── */}
-      {/* Width tracks the active section so the tabs line up with the
-          content beneath them rather than stopping short of it. */}
       <nav className="mf-nav" aria-label="Sections">
-        <div className="mf-nav-inner" style={{ maxWidth: CONTENT_MAX_WIDTH[activeTab] ?? 1000 }}>
+        <div className="mf-nav-inner" style={{ maxWidth: 'none' }}>
           {TABS.map(tab => (
             <button
               key={tab.id}
@@ -57,11 +55,10 @@ export default function Home() {
       </nav>
 
       {/* ── CONTENT ── */}
-      <div style={{
+      <div style={FULL_BLEED.has(activeTab) ? { width: '100%' } : {
         maxWidth: CONTENT_MAX_WIDTH[activeTab] ?? 1000,
         margin: '0 auto',
         padding: '32px',
-        transition: 'max-width 200ms ease',
       }}>
         {activeTab === 'hardwareSpec' && <SpecGenerator />}
         {activeTab === 'cablePlan'    && <CablePlanConfigurator />}

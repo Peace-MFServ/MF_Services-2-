@@ -15,8 +15,9 @@ import {
 const STEPS = ["Product", "Specify", "Wall", "Lock & key", "Review"];
 
 // Which validation errors belong to which step, so each step only
-// gates on its own fields.
-const SPECIFY_FIELDS = new Set(["width", "height", "handing", "acoustic", "doorRestrictor", "finish"]);
+// gates on its own fields. Finish lives on the Wall step with the
+// other appearance choices.
+const SPECIFY_FIELDS = new Set(["width", "height", "handing", "acoustic", "doorRestrictor"]);
 
 // ─── Primitives ───────────────────────────────────────────────────
 
@@ -355,7 +356,7 @@ function DerivedOpening({ product, resolution }) {
   );
 }
 
-function SpecifyStep({ product, config, setConfig, errorFor, markTouched, specType, setSpecType, projectData, setProjectData, resolution }) {
+function SpecifyStep({ product, config, setConfig, errorFor, markTouched, resolution }) {
   const set = (key, value) => { markTouched(key); setConfig(c => ({ ...c, [key]: value })); };
 
   const maxLeaves = product.statedLimits.maxLeaves ?? 6;
@@ -443,7 +444,7 @@ function SpecifyStep({ product, config, setConfig, errorFor, markTouched, specTy
         )}
       </div>
 
-      {product.options.map(opt => (
+      {product.options.filter(opt => opt.id !== "finish").map(opt => (
         <div key={opt.id} style={{ marginBottom: 24 }}>
           <Label>{opt.label}</Label>
           {opt.note && (
@@ -462,60 +463,6 @@ function SpecifyStep({ product, config, setConfig, errorFor, markTouched, specTy
           <FieldError>{errorFor(opt.id)}</FieldError>
         </div>
       ))}
-
-      <RailSection title="Specification type">
-        <Segmented
-          name="Specification type"
-          options={SPEC_TYPES.map(sp => ({ value: sp.id, label: sp.label }))}
-          value={specType}
-          onChange={setSpecType}
-        />
-        <p style={{ margin: "10px 0 0", fontSize: 12.5, lineHeight: 1.5, color: UI.body, fontFamily: FONT }}>
-          {SPEC_TYPES.find(sp => sp.id === specType)?.summary}
-        </p>
-      </RailSection>
-
-      <RailSection title="Your details" note={REQUIRE_ENQUIRY_DETAILS ? "So we can send the specification on and answer any questions." : "Optional for now. So we can answer any questions."}>
-        <TextField
-          id="pd-businessName" label="Business name" required={REQUIRE_ENQUIRY_DETAILS}
-          value={projectData.businessName}
-          onChange={v => setProjectData(pd => ({ ...pd, businessName: v }))}
-          onBlurTouch={() => markTouched("businessName")}
-          error={errorFor("businessName")}
-        />
-        <TextField
-          id="pd-contactName" label="Contact name"
-          value={projectData.contactName}
-          onChange={v => setProjectData(pd => ({ ...pd, contactName: v }))}
-        />
-        <TextField
-          id="pd-email" label="Email" required={REQUIRE_ENQUIRY_DETAILS} type="email"
-          value={projectData.email}
-          onChange={v => setProjectData(pd => ({ ...pd, email: v }))}
-          onBlurTouch={() => markTouched("email")}
-          error={errorFor("email")}
-        />
-        <TextField
-          id="pd-phone" label="Phone" required={REQUIRE_ENQUIRY_DETAILS} type="tel"
-          value={projectData.phone}
-          onChange={v => setProjectData(pd => ({ ...pd, phone: v }))}
-          onBlurTouch={() => markTouched("phone")}
-          error={errorFor("phone")}
-        />
-      </RailSection>
-
-      <RailSection title="Project">
-        <TextField
-          id="pd-projectName" label="Project name"
-          value={projectData.projectName}
-          onChange={v => setProjectData(pd => ({ ...pd, projectName: v }))}
-        />
-        <TextField
-          id="pd-architecturalFirm" label="Architectural firm"
-          value={projectData.architecturalFirm}
-          onChange={v => setProjectData(pd => ({ ...pd, architecturalFirm: v }))}
-        />
-      </RailSection>
     </div>
   );
 }
@@ -650,7 +597,8 @@ function ChoiceCard({ art, label, summary, selected, disabled, disabledNote, onS
   );
 }
 
-function WallStep({ config, setConfig, leaves }) {
+function WallStep({ product, config, setConfig, leaves, markTouched, errorFor }) {
+  const finish = product.options.find(o => o.id === "finish");
   return (
     <div style={{ padding: "20px 22px" }}>
       <p style={{ margin: "0 0 18px", fontSize: 13.5, lineHeight: 1.6, color: UI.body, fontFamily: FONT }}>
@@ -686,6 +634,20 @@ function WallStep({ config, setConfig, leaves }) {
           />
         ))}
       </RailSection>
+
+      {finish && (
+        <RailSection title="Finish">
+          <RadioList
+            name="opt-finish"
+            choices={finish.choices}
+            value={config.finish}
+            onChange={v => { markTouched("finish"); setConfig(c => ({ ...c, finish: v })); }}
+            textValue={config.finishText}
+            onTextChange={v => { markTouched("finish"); setConfig(c => ({ ...c, finishText: v })); }}
+          />
+          <FieldError>{errorFor("finish")}</FieldError>
+        </RailSection>
+      )}
     </div>
   );
 }
@@ -748,7 +710,7 @@ function LockStep({ config, setConfig, leaves }) {
 
 // ─── Step 5 — review ──────────────────────────────────────────────
 
-function ReviewStep({ product, config, projectData, specType, validation, onGenerate, generating, notice }) {
+function ReviewStep({ product, config, projectData, setProjectData, specType, setSpecType, validation, onGenerate, generating, notice, markTouched, errorFor }) {
   const resolution = validation.resolution;
   const rows = specRows(product, config, resolution);
 
@@ -784,20 +746,6 @@ function ReviewStep({ product, config, projectData, specType, validation, onGene
         {rows.map(r => <Row key={r.label} label={r.label} value={r.value} />)}
       </Section>
 
-      <Section title="Project">
-        {projectData.projectName?.trim()
-          ? <Row label="Project" value={projectData.projectName} />
-          : <p style={{ margin: 0, fontSize: 13.5, color: UI.body, fontFamily: FONT }}>No project name recorded.</p>}
-        {projectData.architecturalFirm?.trim() && <Row label="Architectural firm" value={projectData.architecturalFirm} />}
-      </Section>
-
-      <Section title="Your details">
-        {projectData.businessName?.trim() && <Row label="Business" value={projectData.businessName} />}
-        {projectData.contactName?.trim() && <Row label="Contact" value={projectData.contactName} />}
-        {projectData.email?.trim() && <Row label="Email" value={projectData.email} />}
-        {projectData.phone?.trim() && <Row label="Phone" value={projectData.phone} />}
-      </Section>
-
       <Section title="Standards">
         {CHRISTO.standards.map(s => (
           <div key={s.code} style={{ padding: "8px 0", borderBottom: `1px solid ${UI.rule}` }}>
@@ -806,6 +754,62 @@ function ReviewStep({ product, config, projectData, specType, validation, onGene
           </div>
         ))}
       </Section>
+
+      <RailSection title="Specification type">
+        <Segmented
+          name="Specification type"
+          options={SPEC_TYPES.map(sp => ({ value: sp.id, label: sp.label }))}
+          value={specType}
+          onChange={setSpecType}
+        />
+        <p style={{ margin: "10px 0 0", fontSize: 12.5, lineHeight: 1.5, color: UI.body, fontFamily: FONT }}>
+          {SPEC_TYPES.find(sp => sp.id === specType)?.summary}
+        </p>
+      </RailSection>
+
+      <RailSection title="Your details" note={REQUIRE_ENQUIRY_DETAILS ? "So we can send the specification on and answer any questions." : "Optional for now. So we can answer any questions."}>
+        <TextField
+          id="pd-businessName" label="Business name" required={REQUIRE_ENQUIRY_DETAILS}
+          value={projectData.businessName}
+          onChange={v => setProjectData(pd => ({ ...pd, businessName: v }))}
+          onBlurTouch={() => markTouched("businessName")}
+          error={errorFor("businessName")}
+        />
+        <TextField
+          id="pd-contactName" label="Contact name"
+          value={projectData.contactName}
+          onChange={v => setProjectData(pd => ({ ...pd, contactName: v }))}
+        />
+        <TextField
+          id="pd-email" label="Email" required={REQUIRE_ENQUIRY_DETAILS} type="email"
+          value={projectData.email}
+          onChange={v => setProjectData(pd => ({ ...pd, email: v }))}
+          onBlurTouch={() => markTouched("email")}
+          error={errorFor("email")}
+        />
+        <TextField
+          id="pd-phone" label="Phone" required={REQUIRE_ENQUIRY_DETAILS} type="tel"
+          value={projectData.phone}
+          onChange={v => setProjectData(pd => ({ ...pd, phone: v }))}
+          onBlurTouch={() => markTouched("phone")}
+          error={errorFor("phone")}
+        />
+      </RailSection>
+
+      <RailSection title="Project">
+        <TextField
+          id="pd-projectName" label="Project name"
+          value={projectData.projectName}
+          onChange={v => setProjectData(pd => ({ ...pd, projectName: v }))}
+        />
+        <TextField
+          id="pd-architecturalFirm" label="Architectural firm"
+          value={projectData.architecturalFirm}
+          onChange={v => setProjectData(pd => ({ ...pd, architecturalFirm: v }))}
+        />
+      </RailSection>
+
+      <div style={{ height: 18 }} />
 
       <button
         type="button" onClick={onGenerate} disabled={generating || !validation.isValid}
@@ -951,23 +955,27 @@ export default function SpecGenerator() {
     }
   };
 
-  // Each step gates on its own fields only.
+  // Each step gates on its own fields only. Finish lives on the Wall
+  // step, so its error gates there.
   const specifyErrors = validation.errors.filter(e => SPECIFY_FIELDS.has(e.field));
+  const finishError = validation.errors.some(e => e.field === "finish");
   const stepBlocked =
     currentStep === 1 ? specifyErrors.length > 0
-    : currentStep === 2 ? (!config.wallType || resolution?.wallConflict)
+    : currentStep === 2 ? (!config.wallType || resolution?.wallConflict || finishError)
     : currentStep === 3 ? !config.lockType
     : false;
   const nextLabel =
     currentStep === 0 ? `Specify ${product?.label ?? "product"}`
     : currentStep === 1 && stepBlocked ? `${specifyErrors.length} to fix`
-    : currentStep === 2 && stepBlocked ? "Choose a wall"
+    : currentStep === 2 && stepBlocked ? (!config.wallType ? "Choose a wall" : finishError ? "Enter the RAL number" : "Choose a wall")
     : currentStep === 3 && stepBlocked ? "Choose a lock"
     : "Next";
 
+  // Full-bleed: the workspace owns the whole viewport below the
+  // header and tab bar (60px header + 3px rule + ~49px tabs).
   const shell = {
-    border: `1px solid ${UI.ruleStrong}`, background: UI.surface,
-    fontFamily: FONT, color: UI.body,
+    background: UI.surface, fontFamily: FONT, color: UI.body,
+    borderTop: `1px solid ${UI.rule}`,
   };
 
   const footer = (
@@ -1020,7 +1028,7 @@ export default function SpecGenerator() {
   // of the step, and they do not read at rail width.
   if (currentStep === 0) {
     return (
-      <div style={{ ...shell, display: "flex", flexDirection: "column", minHeight: 640 }}>
+      <div style={{ ...shell, display: "flex", flexDirection: "column", minHeight: "calc(100vh - 112px)" }}>
         <StepBar currentStep={currentStep} setCurrentStep={setCurrentStep} furthest={furthest} />
         <div style={{ flex: 1 }}>
           <ProductStep productTypeId={productTypeId} onChoose={chooseProduct} />
@@ -1031,11 +1039,11 @@ export default function SpecGenerator() {
 
   return (
     <div style={{
-      ...shell, display: "flex", height: "calc(100vh - 190px)",
+      ...shell, display: "flex", height: "calc(100vh - 112px)",
       minHeight: 640, overflow: "hidden",
     }}>
       <aside style={{
-        width: 424, flexShrink: 0, display: "flex", flexDirection: "column",
+        width: 448, flexShrink: 0, display: "flex", flexDirection: "column",
         borderRight: `1px solid ${UI.ruleStrong}`, minHeight: 0,
       }}>
         <header style={{ padding: "18px 22px 16px", borderBottom: `1px solid ${UI.rule}`, flexShrink: 0 }}>
@@ -1057,21 +1065,26 @@ export default function SpecGenerator() {
             <SpecifyStep
               product={product} config={config} setConfig={setConfig}
               errorFor={errorFor} markTouched={markTouched}
-              specType={specType} setSpecType={setSpecType}
-              projectData={projectData} setProjectData={setProjectData}
               resolution={resolution}
             />
           )}
-          {currentStep === 2 && (
-            <WallStep config={config} setConfig={setConfig} leaves={config.leaves || 1} />
+          {currentStep === 2 && product && (
+            <WallStep
+              product={product} config={config} setConfig={setConfig}
+              leaves={config.leaves || 1}
+              markTouched={markTouched} errorFor={errorFor}
+            />
           )}
           {currentStep === 3 && (
             <LockStep config={config} setConfig={setConfig} leaves={config.leaves || 1} />
           )}
           {currentStep === 4 && product && (
             <ReviewStep
-              product={product} config={config} projectData={projectData} specType={specType}
+              product={product} config={config}
+              projectData={projectData} setProjectData={setProjectData}
+              specType={specType} setSpecType={setSpecType}
               validation={validation} onGenerate={handleGenerate} generating={generating} notice={notice}
+              markTouched={markTouched} errorFor={errorFor}
             />
           )}
         </div>
