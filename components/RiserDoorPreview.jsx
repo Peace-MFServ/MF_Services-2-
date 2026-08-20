@@ -31,11 +31,10 @@ export default function RiserDoorPreview({ product, config, resolution }) {
   const x0 = PAD.left + (boxW - drawW) / 2
   const y0 = PAD.top + (boxH - drawH) / 2
 
-  // Flush is the standard: no frame band, just a thin outline — the
-  // doorset reads as part of the wall. A chosen frame style brings the
-  // visible surround with it.
+  // Flush is the standard: no frame, no surround, no outline — just
+  // the leaves. A chosen frame style brings the visible surround.
   const flush = !config.frameStyle || config.frameStyle === "flush"
-  const frameT = flush ? 2 : Math.max(4, Math.min(11, drawW * 0.022))
+  const frameT = flush ? 0 : Math.max(4, Math.min(11, drawW * 0.022))
   const innerW = drawW - frameT * 2
   const innerH = drawH - frameT * 2
   const leafW = innerW / leaves
@@ -78,11 +77,11 @@ export default function RiserDoorPreview({ product, config, resolution }) {
             />
           )}
 
-          {/* Opening: a thin outline when flush, a frame band otherwise */}
-          <rect
-            x={x0} y={y0} width={drawW} height={drawH}
-            fill={flush ? "none" : FRAME} stroke={EDGE} strokeWidth={flush ? 1.1 : 1.3}
-          />
+          {/* Frame band — only when a frame style is chosen. Flush
+              draws nothing here: the leaf edges ARE the perimeter. */}
+          {!flush && (
+            <rect x={x0} y={y0} width={drawW} height={drawH} fill={FRAME} stroke={EDGE} strokeWidth="1.3" />
+          )}
 
           {/* Leaves. Christo doors are pivot-hung — no hinges. Handing
               decides the pivot edge: the active leaf sits on the handing
