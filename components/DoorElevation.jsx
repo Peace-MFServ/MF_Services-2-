@@ -19,8 +19,17 @@ function deviceAnchor(device, bubble) {
     case "disc":
     case "sensor":
       return { x: device.x, y: device.y }
-    case "strip":
-      return { x: device.x, y: device.y + device.h / 2 }
+    case "strip": {
+      // Vertical strips point from their long edge; horizontal ones
+      // use the same edge-picking as boxes.
+      if (device.h >= device.w) return { x: device.x, y: device.y + device.h / 2 }
+      const cx = device.x + device.w / 2
+      const cy = device.y + device.h / 2
+      if (Math.abs(bubble.x - cx) > Math.abs(bubble.y - cy)) {
+        return { x: bubble.x > cx ? device.x + device.w : device.x, y: cy }
+      }
+      return { x: cx, y: bubble.y > cy ? device.y + device.h : device.y }
+    }
     case "bar":
       return { x: device.x + device.w / 2, y: device.y + device.h / 2 }
     default: {
@@ -54,7 +63,8 @@ function DeviceSymbol({ device, stroke, fill }) {
         </g>
       )
     case "strip":
-      return <rect x={device.x} y={device.y} width={device.w} height={device.h} {...s} />
+      // Sensor strips read as the black profile they are on site.
+      return <rect x={device.x} y={device.y} width={device.w} height={device.h} stroke={stroke} strokeWidth={1.3} fill={stroke} />
     case "bar":
       return (
         <g>

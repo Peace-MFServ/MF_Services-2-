@@ -15,14 +15,14 @@
     { "id": "comp-2", "position": "2", "label": "Supply voltage bridge to the passive leaf (SF)", "type": "power_supply", "mandatory": true, "cable": { "defaultCable": "NYM 3 x 1.5 mm²", "allowedCables": ["NYM 3 x 1.5 mm²"], "allowOther": true }, "remarks": "Bridge for the supply voltage of the passive leaf" },
     { "id": "comp-3", "position": "3", "label": "Medium cladding", "type": "cladding", "mandatory": false, "optional": true, "cable": { "defaultCable": "(integrated)", "allowedCables": [], "allowOther": false }, "remarks": "Optional — continuous cladding between the two drives" },
     { "id": "comp-3-1", "position": "3.1", "label": "Door coordinator (SRI)", "type": "sequence_controller", "mandatory": false, "optional": true, "cable": { "defaultCable": "(integrated)", "allowedCables": [], "allowOther": false }, "remarks": "Optional. Closing sequence control — closes the passive leaf before the active leaf" },
-    { "id": "comp-4", "position": "4", "label": "System cable — door coordinator control and communication between the drives", "type": "system_cable", "mandatory": true, "cable": { "defaultCable": "(integrated)", "allowedCables": [], "allowOther": false }, "remarks": "Cable laying in the frame (in building) or in the continuous drive cladding" },
-    { "id": "comp-5", "position": "5", "label": "24 V DC E-opener, 100% ED, protective diode", "type": "e_opener", "mandatory": true, "cable": { "defaultCable": "J-Y(ST)Y 4 x 0.6 mm²", "allowedCables": ["J-Y(ST)Y 4 x 0.6 mm²", "J-Y(ST)Y 4 x 0.8 mm²"], "allowOther": true }, "remarks": "Routed to the master drive" },
-    { "id": "comp-6", "position": "6", "label": "Bolt switch contact", "type": "bolt_switch", "mandatory": true, "cable": { "defaultCable": "J-Y(ST)Y 4 x 0.8 mm²", "allowedCables": ["J-Y(ST)Y 4 x 0.8 mm²"], "allowOther": true }, "remarks": "Routed to the master drive" },
+    { "id": "comp-4", "position": "4", "label": "System cable — door coordinator control and communication between the drives", "type": "system_cable", "mandatory": false, "optional": true, "cable": { "defaultCable": "(integrated)", "allowedCables": [], "allowOther": false }, "remarks": "Cable laying in the frame (in building) or in the continuous drive cladding" },
+    { "id": "comp-5", "position": "5", "label": "24 V DC E-opener, 100% ED, protective diode", "type": "e_opener", "mandatory": false, "optional": true, "cable": { "defaultCable": "J-Y(ST)Y 4 x 0.6 mm²", "allowedCables": ["J-Y(ST)Y 4 x 0.6 mm²", "J-Y(ST)Y 4 x 0.8 mm²"], "allowOther": true }, "remarks": "Routed to the master drive" },
+    { "id": "comp-6", "position": "6", "label": "Bolt switch contact", "type": "bolt_switch", "mandatory": false, "optional": true, "cable": { "defaultCable": "J-Y(ST)Y 4 x 0.8 mm²", "allowedCables": ["J-Y(ST)Y 4 x 0.8 mm²"], "allowOther": true }, "remarks": "Routed to the master drive" },
     { "id": "comp-7", "position": "7", "label": "Concealed cable connection — E-opener and bolt switch", "type": "cable_transition", "mandatory": false, "optional": true, "cable": { "defaultCable": "(integrated)", "allowedCables": [], "allowOther": false }, "remarks": "Optional, in building" },
     { "id": "comp-8", "position": "8", "label": "Concealed cable connection — safety elements", "type": "cable_transition", "mandatory": false, "optional": true, "cable": { "defaultCable": "(integrated)", "allowedCables": [], "allowOther": false }, "remarks": "Optional, in building" },
     { "id": "comp-9", "position": "9", "label": "Dual locking or E-opener in the passive leaf", "type": "e_opener", "mandatory": false, "optional": true, "cable": { "defaultCable": "With 4 x 0.6 mm² E-opener", "allowedCables": ["With 4 x 0.6 mm² E-opener"], "allowOther": true }, "remarks": "Cable laying in building, in the frame to the slave drive" },
     { "id": "comp-10", "position": "10", "label": "Flatscan set", "type": "sensor_strip", "mandatory": false, "optional": true, "cable": { "defaultCable": "Cables supplied with operator", "allowedCables": ["Cables supplied with operator"], "allowOther": true }, "remarks": "Concealed cable laying in building, otherwise surface-mounted. Active leaf routed to the master drive, passive leaf to the slave drive" },
-    { "id": "comp-11", "position": "11", "label": "Sensor strips set", "type": "sensor_strip", "mandatory": false, "cable": { "defaultCable": "Cables supplied with operator", "allowedCables": ["Cables supplied with operator"], "allowOther": true }, "remarks": "Both leaves. Concealed cable laying in building, otherwise cable laying is surface-mounted with cable connection" },
+    { "id": "comp-11", "position": "11", "label": "Sensor strips set", "type": "sensor_strip", "mandatory": false, "optional": true, "cable": { "defaultCable": "Cables supplied with operator", "allowedCables": ["Cables supplied with operator"], "allowOther": true }, "remarks": "Both leaves. Concealed cable laying in building, otherwise cable laying is surface-mounted with cable connection" },
     { "id": "comp-12", "position": "12", "label": "Flip switch (inside)", "type": "flip_switch", "mandatory": false, "optional": true, "cable": { "defaultCable": "J-Y(ST)Y 4 x 0.6 mm²", "allowedCables": ["J-Y(ST)Y 4 x 0.6 mm²", "J-Y(ST)Y 4 x 0.8 mm²"], "allowOther": true }, "remarks": "In-wall socket, cable laying in building. Routed to the slave drive",
       "subComponents": [
         { "id": "comp-12-1", "position": "12.1", "label": "Flip switch (outside)", "type": "flip_switch", "mandatory": false, "optional": true, "cable": { "defaultCable": "J-Y(ST)Y 4 x 0.6 mm²", "allowedCables": ["J-Y(ST)Y 4 x 0.6 mm²", "J-Y(ST)Y 4 x 0.8 mm²"], "allowOther": true }, "remarks": "In-wall socket, cable laying in building. Routed to the slave drive" }
@@ -102,14 +102,14 @@
         "route": [[262, 296], [262, 152], [444, 152]]
       },
       "comp-10": {
-        "device": { "kind": "bar", "x": 290, "y": 166, "w": 100, "h": 9 },
+        "device": { "kind": "strip", "x": 280, "y": 170, "w": 150, "h": 8 },
         "bubble": { "x": 340, "y": 214 },
-        "route": [[340, 166], [340, 152], [444, 152]]
+        "route": [[355, 170], [355, 152], [444, 152]]
       },
       "comp-11": {
-        "device": { "kind": "strip", "x": 624, "y": 210, "w": 7, "h": 190 },
+        "device": { "kind": "strip", "x": 460, "y": 170, "w": 160, "h": 8 },
         "bubble": { "x": 692, "y": 236 },
-        "route": [[627, 210], [627, 152], [456, 152]]
+        "route": [[540, 170], [540, 152], [456, 152]]
       },
       "comp-12": {
         "device": { "kind": "box", "x": 186, "y": 296, "w": 30, "h": 44 },
