@@ -19,6 +19,10 @@ const STEPS = ["Product", "Specify", "Wall", "Lock & key", "Review"];
 // other appearance choices.
 const SPECIFY_FIELDS = new Set(["width", "height", "handing", "acoustic", "doorRestrictor"]);
 
+// Millimetre fields take whole numbers only, and no approvable opening
+// needs more than four digits — anything longer is simply not typed.
+const mmDigits = value => value.replace(/\D/g, "").slice(0, 4);
+
 // ─── Primitives ───────────────────────────────────────────────────
 
 function Label({ children, htmlFor, required }) {
@@ -383,10 +387,9 @@ function SpecifyStep({ product, config, setConfig, errorFor, markTouched, resolu
         <div>
           <Label htmlFor="cfg-width">Structural width (mm)</Label>
           <input
-            id="cfg-width" type="number" inputMode="numeric"
-            min={product.statedLimits.width.min} max={product.statedLimits.width.absoluteMax}
+            id="cfg-width" type="text" inputMode="numeric"
             value={config.width}
-            onChange={e => set("width", e.target.value)}
+            onChange={e => set("width", mmDigits(e.target.value))}
             style={{ ...fieldStyle, borderColor: errorFor("width") ? UI.warn : UI.ruleStrong }}
             onFocus={focusField}
             onBlur={e => { markTouched("width"); e.target.style.borderColor = errorFor("width") ? UI.warn : UI.ruleStrong; e.target.style.boxShadow = "none"; }}
@@ -396,10 +399,9 @@ function SpecifyStep({ product, config, setConfig, errorFor, markTouched, resolu
         <div>
           <Label htmlFor="cfg-height">Structural height (mm)</Label>
           <input
-            id="cfg-height" type="number" inputMode="numeric"
-            min={product.statedLimits.height.min} max={product.statedLimits.height.absoluteMax}
+            id="cfg-height" type="text" inputMode="numeric"
             value={config.height}
-            onChange={e => set("height", e.target.value)}
+            onChange={e => set("height", mmDigits(e.target.value))}
             style={{ ...fieldStyle, borderColor: errorFor("height") ? UI.warn : UI.ruleStrong }}
             onFocus={focusField}
             onBlur={e => { markTouched("height"); e.target.style.borderColor = errorFor("height") ? UI.warn : UI.ruleStrong; e.target.style.boxShadow = "none"; }}
@@ -830,10 +832,11 @@ function ReviewStep({ product, config, projectData, setProjectData, specType, se
 
 // ─── Main ─────────────────────────────────────────────────────────
 
-// Everything the user has typed, persisted so a refresh or an
-// accidental tab close does not cost them the configuration. v2:
-// the Christo restructure changed the option ids, so older saves are
-// ignored rather than merged.
+// Everything the user has typed, kept for THIS browser session only —
+// a refresh or a hop to another tab of the app keeps the work, but
+// closing the window starts the next visit fresh. v2: the Christo
+// restructure changed the option ids, so older saves are ignored
+// rather than merged.
 const STORAGE_KEY = "mf-hardware-spec-v2";
 
 export default function SpecGenerator() {
@@ -855,8 +858,11 @@ export default function SpecGenerator() {
   const restored = useRef(false);
 
   useEffect(() => {
+    // Earlier builds saved to localStorage, which outlives the window —
+    // clear any such leftover so old sessions never reappear.
+    try { window.localStorage.removeItem(STORAGE_KEY); } catch { /* best-effort */ }
     try {
-      const raw = window.localStorage.getItem(STORAGE_KEY);
+      const raw = window.sessionStorage.getItem(STORAGE_KEY);
       if (raw) {
         const saved = JSON.parse(raw);
         if (saved.productTypeId && getProduct(saved.productTypeId)) {
@@ -875,14 +881,14 @@ export default function SpecGenerator() {
   useEffect(() => {
     if (!restored.current) return;
     try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify({
         productTypeId, config, specType, projectData, currentStep, furthest,
       }));
     } catch { /* storage full or blocked — persistence is best-effort */ }
   }, [productTypeId, config, specType, projectData, currentStep, furthest]);
 
   const startOver = useCallback(() => {
-    try { window.localStorage.removeItem(STORAGE_KEY); } catch { /* best-effort */ }
+    try { window.sessionStorage.removeItem(STORAGE_KEY); } catch { /* best-effort */ }
     setProductTypeId("riser-doors");
     setConfig(buildInitialConfig(getProduct("riser-doors")));
     setSpecType("branded");
