@@ -19,6 +19,8 @@ function deviceAnchor(device, bubble) {
     case "disc":
     case "sensor":
       return { x: device.x, y: device.y }
+    case "flatscan":
+      return { x: device.x + device.w / 2, y: device.y + device.h + 6 }
     case "strip": {
       // Vertical strips point from their long edge; horizontal ones
       // use the same edge-picking as boxes.
@@ -65,6 +67,21 @@ function DeviceSymbol({ device, stroke, fill }) {
     case "strip":
       // Sensor strips read as the black profile they are on site.
       return <rect x={device.x} y={device.y} width={device.w} height={device.h} stroke={stroke} strokeWidth={1.3} fill={stroke} />
+    case "flatscan": {
+      // Laser scanner under the head — housing with a curved face,
+      // as on the manufacturer's sheets.
+      const { x, y, w, h } = device
+      return (
+        <g>
+          <path
+            d={`M ${x} ${y} H ${x + w} V ${y + h * 0.4} Q ${x + w / 2} ${y + h * 1.7} ${x} ${y + h * 0.4} Z`}
+            {...s}
+          />
+          <line x1={x + 5} y1={y + 3.5} x2={x + w - 5} y2={y + 3.5}
+            stroke={stroke} strokeWidth={0.7} opacity={0.6} />
+        </g>
+      )
+    }
     case "bar":
       return (
         <g>
@@ -225,7 +242,10 @@ export default function DoorElevation({ system, componentStates, activeId, onSel
             const active = activeId === comp.id
             const r = depth > 0 ? R_SUB : R_MAIN
             const stroke = included ? DRAW.outline : DRAW.ghost
-            const tip = deviceAnchor(a.device, a.bubble)
+            // A position that repeats on each leaf carries a devices
+            // array; the leader points at the first one.
+            const devices = a.devices ?? [a.device]
+            const tip = deviceAnchor(devices[0], a.bubble)
 
             return (
               <g
@@ -236,7 +256,9 @@ export default function DoorElevation({ system, componentStates, activeId, onSel
               >
                 <title>{`${comp.position} — ${comp.label}${included ? "" : " (not included)"}`}</title>
 
-                <DeviceSymbol device={a.device} stroke={stroke} fill={included ? "#FFFFFF" : DRAW.wall} />
+                {devices.map((d, i) => (
+                  <DeviceSymbol key={i} device={d} stroke={stroke} fill={included ? "#FFFFFF" : DRAW.wall} />
+                ))}
                 <line x1={a.bubble.x} y1={a.bubble.y} x2={tip.x} y2={tip.y} stroke={stroke} strokeWidth="0.9" />
 
                 <circle
