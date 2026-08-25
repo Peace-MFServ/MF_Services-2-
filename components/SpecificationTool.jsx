@@ -3,6 +3,7 @@ import { useState, useCallback, useEffect } from "react";
 import SpecGenerator from "./SpecGenerator";
 import CablePlanConfigurator from "./CablePlanConfigurator";
 import QuickSpec from "./QuickSpec";
+import { useAuth } from "./AuthProvider";
 import { PRODUCT_ART, CABLE_ART, CableSingleArt } from "./ProductIllustrations";
 import { PRODUCT_TYPES } from "../lib/hardwareSpec";
 import { UI, FONT } from "../lib/theme";
@@ -26,10 +27,14 @@ const MODE_KEY = "mf-specification-tool-mode";
 
 /** Guided walks you through it; quick puts the whole thing on one
  *  screen for someone who specifies these every week. */
-function ModeSwitch({ mode, onChange }) {
+function ModeSwitch({ mode, onChange, locked }) {
   const opts = [
     { id: "guided", label: "Guided", title: "Step by step, with the drawing beside you" },
-    { id: "quick", label: "Quick spec", title: "Everything on one screen" },
+    {
+      id: "quick", label: "Quick spec",
+      title: locked ? "Sign in to use the quick layout" : "Everything on one screen",
+      locked,
+    },
   ];
   return (
     <div role="radiogroup" aria-label="Layout" style={{ display: "flex", flexShrink: 0 }}>
@@ -39,6 +44,7 @@ function ModeSwitch({ mode, onChange }) {
           <button
             key={o.id} type="button" role="radio" aria-checked={on} title={o.title}
             onClick={() => onChange(o.id)}
+            aria-describedby={o.locked ? "mode-locked" : undefined}
             style={{
               padding: "9px 18px", fontSize: 13.5, fontWeight: on ? 600 : 500, fontFamily: FONT,
               border: `1px solid ${on ? UI.accent : UI.ruleStrong}`,
@@ -51,6 +57,13 @@ function ModeSwitch({ mode, onChange }) {
             }}
           >
             {o.label}
+            {o.locked && (
+              <svg width="11" height="13" viewBox="0 0 11 13" aria-hidden="true"
+                style={{ marginLeft: 7, verticalAlign: "-2px" }}>
+                <path d="M2.4 5.5V3.6a3.1 3.1 0 0 1 6.2 0v1.9" fill="none" stroke="currentColor" strokeWidth="1.3" />
+                <rect x="1" y="5.5" width="9" height="6.6" rx="1" fill="currentColor" />
+              </svg>
+            )}
           </button>
         );
       })}
@@ -185,11 +198,19 @@ export default function SpecificationTool() {
   const [selection, setSelection] = useState(null);
   const [mode, setMode] = useState("guided");
   const restored = useRestoredSelection(setSelection, setMode);
+  const { ready, signedIn, promptSignIn } = useAuth();
 
   const chooseMode = useCallback(m => {
+    // The quick layout belongs to account holders. Asking to sign in
+    // beats hiding it — it is the clearest reason to have an account.
+    if (m === "quick" && !signedIn) { promptSignIn(); return; }
     setMode(m);
     try { window.sessionStorage.setItem(MODE_KEY, m); } catch { /* best-effort */ }
-  }, []);
+  }, [signedIn, promptSignIn]);
+
+  // Signing out drops straight back to the guided layout, including
+  // when a stored preference says otherwise.
+  const effectiveMode = signedIn ? mode : "guided";
 
   const choose = useCallback(sel => {
     setSelection(sel);
@@ -213,9 +234,11 @@ export default function SpecificationTool() {
     return <CablePlanConfigurator startSystemId={selection.id} onChangeSystem={clear} />;
   }
 
-  const modeSwitch = <ModeSwitch mode={mode} onChange={chooseMode} />;
+  const modeSwitch = (
+    <ModeSwitch mode={effectiveMode} onChange={chooseMode} locked={ready && !signedIn} />
+  );
 
-  if (mode === "quick") {
+  if (effectiveMode === "quick") {
     return <QuickSpec productTypeId={selection.id} onChangeProduct={clear} modeSwitch={modeSwitch} />;
   }
   return <SpecGenerator startProductId={selection.id} onChangeProduct={clear} modeSwitch={modeSwitch} />;

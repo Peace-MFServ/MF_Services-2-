@@ -43,6 +43,9 @@ export default function AuthProvider({ children }) {
   // signed in, and painting the signed-out state first makes the page
   // flicker for people who are.
   const [ready, setReady] = useState(false);
+  // Anywhere in the app can ask for the sign-in panel — the gate on
+  // the quick layout, a save button, anything added later.
+  const [promptOpen, setPromptOpen] = useState(false);
 
   useEffect(() => {
     const stop = onAuthStateChanged(auth, async current => {
@@ -91,11 +94,15 @@ export default function AuthProvider({ children }) {
 
   const resetPassword = useCallback(email => sendPasswordResetEmail(auth, email), []);
 
+  const promptSignIn = useCallback(() => setPromptOpen(true), []);
+  const closePrompt = useCallback(() => setPromptOpen(false), []);
+
   const value = {
     user, role, ready,
     signedIn: !!user,
     isStaff: role === ROLES.STAFF,
     signUp, signIn, signOut, resetPassword,
+    promptOpen, promptSignIn, closePrompt,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

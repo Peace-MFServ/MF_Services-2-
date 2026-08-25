@@ -153,8 +153,7 @@ export function AccountPanel({ onDone, initialMode = MODES.SIGN_IN }) {
 
 /** The account control in the page header. */
 export function AccountBar() {
-  const { ready, signedIn, user, role, signOut } = useAuth();
-  const [open, setOpen] = useState(false);
+  const { ready, signedIn, user, role, signOut, promptSignIn } = useAuth();
 
   const chip = {
     padding: "6px 12px", fontSize: 12.5, fontFamily: FONT, fontWeight: 500,
@@ -179,32 +178,9 @@ export function AccountBar() {
           <button type="button" style={chip} onClick={() => signOut()}>Sign out</button>
         </>
       ) : (
-        <button type="button" style={chip} onClick={() => setOpen(true)}>Sign in</button>
+        <button type="button" style={chip} onClick={promptSignIn}>Sign in</button>
       )}
 
-      {open && !signedIn && (
-        <div
-          role="dialog" aria-modal="true" aria-label="Sign in"
-          onClick={e => { if (e.target === e.currentTarget) setOpen(false); }}
-          style={{
-            position: "fixed", inset: 0, background: "rgba(16,25,34,0.55)",
-            display: "flex", alignItems: "center", justifyContent: "center", zIndex: 100, padding: 20,
-          }}
-        >
-          <div style={{ background: UI.surface, padding: "28px 30px 30px", maxWidth: 440, width: "100%", position: "relative" }}>
-            <button
-              type="button" onClick={() => setOpen(false)} aria-label="Close"
-              style={{
-                position: "absolute", top: 12, right: 14, background: "none", border: "none",
-                fontSize: 22, lineHeight: 1, color: UI.muted, cursor: "pointer", padding: 4,
-              }}
-            >
-              ×
-            </button>
-            <AccountPanel onDone={() => setOpen(false)} />
-          </div>
-        </div>
-      )}
     </div>
   );
 }
