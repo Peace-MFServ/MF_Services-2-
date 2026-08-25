@@ -84,6 +84,22 @@ function Chips({ options, value, onChange, name }) {
   );
 }
 
+/** Header action, styled to match the layout switch beside it. */
+function HeaderButton({ onClick, children }) {
+  return (
+    <button
+      type="button" onClick={onClick}
+      style={{
+        padding: "7px 14px", fontSize: 12.5, fontFamily: FONT, fontWeight: 400,
+        border: `1px solid ${UI.ruleStrong}`, background: UI.surface, color: UI.body,
+        cursor: "pointer", whiteSpace: "nowrap",
+      }}
+    >
+      {children}
+    </button>
+  );
+}
+
 function Input({ id, value, onChange, placeholder, type = "text" }) {
   return (
     <input
@@ -206,25 +222,9 @@ export default function QuickSpec({ productTypeId = "riser-doors", onChangeProdu
           </h1>
           {modeSwitch}
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 18, flexShrink: 0 }}>
-          <button
-            type="button" onClick={onChangeProduct}
-            style={{
-              background: "none", border: "none", padding: 0, fontFamily: FONT,
-              fontSize: 13, color: UI.accent, textDecoration: "underline", cursor: "pointer",
-            }}
-          >
-            Change product
-          </button>
-          <button
-            type="button" onClick={startOver}
-            style={{
-              background: "none", border: "none", padding: 0, fontFamily: FONT,
-              fontSize: 13, color: UI.accent, textDecoration: "underline", cursor: "pointer",
-            }}
-          >
-            Start over
-          </button>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
+          <HeaderButton onClick={onChangeProduct}>Change product</HeaderButton>
+          <HeaderButton onClick={startOver}>Start over</HeaderButton>
         </div>
       </header>
 
