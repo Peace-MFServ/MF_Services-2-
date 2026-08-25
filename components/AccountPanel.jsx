@@ -1,6 +1,7 @@
 'use client'
 import { useState, useCallback } from "react";
 import { useAuth } from "./AuthProvider";
+import { useProjects } from "./ProjectsProvider";
 import { authErrorMessage } from "../lib/firebase";
 import { UI, FONT, fieldStyle, focusField, blurField } from "../lib/theme";
 
@@ -154,6 +155,7 @@ export function AccountPanel({ onDone, initialMode = MODES.SIGN_IN }) {
 /** The account control in the page header. */
 export function AccountBar() {
   const { ready, signedIn, user, role, signOut, promptSignIn } = useAuth();
+  const { openPanel } = useProjects();
 
   const chip = {
     padding: "6px 12px", fontSize: 12.5, fontFamily: FONT, fontWeight: 500,
@@ -175,6 +177,7 @@ export function AccountBar() {
               {role === "staff" ? "MF Services" : "Signed in"}
             </div>
           </div>
+          <button type="button" style={chip} onClick={openPanel}>Your projects</button>
           <button type="button" style={chip} onClick={() => signOut()}>Sign out</button>
         </>
       ) : (

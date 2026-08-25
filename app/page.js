@@ -6,6 +6,8 @@ import OverpressureCalculator from '../components/OverpressureCalculator'
 import AuthProvider from '../components/AuthProvider'
 import { AccountBar } from '../components/AccountPanel'
 import SignInDialog from '../components/SignInDialog'
+import ProjectsProvider from '../components/ProjectsProvider'
+import ProjectsDialog from '../components/ProjectsDialog'
 
 const TABS = [
   { id: 'specification', label: 'Specification Tool' },
@@ -26,7 +28,9 @@ export default function Home() {
 
   return (
     <AuthProvider>
+    <ProjectsProvider>
     <SignInDialog />
+    <ProjectsDialog />
     <div style={{ minHeight: '100vh', background: '#F8F9FA', fontFamily: FONT }}>
 
       {/* ── GLOBAL HEADER ── */}
@@ -69,6 +73,7 @@ export default function Home() {
       </div>
 
     </div>
+    </ProjectsProvider>
     </AuthProvider>
   )
 }

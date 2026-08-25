@@ -20,10 +20,11 @@ function when(ts) {
   return d.toLocaleDateString("en-IE", { day: "numeric", month: "short", year: "numeric" });
 }
 
-/** Save button for the configurator chrome. */
+/** Save button for the configurator chrome. One button: naming a new
+ *  project, or confirming before it writes over the open one. */
 export function SaveProjectButton({ kind, selectionId, openProject, onSaved, style }) {
   const { signedIn, user, promptSignIn } = useAuth();
-  const [naming, setNaming] = useState(false);
+  const [panel, setPanel] = useState(null);   // null | "name" | "confirm"
   const [name, setName] = useState("");
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState(null);
@@ -34,31 +35,33 @@ export function SaveProjectButton({ kind, selectionId, openProject, onSaved, sty
     cursor: "pointer", whiteSpace: "nowrap",
   };
 
+  const flash = useCallback(n => {
+    setNotice(n);
+    setTimeout(() => setNotice(null), 2600);
+  }, []);
+
   const doSave = useCallback(async overwrite => {
     const payload = readWorkingState(kind);
-    if (!payload) { setNotice({ text: "Nothing to save yet.", error: true }); return; }
-    setBusy(true); setNotice(null);
+    if (!payload) { flash({ text: "Nothing to save yet.", error: true }); return; }
+    setBusy(true);
     try {
       if (overwrite && openProject) {
         await updateProject({ id: openProject.id, ownerId: user.uid, payload });
-        setNotice({ text: `Saved to “${openProject.name}”.` });
+        flash({ text: `Saved to “${openProject.name}”.` });
       } else {
-        const id = await saveProject({
-          ownerId: user.uid,
-          name: name.trim() || "Untitled project",
-          kind, selectionId, payload,
-        });
-        setNotice({ text: "Project saved." });
-        onSaved?.({ id, name: name.trim() || "Untitled project" });
+        const chosen = name.trim() || "Untitled project";
+        const id = await saveProject({ ownerId: user.uid, name: chosen, kind, selectionId, payload });
+        flash({ text: "Project saved." });
+        onSaved?.({ id, name: chosen });
       }
-      setNaming(false);
+      setPanel(null);
       setName("");
     } catch {
-      setNotice({ text: "Could not save. Please try again.", error: true });
+      flash({ text: "Could not save. Please try again.", error: true });
     } finally {
       setBusy(false);
     }
-  }, [kind, selectionId, name, user, openProject, onSaved]);
+  }, [kind, selectionId, name, user, openProject, onSaved, flash]);
 
   if (!signedIn) {
     return (
@@ -68,28 +71,27 @@ export function SaveProjectButton({ kind, selectionId, openProject, onSaved, sty
     );
   }
 
+  const popover = {
+    position: "absolute", top: "calc(100% + 8px)", right: 0, zIndex: 40,
+    background: UI.surface, border: `1px solid ${UI.ruleStrong}`,
+    padding: 14, width: 286, boxShadow: "0 6px 20px rgba(16,25,34,0.13)",
+    fontFamily: FONT,
+  };
+
   return (
     <div style={{ position: "relative" }}>
-      <div style={{ display: "flex", gap: 8 }}>
-        {openProject && (
-          <button type="button" style={buttonStyle} disabled={busy} onClick={() => doSave(true)}>
-            {busy ? "Saving" : "Save"}
-          </button>
-        )}
-        <button type="button" style={buttonStyle} onClick={() => setNaming(v => !v)}>
-          {openProject ? "Save as new" : "Save project"}
-        </button>
-      </div>
+      <button
+        type="button" style={buttonStyle} disabled={busy}
+        onClick={() => setPanel(p => (p ? null : openProject ? "confirm" : "name"))}
+      >
+        {busy ? "Saving" : "Save"}
+      </button>
 
-      {naming && (
-        <div style={{
-          position: "absolute", top: "calc(100% + 8px)", right: 0, zIndex: 40,
-          background: UI.surface, border: `1px solid ${UI.ruleStrong}`,
-          padding: 14, width: 280, boxShadow: "0 6px 20px rgba(16,25,34,0.13)",
-        }}>
+      {panel === "name" && (
+        <div style={popover}>
           <label htmlFor="proj-name" style={{
             display: "block", fontSize: 11, fontWeight: 600, letterSpacing: "0.06em",
-            textTransform: "uppercase", color: UI.muted, marginBottom: 6, fontFamily: FONT,
+            textTransform: "uppercase", color: UI.muted, marginBottom: 6,
           }}>
             Project name
           </label>
@@ -97,7 +99,7 @@ export function SaveProjectButton({ kind, selectionId, openProject, onSaved, sty
             id="proj-name" value={name} autoFocus
             placeholder="e.g. Kildare Street, level 3"
             onChange={e => setName(e.target.value)}
-            onKeyDown={e => { if (e.key === "Enter") doSave(false); if (e.key === "Escape") setNaming(false); }}
+            onKeyDown={e => { if (e.key === "Enter") doSave(false); if (e.key === "Escape") setPanel(null); }}
             style={{ ...fieldStyle, padding: "8px 10px", fontSize: 13 }}
             onFocus={focusField} onBlur={blurField}
           />
@@ -106,16 +108,48 @@ export function SaveProjectButton({ kind, selectionId, openProject, onSaved, sty
             style={{
               width: "100%", marginTop: 10, padding: "9px 14px",
               border: `1px solid ${UI.accent}`, background: UI.accent, color: "#FFFFFF",
-              fontSize: 13, fontWeight: 600, fontFamily: FONT,
-              cursor: busy ? "progress" : "pointer",
+              fontSize: 13, fontWeight: 600, fontFamily: FONT, cursor: busy ? "progress" : "pointer",
             }}
           >
-            {busy ? "Saving" : "Save"}
+            Save
           </button>
         </div>
       )}
 
-      {notice && (
+      {panel === "confirm" && (
+        <div style={popover}>
+          <p style={{ margin: "0 0 4px", fontSize: 13.5, fontWeight: 600, color: UI.ink }}>
+            Overwrite this project?
+          </p>
+          <p style={{ margin: "0 0 14px", fontSize: 12.5, lineHeight: 1.5, color: UI.body }}>
+            “{openProject.name}” is already saved. Saving replaces what is stored with what is on screen now.
+          </p>
+          <div style={{ display: "flex", gap: 8 }}>
+            <button
+              type="button" onClick={() => doSave(true)} disabled={busy}
+              style={{
+                flex: 1, padding: "9px 14px", border: `1px solid ${UI.accent}`,
+                background: UI.accent, color: "#FFFFFF",
+                fontSize: 13, fontWeight: 600, fontFamily: FONT, cursor: busy ? "progress" : "pointer",
+              }}
+            >
+              Yes, save
+            </button>
+            <button
+              type="button" onClick={() => setPanel(null)}
+              style={{
+                flex: 1, padding: "9px 14px", border: `1px solid ${UI.ruleStrong}`,
+                background: UI.surface, color: UI.body,
+                fontSize: 13, fontFamily: FONT, cursor: "pointer",
+              }}
+            >
+              No
+            </button>
+          </div>
+        </div>
+      )}
+
+      {notice && !panel && (
         <div style={{
           position: "absolute", top: "calc(100% + 8px)", right: 0, zIndex: 30,
           background: UI.surface, border: `1px solid ${notice.error ? UI.warn : UI.ruleStrong}`,
@@ -129,8 +163,8 @@ export function SaveProjectButton({ kind, selectionId, openProject, onSaved, sty
   );
 }
 
-/** The list of saved projects, shown above the gallery. */
-export function SavedProjectList({ onOpen }) {
+/** The list of saved projects, shown from the top bar. */
+export function SavedProjectList({ onOpen, showEmpty }) {
   const { signedIn, user } = useAuth();
   const [projects, setProjects] = useState(null);
   const [error, setError] = useState(false);
@@ -153,8 +187,10 @@ export function SavedProjectList({ onOpen }) {
     } catch { setError(true); }
   };
 
-  if (!signedIn || error) return null;
-  if (!projects || projects.length === 0) return null;
+  if (!signedIn) return null;
+
+  const empty = !projects || projects.length === 0;
+  if (empty && !showEmpty) return null;
 
   return (
     <section style={{ marginBottom: 40 }}>
@@ -165,11 +201,15 @@ export function SavedProjectList({ onOpen }) {
         Your projects
       </h2>
       <p style={{ margin: "0 0 18px", fontSize: 13.5, lineHeight: 1.5, color: UI.body, maxWidth: 620 }}>
-        Pick up where you left off.
+        {error
+          ? "Could not load your projects. Try again in a moment."
+          : empty
+            ? "Nothing saved yet. Configure a doorset and press Save to keep it."
+            : "Pick up where you left off."}
       </p>
 
-      <div style={{ border: `1px solid ${UI.rule}`, background: UI.surface }}>
-        {projects.map((p, i) => (
+      <div style={{ border: empty ? "none" : `1px solid ${UI.rule}`, background: UI.surface }}>
+        {(projects ?? []).map((p, i) => (
           <div key={p.id} style={{
             display: "flex", alignItems: "center", gap: 14, padding: "13px 16px",
             borderTop: i === 0 ? "none" : `1px solid ${UI.rule}`,

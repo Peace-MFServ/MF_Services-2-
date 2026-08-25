@@ -4,8 +4,9 @@ import SpecGenerator from "./SpecGenerator";
 import CablePlanConfigurator from "./CablePlanConfigurator";
 import QuickSpec from "./QuickSpec";
 import { useAuth } from "./AuthProvider";
-import { SavedProjectList, SaveProjectButton } from "./SavedProjects";
+import { SaveProjectButton } from "./SavedProjects";
 import { writeWorkingState } from "../lib/projects";
+import { useProjects } from "./ProjectsProvider";
 import { PRODUCT_ART, CABLE_ART, CableSingleArt } from "./ProductIllustrations";
 import { PRODUCT_TYPES } from "../lib/hardwareSpec";
 import { UI, FONT } from "../lib/theme";
@@ -145,7 +146,7 @@ function Group({ title, note, children }) {
   );
 }
 
-function Chooser({ onChoose, onOpenProject }) {
+function Chooser({ onChoose }) {
   return (
     <div style={{ padding: "36px 32px 48px", fontFamily: FONT }}>
       <h1 style={{ margin: 0, fontSize: 28, fontWeight: 600, letterSpacing: "-0.02em", color: UI.ink, lineHeight: 1.2 }}>
@@ -155,8 +156,6 @@ function Chooser({ onChoose, onOpenProject }) {
         Configure a doorset or the cabling for a door system, and take
         the specification away as a PDF.
       </p>
-
-      <SavedProjectList onOpen={onOpenProject} />
 
       <Group title="Doorsets" note="Fire-rated doorsets, specified against their approved sizes.">
         {PRODUCT_TYPES.map(pt => {
@@ -206,6 +205,7 @@ export default function SpecificationTool() {
   const [openProject, setOpenProject] = useState(null);
   const restored = useRestoredSelection(setSelection, setMode);
   const { ready, signedIn, promptSignIn } = useAuth();
+  const { pendingOpen, consumeOpen } = useProjects();
 
   const chooseMode = useCallback(m => {
     // The quick layout belongs to account holders. Asking to sign in
@@ -236,11 +236,17 @@ export default function SpecificationTool() {
     choose({ kind: record.kind, id: record.selectionId });
   }, [choose]);
 
+  useEffect(() => {
+    if (!pendingOpen) return;
+    openProjectRecord(pendingOpen);
+    consumeOpen();
+  }, [pendingOpen, openProjectRecord, consumeOpen]);
+
   // Wait for the restore pass before painting, so a refresh does not
   // flash the chooser on its way back to where the customer was.
   if (!restored) return <div style={{ minHeight: "calc(100vh - 136px)" }} />;
 
-  if (!selection) return <Chooser onChoose={choose} onOpenProject={openProjectRecord} />;
+  if (!selection) return <Chooser onChoose={choose} />;
 
   // The cable plan is a checklist already — the quick layout is for
   // doorsets, where the guided flow is the slow part.
