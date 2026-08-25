@@ -213,22 +213,21 @@ export default function DoorElevation({ system, componentStates, activeId, onSel
 
           <circle cx={controller.x} cy={controller.y} r={2.6} fill={DRAW.outline} />
 
-          {/* Cable runs */}
+          {/* Cable runs — the plan's own cables only. A position that is
+              not in the job keeps its ghosted device and callout, but
+              drawing its route as well buries the real cabling. */}
           {flat.map(({ comp }) => {
             const a = anchors[comp.id]
-            if (!a) return null
-            const included = inclusion[comp.id]
+            if (!a || !inclusion[comp.id]) return null
             const { color } = resolveCable(componentStates[comp.id])
             return (
               <polyline
                 key={`r-${comp.id}`}
                 points={a.route.map(p => p.join(",")).join(" ")}
                 fill="none"
-                stroke={included ? color : DRAW.ghost}
+                stroke={color}
                 strokeWidth={activeId === comp.id ? 2.8 : 1.5}
-                strokeDasharray={included ? "none" : "5 4"}
                 strokeLinejoin="round" strokeLinecap="round"
-                opacity={included ? 1 : 0.5}
               />
             )
           })}
@@ -251,7 +250,7 @@ export default function DoorElevation({ system, componentStates, activeId, onSel
               <g
                 key={comp.id}
                 onClick={onSelect ? () => onSelect(comp.id) : undefined}
-                opacity={included ? 1 : 0.45}
+                opacity={included ? 1 : 0.34}
                 style={{ cursor: onSelect ? "pointer" : "default" }}
               >
                 <title>{`${comp.position} — ${comp.label}${included ? "" : " (not included)"}`}</title>

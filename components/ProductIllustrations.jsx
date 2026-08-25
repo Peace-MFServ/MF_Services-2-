@@ -129,6 +129,83 @@ export function SlidingDoorArt() {
   )
 }
 
+/** Cable plan, single leaf — operator on the head, cable to the wall. */
+export function CableSingleArt() {
+  return (
+    <svg viewBox={VB} width="100%" height="100%" role="img" aria-label="Single-leaf cable plan illustration">
+      <rect x="26" y="18" width="188" height="146" fill="#F4F6F8" />
+      {/* Radar above the header */}
+      <g stroke={EDGE} strokeWidth="1.2" fill={GLASS}>
+        <rect x="112" y="20" width="26" height="11" />
+      </g>
+      <g stroke={MOTION} strokeWidth="1" opacity="0.7">
+        <line x1="118" y1="31" x2="114" y2="39" />
+        <line x1="125" y1="31" x2="125" y2="41" />
+        <line x1="132" y1="31" x2="136" y2="39" />
+      </g>
+      {/* Operator across the head */}
+      <rect x="72" y="44" width="106" height="17" fill={FRAME} stroke={EDGE} strokeWidth="1.5" />
+      <line x1="78" y1="52" x2="172" y2="52" stroke={EDGE} strokeWidth="0.8" opacity="0.6" />
+      {/* Frame and leaf */}
+      <rect x="72" y="61" width="9" height="103" fill={FRAME} stroke={EDGE} strokeWidth="1.4" />
+      <rect x="169" y="61" width="9" height="103" fill={FRAME} stroke={EDGE} strokeWidth="1.4" />
+      <rect x="81" y="61" width="88" height="103" fill={LEAF} stroke={EDGE} strokeWidth="1.3" />
+      {/* Sensor strip along the leaf head */}
+      <rect x="85" y="65" width="80" height="5" fill={EDGE} />
+      <rect x="160" y="105" width="5" height="12" rx="1" fill={DEEP} stroke={EDGE} strokeWidth="0.8" />
+      {/* Cable to a wall-mounted switch */}
+      <rect x="36" y="96" width="17" height="23" fill="#FFFFFF" stroke={EDGE} strokeWidth="1.2" />
+      <line x1="41" y1="112" x2="48" y2="112" stroke={EDGE} strokeWidth="1" />
+      <polyline points="44.5,96 44.5,52 72,52" fill="none" stroke={ACCENT} strokeWidth="1.8"
+        strokeLinejoin="round" strokeLinecap="round" />
+      <Ground />
+    </svg>
+  )
+}
+
+/** Cable plan, double leaf — twin operators either side of a mullion. */
+export function CableDoubleArt() {
+  return (
+    <svg viewBox={VB} width="100%" height="100%" role="img" aria-label="Double-leaf cable plan illustration">
+      <rect x="26" y="18" width="188" height="146" fill="#F4F6F8" />
+      {/* Radars above the header */}
+      <g stroke={EDGE} strokeWidth="1.2" fill={GLASS}>
+        <rect x="92" y="20" width="24" height="11" />
+        <rect x="134" y="20" width="24" height="11" />
+      </g>
+      <g stroke={MOTION} strokeWidth="1" opacity="0.7">
+        <line x1="104" y1="31" x2="104" y2="40" />
+        <line x1="146" y1="31" x2="146" y2="40" />
+      </g>
+      {/* Twin operators, split at the middle */}
+      <rect x="60" y="44" width="62" height="17" fill={FRAME} stroke={EDGE} strokeWidth="1.5" />
+      <rect x="126" y="44" width="62" height="17" fill={FRAME} stroke={EDGE} strokeWidth="1.5" />
+      {/* System cable bridging the drives */}
+      <line x1="122" y1="52" x2="126" y2="52" stroke={ACCENT} strokeWidth="2" />
+      {/* Frame, mullion and two leaves */}
+      <rect x="60" y="61" width="9" height="103" fill={FRAME} stroke={EDGE} strokeWidth="1.4" />
+      <rect x="179" y="61" width="9" height="103" fill={FRAME} stroke={EDGE} strokeWidth="1.4" />
+      <rect x="69" y="61" width="55" height="103" fill={LEAF} stroke={EDGE} strokeWidth="1.3" />
+      <rect x="124" y="61" width="55" height="103" fill={LEAF} stroke={EDGE} strokeWidth="1.3" />
+      {/* Sensor strips, one per leaf */}
+      <rect x="73" y="65" width="47" height="5" fill={EDGE} />
+      <rect x="128" y="65" width="47" height="5" fill={EDGE} />
+      <rect x="116" y="105" width="5" height="12" rx="1" fill={DEEP} stroke={EDGE} strokeWidth="0.8" />
+      {/* Cable to a wall-mounted switch */}
+      <rect x="30" y="96" width="17" height="23" fill="#FFFFFF" stroke={EDGE} strokeWidth="1.2" />
+      <line x1="35" y1="112" x2="42" y2="112" stroke={EDGE} strokeWidth="1" />
+      <polyline points="38.5,96 38.5,52 60,52" fill="none" stroke={ACCENT} strokeWidth="1.8"
+        strokeLinejoin="round" strokeLinecap="round" />
+      <Ground />
+    </svg>
+  )
+}
+
+export const CABLE_ART = {
+  "ets73-single": CableSingleArt,
+  "ets73-double": CableDoubleArt,
+}
+
 export const PRODUCT_ART = {
   "riser-doors": RiserDoorArt,
   "steel-doors": SteelDoorArt,

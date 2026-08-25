@@ -2,7 +2,7 @@
 import { useState, useCallback, useEffect } from "react";
 import SpecGenerator from "./SpecGenerator";
 import CablePlanConfigurator from "./CablePlanConfigurator";
-import { PRODUCT_ART } from "./ProductIllustrations";
+import { PRODUCT_ART, CABLE_ART, CableSingleArt } from "./ProductIllustrations";
 import { PRODUCT_TYPES } from "../lib/hardwareSpec";
 import { UI, FONT } from "../lib/theme";
 import ets73Single from "../data/cable-systems/ets73-single-leaf.json";
@@ -16,31 +16,11 @@ import ets73Double from "../data/cable-systems/ets73-double-leaf.json";
 const CABLE_SYSTEMS = [ets73Single, ets73Double];
 
 const CABLE_COMING_SOON = [
-  { id: "hold-open", label: "Hold-open system", summary: "Free-swing and hold-open closers with detection, for fire and smoke doors.", leaves: 1 },
-  { id: "sliding-operator", label: "Sliding operator", summary: "Automatic sliding door drive with safety sensors.", leaves: 1 },
+  { id: "hold-open", label: "Hold-open system", summary: "Free-swing and hold-open closers with detection, for fire and smoke doors." },
+  { id: "sliding-operator", label: "Sliding operator", summary: "Automatic sliding door drive with safety sensors." },
 ];
 
 const STORAGE_KEY = "mf-specification-tool-selection";
-
-/** Miniature elevation for the cable system cards — one or two leaves
- *  under an operator band, matching the plan's own drawing style. */
-function CableArt({ leaves }) {
-  const openL = 14, openR = 106, top = 12, floor = 74;
-  const innerL = openL + 5, innerR = openR - 5;
-  const leafTop = 30;
-  const leafViews = leaves === 2 ? [[innerL, 59], [61, innerR]] : [[innerL, innerR]];
-  return (
-    <svg viewBox="0 0 120 84" width="100%" height="100%" aria-hidden="true"
-      preserveAspectRatio="xMidYMid meet" style={{ display: "block" }}>
-      <rect x={openL} y={top} width={openR - openL} height={floor - top} fill="#8895A3" stroke="#3C4956" strokeWidth="1" />
-      <rect x={innerL} y={top + 5} width={innerR - innerL} height={floor - top - 8} fill="#FFFFFF" />
-      <rect x={innerL} y={top + 5} width={innerR - innerL} height={leafTop - top - 5} fill="#FFFFFF" stroke="#3C4956" strokeWidth="0.8" />
-      {leafViews.map(([l, r], i) => (
-        <rect key={i} x={l} y={leafTop} width={r - l} height={floor - leafTop - 3} fill="#CBD5DF" stroke="#3C4956" strokeWidth="0.9" />
-      ))}
-    </svg>
-  );
-}
 
 function Card({ art, label, summary, comingSoon, onSelect }) {
   const [hover, setHover] = useState(false);
@@ -145,7 +125,7 @@ function Chooser({ onChoose }) {
         {CABLE_SYSTEMS.map(sys => (
           <Card
             key={sys.id}
-            art={<CableArt leaves={sys.leafType === "double-leaf" ? 2 : 1} />}
+            art={(() => { const Art = CABLE_ART[sys.id]; return Art ? <Art /> : null; })()}
             label={sys.label}
             summary={sys.summary}
             onSelect={() => onChoose({ kind: "cable", id: sys.id })}
@@ -154,7 +134,7 @@ function Chooser({ onChoose }) {
         {CABLE_COMING_SOON.map(sys => (
           <Card
             key={sys.id}
-            art={<CableArt leaves={sys.leaves} />}
+            art={<CableSingleArt />}
             label={sys.label}
             summary={sys.summary}
             comingSoon
