@@ -51,6 +51,20 @@ export default function RiserDoorPreview({ product, config, resolution }) {
   const leafSize = resolution?.leaf
   const leafSizeText = leafSize ? `${leafSize.width} × ${leafSize.height}` : null
 
+  // Every leaf is the same width, so the label fit is worked out once:
+  // horizontal always, shrunk to fit, stacked onto two lines rather
+  // than turned on its side.
+  const leafLabel = (() => {
+    if (!leafSizeText) return null
+    const avail = leafW - 6
+    const widthAt = size => leafSizeText.length * size * 0.54
+    let size = 11
+    while (size > 7 && widthAt(size) > avail) size -= 0.5
+    return widthAt(size) <= avail
+      ? { size, lines: [leafSizeText] }
+      : { size, lines: [String(leafSize.width), `× ${leafSize.height}`] }
+  })()
+
   const finishChoice = product?.options
     ?.find(o => o.id === "finish")?.choices
     ?.find(c => c.id === config.finish)
@@ -154,24 +168,16 @@ export default function RiserDoorPreview({ product, config, resolution }) {
                   />
                 ))}
                 {/* Leaf size, written on the leaf itself */}
-                {leafSizeText && room && (
-                  leafW > 74 ? (
-                    <text
-                      x={lx + leafW / 2} y={y0 + drawH * 0.38} textAnchor="middle"
-                      fontFamily={FONT} fontSize="11" fill={DIM}
-                    >
-                      {leafSizeText}
-                    </text>
-                  ) : (
-                    <text
-                      x={lx + leafW / 2} y={y0 + drawH * 0.38} textAnchor="middle"
-                      fontFamily={FONT} fontSize="10" fill={DIM}
-                      transform={`rotate(-90 ${lx + leafW / 2} ${y0 + drawH * 0.38})`}
-                    >
-                      {leafSizeText}
-                    </text>
-                  )
-                )}
+                {leafLabel && room && leafLabel.lines.map((line, n) => (
+                  <text
+                    key={n}
+                    x={lx + leafW / 2} y={y0 + drawH * 0.38 + n * leafLabel.size * 1.15}
+                    textAnchor="middle"
+                    fontFamily={FONT} fontSize={leafLabel.size} fill={DIM}
+                  >
+                    {line}
+                  </text>
+                ))}
               </g>
             )
           })}
