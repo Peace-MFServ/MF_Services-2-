@@ -549,13 +549,6 @@ function FrameArt({ id }) {
       {id === "raised-picture" && (
         <path d="M34 13 H86 M34 13 V18 M86 13 V18" stroke={steel} strokeWidth="2.4" fill="none" />
       )}
-      {id === "framesmart" && (
-        <>
-          <path d="M34 16 H86" stroke={steel} strokeWidth="2.4" fill="none" />
-          <circle cx="48" cy="24" r="2.2" fill={steel} />
-          <circle cx="72" cy="24" r="2.2" fill={steel} />
-        </>
-      )}
     </svg>
   );
 }
@@ -598,8 +591,8 @@ function WallStep({ product, config, setConfig, leaves, markTouched, errorFor })
   return (
     <div style={{ padding: "20px 22px" }}>
       <p style={{ margin: "0 0 18px", fontSize: 13.5, lineHeight: 1.6, color: UI.body, fontFamily: FONT }}>
-        What is the doorset going into? The fire rating depends on the
-        wall meeting the required performance.
+        What is the doorset being fixed into? The fire rating depends on
+        the wall meeting the required performance.
       </p>
 
       {CHRISTO.walls.map(w => {

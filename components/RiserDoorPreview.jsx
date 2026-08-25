@@ -1,6 +1,7 @@
 'use client'
 
 import { UI, FONT } from '../lib/theme'
+import { leafLayout } from '../lib/doorLayout'
 
 // Technical elevation of the configured doorset. Scales to the entered
 // dimensions so the proportions on screen are the proportions ordered.
@@ -43,6 +44,13 @@ export default function RiserDoorPreview({ product, config, resolution }) {
 
   const leafW = drawW / leaves
 
+  // Door sets: pairs meeting at a mullion, a single where the count is odd.
+  const layout = leafLayout(leaves, config.handing)
+
+  // The leaf size, written on each leaf the way a door schedule shows it.
+  const leafSize = resolution?.leaf
+  const leafSizeText = leafSize ? `${leafSize.width} × ${leafSize.height}` : null
+
   const finishChoice = product?.options
     ?.find(o => o.id === "finish")?.choices
     ?.find(c => c.id === config.finish)
@@ -74,8 +82,7 @@ export default function RiserDoorPreview({ product, config, resolution }) {
           {/* Architrave — the chosen frame's real face, one coherent
               band around the leaves:
                 picture         flat band
-                raised-picture  flat band with the 8 mm raised return
-                framesmart      flat band with the adjustable liner joint */}
+                raised-picture  flat band with the 8 mm raised return */}
           {!flush && (
             <g>
               <rect
@@ -90,30 +97,21 @@ export default function RiserDoorPreview({ product, config, resolution }) {
                   fill="none" stroke={EDGE} strokeWidth="0.9"
                 />
               )}
-              {config.frameStyle === "framesmart" && (
-                <rect
-                  x={x0 - bandW * 0.5} y={y0 - bandW * 0.5}
-                  width={drawW + bandW} height={drawH + bandW}
-                  fill="none" stroke={EDGE} strokeWidth="0.6" strokeDasharray="5 4" opacity="0.7"
-                />
-              )}
             </g>
           )}
 
-          {/* Leaves. Christo doors are pivot-hung — no hinges. Handing
-              decides the pivot edge: the active leaf sits on the handing
-              side (viewed from the access side), and each leaf pivots
-              towards its nearer jamb so multi-leaf sets read as folding
-              outward. */}
-          {Array.from({ length: leaves }, (_, i) => {
+          {/* Leaves. A multi-leaf riser is a row of door sets, each
+              set a pair meeting at a centre mullion and pivoted at its
+              outer edges. Christo doors are pivot-hung — no hinges. */}
+          {layout.leaves.map(info => {
+            const i = info.index
             const lx = x0 + i * leafW
             const inset = 1
-            const rightHand = config.handing === "right"
-            const pivotsRight = leaves === 1 ? rightHand : i >= leaves / 2
+            const pivotsRight = info.pivotSide === "right"
             const pivotX = pivotsRight ? lx + leafW - 8 : lx + 3
-            const isActive = leaves === 1 || (rightHand ? i === leaves - 1 : i === 0)
             const lockX = pivotsRight ? lx + 7 : lx + leafW - 12
             const euroVisible = !!config.lockType && config.lockType !== "slik-concealed"
+            const room = leafW > 26 && drawH > 40
             return (
               <g key={i}>
                 <rect
@@ -122,7 +120,7 @@ export default function RiserDoorPreview({ product, config, resolution }) {
                   fill={LEAF} stroke={EDGE} strokeWidth="1.1"
                 />
                 {/* Pivot pins, top and bottom of the pivot edge */}
-                {leafW > 26 && drawH > 40 && [y0 + 4, y0 + drawH - 10].map(py => (
+                {room && [y0 + 4, y0 + drawH - 10].map(py => (
                   <rect
                     key={py}
                     x={pivotX} y={py} width={6} height={6}
@@ -131,7 +129,7 @@ export default function RiserDoorPreview({ product, config, resolution }) {
                 ))}
                 {/* Lock on the active leaf's leading edge: the SLIK slot,
                     plus a cylinder mark when the face carries one. */}
-                {isActive && leafW > 26 && drawH > 40 && (
+                {info.isActive && room && (
                   <g>
                     <rect
                       x={lockX} y={y0 + drawH / 2 - 7}
@@ -146,9 +144,47 @@ export default function RiserDoorPreview({ product, config, resolution }) {
                     )}
                   </g>
                 )}
+                {/* Passive leaf: the 2-point bolts, top and bottom of
+                    the leading edge. */}
+                {info.isPassive && room && [y0 + 16, y0 + drawH - 22].map(by => (
+                  <rect
+                    key={by}
+                    x={lockX} y={by} width={4} height={6}
+                    fill="#6D7A88" stroke={EDGE} strokeWidth="0.6"
+                  />
+                ))}
+                {/* Leaf size, written on the leaf itself */}
+                {leafSizeText && room && (
+                  leafW > 74 ? (
+                    <text
+                      x={lx + leafW / 2} y={y0 + drawH * 0.38} textAnchor="middle"
+                      fontFamily={FONT} fontSize="11" fill={DIM}
+                    >
+                      {leafSizeText}
+                    </text>
+                  ) : (
+                    <text
+                      x={lx + leafW / 2} y={y0 + drawH * 0.38} textAnchor="middle"
+                      fontFamily={FONT} fontSize="10" fill={DIM}
+                      transform={`rotate(-90 ${lx + leafW / 2} ${y0 + drawH * 0.38})`}
+                    >
+                      {leafSizeText}
+                    </text>
+                  )
+                )}
               </g>
             )
           })}
+
+          {/* Mullion between adjacent door sets */}
+          {layout.boundaries.map(b => (
+            <rect
+              key={`m-${b}`}
+              x={x0 + b * leafW - 2} y={y0}
+              width={4} height={drawH}
+              fill="#8895A3" stroke={EDGE} strokeWidth="0.8"
+            />
+          ))}
 
           {/* Width dimension, below */}
           <g stroke={DIM} strokeWidth="0.9" fill="none">

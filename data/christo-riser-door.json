@@ -47,7 +47,7 @@
       "summary": "Blockwork, brickwork or concrete. Approved for single and double leaf assemblies only." },
     { "id": "shaftwall", "label": "Shaftwall", "maxLeaves": 6,
       "summary": "Steel stud shaftwall, installed in the plane of the corridor lining. Approved for all configurations." },
-    { "id": "masonry-lined", "label": "Masonry with lining system", "maxLeaves": 6,
+    { "id": "masonry-lined", "label": "Masonry / concrete with lining system", "maxLeaves": 6,
       "summary": "Masonry wall with a plasterboard lining; the doorset sits in the plane of the lining on a steel liner system. Approved for all configurations." }
   ],
 
@@ -57,9 +57,7 @@
     { "id": "picture", "label": "Picture frame",
       "summary": "Visible flat architrave around the opening." },
     { "id": "raised-picture", "label": "Raised picture frame",
-      "summary": "Visible architrave with an 8 mm raised return." },
-    { "id": "framesmart", "label": "FrameSmart adjustable",
-      "summary": "Adjustable-depth frame system for a faster, packer-free installation." }
+      "summary": "Visible architrave with an 8 mm raised return." }
   ],
 
   "locks": [
