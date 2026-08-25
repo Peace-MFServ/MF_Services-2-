@@ -1179,18 +1179,18 @@ export default function SpecGenerator({ startProductId, onChangeProduct, modeSwi
         borderRight: `1px solid ${UI.ruleStrong}`, minHeight: 0,
       }}>
         <header style={{ padding: "18px 22px 16px", borderBottom: `1px solid ${UI.rule}`, flexShrink: 0 }}>
-          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
-            <div style={{ minWidth: 0 }}>
-              <h1 style={{ margin: 0, fontSize: 19, fontWeight: 600, letterSpacing: "-0.01em", color: UI.ink, lineHeight: 1.3 }}>
-                {product?.label ?? "Doorset"}
-              </h1>
-              <p style={{ margin: "6px 0 0", fontSize: 13, color: UI.body, lineHeight: 1.5 }}>
-                {SPEC_TYPES.find(s => s.id === specType)?.label} specification
-                {projectData.projectName?.trim() ? ` · ${projectData.projectName.trim()}` : ""}
-              </p>
-            </div>
+          {/* The layout switch sits beside the product name here and in
+              the quick layout, so it does not move between the two. */}
+          <div style={{ display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap", minWidth: 0 }}>
+            <h1 style={{ margin: 0, fontSize: 19, fontWeight: 600, letterSpacing: "-0.01em", color: UI.ink, lineHeight: 1.3 }}>
+              {product?.label ?? "Doorset"}
+            </h1>
             {modeSwitch}
           </div>
+          <p style={{ margin: "8px 0 0", fontSize: 13, color: UI.body, lineHeight: 1.5 }}>
+            {SPEC_TYPES.find(s => s.id === specType)?.label} specification
+            {projectData.projectName?.trim() ? ` · ${projectData.projectName.trim()}` : ""}
+          </p>
         </header>
 
         <StepBar currentStep={currentStep} setCurrentStep={goToStep} furthest={furthest} />

@@ -137,6 +137,17 @@ export default function QuickSpec({ productTypeId = "riser-doors", onChangeProdu
     } catch { /* storage full or blocked — persistence is best-effort */ }
   }, [hydrated, productTypeId, config, specType, projectData]);
 
+  const startOver = useCallback(() => {
+    setConfig(buildInitialConfig(product));
+    setSpecType("branded");
+    setProjectData({
+      businessName: "", contactName: "", email: "", phone: "",
+      projectName: "", architecturalFirm: "",
+    });
+    setNotice(null);
+    try { window.sessionStorage.removeItem(STORAGE_KEY); } catch { /* best-effort */ }
+  }, [product]);
+
   const set = useCallback((key, value) => setConfig(c => ({ ...c, [key]: value })), []);
   const setPd = useCallback((key, value) => setProjectData(pd => ({ ...pd, [key]: value })), []);
 
@@ -187,10 +198,15 @@ export default function QuickSpec({ productTypeId = "riser-doors", onChangeProdu
         display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16,
         padding: "14px 26px", borderBottom: `1px solid ${UI.ruleStrong}`, flexShrink: 0,
       }}>
-        <div style={{ display: "flex", alignItems: "baseline", gap: 12, flexWrap: "wrap" }}>
+        {/* The layout switch sits on the left in both views, so it does
+            not move when you change between them. */}
+        <div style={{ display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap", minWidth: 0 }}>
           <h1 style={{ margin: 0, fontSize: 18, fontWeight: 600, letterSpacing: "-0.01em", color: UI.ink }}>
             {product.label}
           </h1>
+          {modeSwitch}
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 18, flexShrink: 0 }}>
           <button
             type="button" onClick={onChangeProduct}
             style={{
@@ -200,8 +216,16 @@ export default function QuickSpec({ productTypeId = "riser-doors", onChangeProdu
           >
             Change product
           </button>
+          <button
+            type="button" onClick={startOver}
+            style={{
+              background: "none", border: "none", padding: 0, fontFamily: FONT,
+              fontSize: 13, color: UI.accent, textDecoration: "underline", cursor: "pointer",
+            }}
+          >
+            Start over
+          </button>
         </div>
-        {modeSwitch}
       </header>
 
       <div style={{ flex: 1, minHeight: 0, display: "flex", overflow: "hidden" }}>
