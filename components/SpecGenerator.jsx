@@ -553,7 +553,7 @@ function FrameArt({ id }) {
   );
 }
 
-function ChoiceCard({ art, label, summary, selected, disabled, disabledNote, onSelect }) {
+function ChoiceCard({ art, artWidth = 108, label, summary, selected, disabled, disabledNote, onSelect }) {
   return (
     <button
       type="button"
@@ -570,7 +570,7 @@ function ChoiceCard({ art, label, summary, selected, disabled, disabledNote, onS
         marginBottom: 10,
       }}
     >
-      <div style={{ width: 108, flexShrink: 0, background: "#F4F6F8", padding: 4, border: `1px solid ${UI.rule}` }}>
+      <div style={{ width: artWidth, flexShrink: 0, background: "#F4F6F8", padding: 4, border: `1px solid ${UI.rule}` }}>
         {art}
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
@@ -643,28 +643,138 @@ function WallStep({ product, config, setConfig, leaves, markTouched, errorFor })
 
 // ─── Step 4 — lock & key (visual) ─────────────────────────────────
 
-/** Lock face miniatures: SLIK slot, euro cylinder, thumb turn. */
+/** Lock illustrations.
+ *
+ *  The door face as it actually looks, beside what opens it. Every
+ *  option is the same 3-point lock behind a spring-loaded invisible
+ *  keyhole (the SLIK); what differs is what else sits on the face and
+ *  therefore what the customer carries — a square-drive key, a euro
+ *  key, or a turn they operate by hand.
+ */
 function LockArt({ id }) {
-  const steel = "#3C4956", face = "#E8ECEF";
+  const EDGE = "#5A656E", DARK = "#2A333B";
   const plus = id.startsWith("slik-plus");
   const thumb = id.includes("thumb");
-  const euro = id.includes("euro") || plus;
   const concealed = id === "slik-concealed";
+  // A euro cylinder is on the face unless it is concealed behind the
+  // SLIK (the "plus" options) or there is none at all.
+  const faceCylinder = !concealed && !plus;
+  const needsEuroKey = !concealed && !thumb;
+
+  const g = n => `${n}-${id}`;
+
   return (
-    <svg viewBox="0 0 120 62" width="100%" aria-hidden="true" style={{ display: "block" }}>
-      {/* Leaf face */}
-      <rect x="30" y="4" width="60" height="54" fill={face} stroke={steel} strokeWidth="1" />
-      {/* SLIK — spring-loaded invisible keyhole: a discreet slot */}
-      <rect x="57" y="12" width="6" height="14" rx="3" fill="none" stroke={steel} strokeWidth="1.4" />
-      {concealed && <circle cx="60" cy="42" r="1.6" fill={steel} />}
-      {!concealed && euro && (
+    <svg viewBox="0 0 180 120" width="100%" aria-hidden="true" style={{ display: "block" }}>
+      <defs>
+        <linearGradient id={g("door")} x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stopColor="#EDF1F4" />
+          <stop offset="0.7" stopColor="#DFE5EA" />
+          <stop offset="1" stopColor="#CFD7DE" />
+        </linearGradient>
+        <linearGradient id={g("steel")} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#F6F8F9" />
+          <stop offset="0.45" stopColor="#C9D1D8" />
+          <stop offset="1" stopColor="#95A0A8" />
+        </linearGradient>
+        <linearGradient id={g("cyl")} x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stopColor="#B9C3CB" />
+          <stop offset="0.35" stopColor="#F1F4F6" />
+          <stop offset="0.75" stopColor="#C3CCD3" />
+          <stop offset="1" stopColor="#8F9AA2" />
+        </linearGradient>
+        <radialGradient id={g("disc")} cx="0.38" cy="0.32" r="0.8">
+          <stop offset="0" stopColor="#F4F7F8" />
+          <stop offset="0.6" stopColor="#DDE3E8" />
+          <stop offset="1" stopColor="#B6C0C8" />
+        </radialGradient>
+      </defs>
+
+      {/* ── Door face, close up on the lock stile ── */}
+      <rect x="6" y="6" width="100" height="108" fill={`url(#${g("door")})`} stroke={EDGE} strokeWidth="1" />
+      {/* Brushed grain */}
+      <g stroke="#FFFFFF" strokeWidth="0.6" opacity="0.35">
+        {[18, 34, 50, 66, 82].map(x => <line key={x} x1={x} y1="8" x2={x} y2="112" />)}
+      </g>
+      {/* The leading edge of the leaf */}
+      <rect x="94" y="6" width="12" height="108" fill="#B9C2C9" stroke={EDGE} strokeWidth="0.8" />
+      <line x1="94" y1="6" x2="94" y2="114" stroke="#FFFFFF" strokeWidth="0.7" opacity="0.55" />
+
+      {/* ── SLIK — the spring-loaded invisible keyhole ──
+          Flush with the face: a fine seam, with the square drive
+          sitting behind the cover. */}
+      <g>
+        <circle cx="56" cy={faceCylinder ? 40 : 56} r="13.5" fill={`url(#${g("disc")})`} stroke={EDGE} strokeWidth="0.9" />
+        <circle cx="56" cy={faceCylinder ? 40 : 56} r="10.5" fill="none" stroke={EDGE} strokeWidth="0.5" opacity="0.55" />
+        {/* Square drive behind the cover */}
+        <rect
+          x="51.5" y={(faceCylinder ? 40 : 56) - 4.5} width="9" height="9" rx="1"
+          fill="none" stroke={DARK} strokeWidth="0.85" strokeDasharray="3.4 2.2" opacity="0.55"
+        />
+        {/* Concealed cylinder behind the SLIK on the plus options */}
+        {plus && (
+          <circle cx="56" cy={(faceCylinder ? 40 : 56) + 20} r="8.5" fill="none"
+            stroke={EDGE} strokeWidth="0.8" strokeDasharray="3 2.4" opacity="0.45" />
+        )}
+      </g>
+
+      {/* ── Euro cylinder on the face ── */}
+      {faceCylinder && (
         <g>
-          <circle cx="60" cy="42" r="7" fill="none" stroke={steel} strokeWidth="1.4" />
-          {thumb
-            ? <rect x="56.5" y="40.4" width="7" height="3.2" rx="1.6" fill={steel} />
-            : <path d="M60 37.5 V44 M58.6 44 H61.4 V47.5 H58.6 Z" fill={steel} stroke="none" />}
+          {/* Escutcheon rose */}
+          <circle cx="56" cy="82" r="14" fill={`url(#${g("disc")})`} stroke={EDGE} strokeWidth="0.9" />
+          {thumb ? (
+            <g>
+              {/* Thumb turn — knurled metal knob */}
+              <rect x="47" y="76" width="18" height="12" rx="6" fill={`url(#${g("steel")})`} stroke={EDGE} strokeWidth="1" />
+              <g stroke={EDGE} strokeWidth="0.6" opacity="0.5">
+                {[51, 56, 61].map(x => <line key={x} x1={x} y1="78.5" x2={x} y2="85.5" />)}
+              </g>
+            </g>
+          ) : (
+            <g>
+              {/* Cylinder face and keyway */}
+              <circle cx="56" cy="82" r="9" fill={`url(#${g("cyl")})`} stroke={EDGE} strokeWidth="1" />
+              <circle cx="56" cy="78.5" r="2.4" fill={DARK} />
+              <path d="M54.6 78.5 H57.4 L56.6 89 H55.4 Z" fill={DARK} />
+            </g>
+          )}
         </g>
       )}
+
+      {/* ── What opens it ── */}
+      <g transform="translate(112, 0)">
+        {/* Square-drive key — every option is opened by one */}
+        <g>
+          <rect x="12" y="16" width="34" height="8" rx="4" fill={`url(#${g("steel")})`} stroke={EDGE} strokeWidth="0.9" />
+          <rect x="25" y="24" width="8" height="19" fill={`url(#${g("steel")})`} stroke={EDGE} strokeWidth="0.9" />
+          <rect x="22.5" y="43" width="13" height="12" rx="1.2" fill="#8B959D" stroke={EDGE} strokeWidth="1" />
+          <rect x="26" y="46.5" width="6" height="5" fill={DARK} opacity="0.75" />
+        </g>
+
+        {/* …and, where the face carries one, a euro key or a turn */}
+        {needsEuroKey ? (
+          <g>
+            <rect x="17" y="68" width="24" height="18" rx="6" fill={`url(#${g("steel")})`} stroke={EDGE} strokeWidth="0.9" />
+            <circle cx="29" cy="77" r="3.6" fill="#E4E9ED" stroke={EDGE} strokeWidth="0.7" />
+            <path
+              d="M26 86 H32 V93 L35 94.6 V97 L32 98.4 V101 L34.6 102.4 V104.6 L32 106 H26 Z"
+              fill={`url(#${g("steel")})`} stroke={EDGE} strokeWidth="0.9" strokeLinejoin="round"
+            />
+          </g>
+        ) : (
+          <g>
+            <circle cx="29" cy="86" r="13" fill={`url(#${g("disc")})`} stroke={EDGE} strokeWidth="0.9" />
+            <rect x="20" y="80" width="18" height="12" rx="6" fill={`url(#${g("steel")})`} stroke={EDGE} strokeWidth="1" />
+            <g stroke={EDGE} strokeWidth="0.6" opacity="0.5">
+              {[24, 29, 34].map(x => <line key={x} x1={x} y1="82.5" x2={x} y2="89.5" />)}
+            </g>
+            {/* Turned by hand */}
+            <path d="M43 82 A 15 15 0 0 1 43 90" fill="none" stroke={EDGE} strokeWidth="1" opacity="0.7" />
+            <path d="M41 89 L43.4 90.8 L45.2 88" fill="none" stroke={EDGE} strokeWidth="1"
+              strokeLinecap="round" strokeLinejoin="round" opacity="0.7" />
+          </g>
+        )}
+      </g>
     </svg>
   );
 }
@@ -681,6 +791,7 @@ function LockStep({ config, setConfig, leaves }) {
         <ChoiceCard
           key={l.id}
           art={<LockArt id={l.id} />}
+          artWidth={164}
           label={l.label}
           summary={l.summary}
           selected={config.lockType === l.id}
