@@ -1181,7 +1181,7 @@ export default function SpecGenerator({ startProductId, onChangeProduct, modeSwi
         <header style={{ padding: "18px 22px 16px", borderBottom: `1px solid ${UI.rule}`, flexShrink: 0 }}>
           {/* The layout switch sits beside the product name here and in
               the quick layout, so it does not move between the two. */}
-          <div style={{ display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap", minWidth: 0 }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, minWidth: 0 }}>
             <h1 style={{ margin: 0, fontSize: 19, fontWeight: 600, letterSpacing: "-0.01em", color: UI.ink, lineHeight: 1.3 }}>
               {product?.label ?? "Doorset"}
             </h1>

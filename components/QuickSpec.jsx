@@ -216,8 +216,11 @@ export default function QuickSpec({ productTypeId = "riser-doors", onChangeProdu
       }}>
         {/* The layout switch sits on the left in both views, so it does
             not move when you change between them. */}
-        <div style={{ display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap", minWidth: 0 }}>
-          <h1 style={{ margin: 0, fontSize: 18, fontWeight: 600, letterSpacing: "-0.01em", color: UI.ink }}>
+        <div style={{
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+          gap: 16, width: 404, flexShrink: 0, minWidth: 0,
+        }}>
+          <h1 style={{ margin: 0, fontSize: 19, fontWeight: 600, letterSpacing: "-0.01em", color: UI.ink }}>
             {product.label}
           </h1>
           {modeSwitch}

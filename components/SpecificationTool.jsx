@@ -40,10 +40,12 @@ function ModeSwitch({ mode, onChange }) {
             key={o.id} type="button" role="radio" aria-checked={on} title={o.title}
             onClick={() => onChange(o.id)}
             style={{
-              padding: "7px 14px", fontSize: 12.5, fontWeight: on ? 600 : 400, fontFamily: FONT,
+              padding: "9px 18px", fontSize: 13.5, fontWeight: on ? 600 : 500, fontFamily: FONT,
               border: `1px solid ${on ? UI.accent : UI.ruleStrong}`,
-              background: on ? UI.accent : UI.surface,
-              color: on ? "#FFFFFF" : UI.body,
+              // The unselected half sits on a tint so the pair reads as
+              // one control rather than fading into the header.
+              background: on ? UI.accent : UI.sunken,
+              color: on ? "#FFFFFF" : UI.ink,
               cursor: "pointer", marginLeft: i === 0 ? 0 : -1,
               position: "relative", zIndex: on ? 1 : 0, whiteSpace: "nowrap",
             }}
