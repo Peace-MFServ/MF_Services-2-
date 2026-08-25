@@ -1,0 +1,45 @@
+# Build and deploy on every push to main.
+#
+# Cloud Build runs this when the GitHub trigger fires: build the image
+# from the Dockerfile, push it to Artifact Registry tagged with the
+# commit, then point Cloud Run at that tag. Tagging by commit means any
+# release can be rolled back to by redeploying an earlier image.
+
+steps:
+  - id: build
+    name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - -t
+      - europe-west1-docker.pkg.dev/$PROJECT_ID/app/spec-tool:$COMMIT_SHA
+      - -t
+      - europe-west1-docker.pkg.dev/$PROJECT_ID/app/spec-tool:latest
+      - .
+
+  - id: push
+    name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - --all-tags
+      - europe-west1-docker.pkg.dev/$PROJECT_ID/app/spec-tool
+
+  - id: deploy
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    entrypoint: gcloud
+    args:
+      - run
+      - deploy
+      - spec-tool
+      - --image=europe-west1-docker.pkg.dev/$PROJECT_ID/app/spec-tool:$COMMIT_SHA
+      - --region=europe-west1
+      - --allow-unauthenticated
+      - --quiet
+
+images:
+  - europe-west1-docker.pkg.dev/$PROJECT_ID/app/spec-tool:$COMMIT_SHA
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+  machineType: E2_HIGHCPU_8
+
+timeout: 1200s
