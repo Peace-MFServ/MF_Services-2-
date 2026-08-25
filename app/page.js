@@ -3,6 +3,8 @@ import { useState } from 'react'
 import { FONT } from '../lib/theme'
 import SpecificationTool from '../components/SpecificationTool'
 import OverpressureCalculator from '../components/OverpressureCalculator'
+import AuthProvider from '../components/AuthProvider'
+import { AccountBar } from '../components/AccountPanel'
 
 const TABS = [
   { id: 'specification', label: 'Specification Tool' },
@@ -22,6 +24,7 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState('specification')
 
   return (
+    <AuthProvider>
     <div style={{ minHeight: '100vh', background: '#F8F9FA', fontFamily: FONT }}>
 
       {/* ── GLOBAL HEADER ── */}
@@ -32,6 +35,7 @@ export default function Home() {
             <div style={{ color: '#fff', fontWeight: 700, fontSize: 14, letterSpacing: '-0.01em', lineHeight: 1.2 }}>MF Services</div>
             <div style={{ color: 'rgba(255,255,255,0.74)', fontSize: 11.5, letterSpacing: '0.03em' }}>Door Systems Toolbox</div>
           </div>
+          <div style={{ marginLeft: 'auto' }}><AccountBar /></div>
         </div>
       </header>
 
@@ -63,5 +67,6 @@ export default function Home() {
       </div>
 
     </div>
+    </AuthProvider>
   )
 }
