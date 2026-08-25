@@ -1,0 +1,14 @@
+{
+  "indexes": [
+    {
+      "_comment": "Listing a person's projects filters by owner and sorts by when they last touched it — Firestore needs this pair declared.",
+      "collectionGroup": "projects",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "ownerId", "order": "ASCENDING" },
+        { "fieldPath": "updatedAt", "order": "DESCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

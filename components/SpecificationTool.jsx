@@ -4,6 +4,8 @@ import SpecGenerator from "./SpecGenerator";
 import CablePlanConfigurator from "./CablePlanConfigurator";
 import QuickSpec from "./QuickSpec";
 import { useAuth } from "./AuthProvider";
+import { SavedProjectList, SaveProjectButton } from "./SavedProjects";
+import { writeWorkingState } from "../lib/projects";
 import { PRODUCT_ART, CABLE_ART, CableSingleArt } from "./ProductIllustrations";
 import { PRODUCT_TYPES } from "../lib/hardwareSpec";
 import { UI, FONT } from "../lib/theme";
@@ -143,7 +145,7 @@ function Group({ title, note, children }) {
   );
 }
 
-function Chooser({ onChoose }) {
+function Chooser({ onChoose, onOpenProject }) {
   return (
     <div style={{ padding: "36px 32px 48px", fontFamily: FONT }}>
       <h1 style={{ margin: 0, fontSize: 28, fontWeight: 600, letterSpacing: "-0.02em", color: UI.ink, lineHeight: 1.2 }}>
@@ -153,6 +155,8 @@ function Chooser({ onChoose }) {
         Configure a doorset or the cabling for a door system, and take
         the specification away as a PDF.
       </p>
+
+      <SavedProjectList onOpen={onOpenProject} />
 
       <Group title="Doorsets" note="Fire-rated doorsets, specified against their approved sizes.">
         {PRODUCT_TYPES.map(pt => {
@@ -197,6 +201,9 @@ function Chooser({ onChoose }) {
 export default function SpecificationTool() {
   const [selection, setSelection] = useState(null);
   const [mode, setMode] = useState("guided");
+  // The saved project currently open, so Save can overwrite it rather
+  // than making a second copy every time.
+  const [openProject, setOpenProject] = useState(null);
   const restored = useRestoredSelection(setSelection, setMode);
   const { ready, signedIn, promptSignIn } = useAuth();
 
@@ -219,14 +226,21 @@ export default function SpecificationTool() {
 
   const clear = useCallback(() => {
     setSelection(null);
+    setOpenProject(null);
     try { window.sessionStorage.removeItem(STORAGE_KEY); } catch { /* best-effort */ }
   }, []);
+
+  const openProjectRecord = useCallback(record => {
+    writeWorkingState(record.kind, record.payload);
+    setOpenProject({ id: record.id, name: record.name });
+    choose({ kind: record.kind, id: record.selectionId });
+  }, [choose]);
 
   // Wait for the restore pass before painting, so a refresh does not
   // flash the chooser on its way back to where the customer was.
   if (!restored) return <div style={{ minHeight: "calc(100vh - 136px)" }} />;
 
-  if (!selection) return <Chooser onChoose={choose} />;
+  if (!selection) return <Chooser onChoose={choose} onOpenProject={openProjectRecord} />;
 
   // The cable plan is a checklist already — the quick layout is for
   // doorsets, where the guided flow is the slow part.
@@ -235,7 +249,17 @@ export default function SpecificationTool() {
   }
 
   const modeSwitch = (
-    <ModeSwitch mode={effectiveMode} onChange={chooseMode} locked={ready && !signedIn} />
+    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+      <ModeSwitch mode={effectiveMode} onChange={chooseMode} locked={ready && !signedIn} />
+      {selection.kind === "door" && (
+        <SaveProjectButton
+          kind={selection.kind}
+          selectionId={selection.id}
+          openProject={openProject}
+          onSaved={saved => setOpenProject(saved)}
+        />
+      )}
+    </div>
   );
 
   if (effectiveMode === "quick") {
