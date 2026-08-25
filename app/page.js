@@ -1,27 +1,25 @@
 'use client'
 import { useState } from 'react'
 import { FONT } from '../lib/theme'
-import CablePlanConfigurator from '../components/CablePlanConfigurator'
-import SpecGenerator from '../components/SpecGenerator'
+import SpecificationTool from '../components/SpecificationTool'
 import OverpressureCalculator from '../components/OverpressureCalculator'
 
 const TABS = [
-  { id: 'hardwareSpec', label: 'Hardware Spec' },
-  { id: 'cablePlan',    label: 'Cable Plan' },
-  { id: 'overpressure', label: 'Overpressure' },
+  { id: 'specification', label: 'Specification Tool' },
+  { id: 'overpressure',  label: 'Overpressure' },
 ]
 
-// The hardware spec and cable plan are two-pane workspaces — a
-// configuration rail beside a persistent elevation — and they run
-// full-bleed: the whole browser width is theirs. Only the calculator
-// keeps a reading width.
+// The specification tool is a two-pane workspace — a configuration
+// rail beside a persistent elevation — and it runs full-bleed: the
+// whole browser width is its own. Only the calculator keeps a reading
+// width.
 const CONTENT_MAX_WIDTH = {
   overpressure: 1400,
 }
-const FULL_BLEED = new Set(["hardwareSpec", "cablePlan"])
+const FULL_BLEED = new Set(["specification"])
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState('hardwareSpec')
+  const [activeTab, setActiveTab] = useState('specification')
 
   return (
     <div style={{ minHeight: '100vh', background: '#F8F9FA', fontFamily: FONT }}>
@@ -60,9 +58,8 @@ export default function Home() {
         margin: '0 auto',
         padding: '32px',
       }}>
-        {activeTab === 'hardwareSpec' && <SpecGenerator />}
-        {activeTab === 'cablePlan'    && <CablePlanConfigurator />}
-        {activeTab === 'overpressure' && <OverpressureCalculator />}
+        {activeTab === 'specification' && <SpecificationTool />}
+        {activeTab === 'overpressure'  && <OverpressureCalculator />}
       </div>
 
     </div>

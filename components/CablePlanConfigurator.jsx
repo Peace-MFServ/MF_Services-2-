@@ -439,11 +439,15 @@ function ProjectDetails({ projectData, setProjectData }) {
 
 // ─── Main ─────────────────────────────────────────────────────────
 
-export default function CablePlanConfigurator() {
-  const [currentStep, setCurrentStep] = useState(0);
-  const [furthest, setFurthest] = useState(0);
-  const [selectedSystemId, setSelectedSystemId] = useState("ets73-single");
-  const [componentStates, setComponentStates] = useState(() => buildInitialState(SYSTEMS["ets73-single"]));
+export default function CablePlanConfigurator({ startSystemId, onChangeSystem }) {
+  // Mounted inside the Specification Tool the system is already
+  // chosen, so step 0 belongs to the shared chooser rather than here.
+  const embedded = !!startSystemId && !!SYSTEMS[startSystemId];
+  const firstSystemId = embedded ? startSystemId : "ets73-single";
+  const [currentStep, setCurrentStep] = useState(embedded ? 1 : 0);
+  const [furthest, setFurthest] = useState(embedded ? 1 : 0);
+  const [selectedSystemId, setSelectedSystemId] = useState(firstSystemId);
+  const [componentStates, setComponentStates] = useState(() => buildInitialState(SYSTEMS[firstSystemId]));
   const [projectData, setProjectData] = useState({
     constructionProject: "", doorNumberOrNaming: "", installationLocation: "",
     positionNumberInSpec: "", functionDescription: "", miscellaneous: "",
@@ -499,8 +503,16 @@ export default function CablePlanConfigurator() {
     if (railRef.current) railRef.current.scrollTop = 0;
   };
   const goBack = () => {
+    if (currentStep <= 1 && onChangeSystem) { onChangeSystem(); return; }
     setCurrentStep(s => Math.max(s - 1, 0));
     if (railRef.current) railRef.current.scrollTop = 0;
+  };
+
+  // Stepping back to "System" hands control to the shared chooser
+  // when this is mounted inside the Specification Tool.
+  const goToStep = i => {
+    if (i === 0 && onChangeSystem) { onChangeSystem(); return; }
+    setCurrentStep(i);
   };
 
   const nextDisabled = currentStep === 1 && !validation.isValid;
@@ -539,7 +551,7 @@ export default function CablePlanConfigurator() {
           </div>
         </header>
 
-        <StepBar currentStep={currentStep} setCurrentStep={setCurrentStep} furthest={furthest} />
+        <StepBar currentStep={currentStep} setCurrentStep={goToStep} furthest={furthest} />
 
         {currentStep === 1 && <IssueList validation={validation} />}
 

@@ -840,10 +840,13 @@ function ReviewStep({ product, config, specType, validation, onGenerate, generat
 // rather than merged.
 const STORAGE_KEY = "mf-hardware-spec-v2";
 
-export default function SpecGenerator() {
-  const [currentStep, setCurrentStep] = useState(0);
-  const [furthest, setFurthest] = useState(0);
-  const [productTypeId, setProductTypeId] = useState("riser-doors");
+export default function SpecGenerator({ startProductId, onChangeProduct }) {
+  // Mounted inside the Specification Tool the product is already
+  // chosen, so step 0 belongs to the shared chooser rather than here.
+  const embedded = !!startProductId;
+  const [currentStep, setCurrentStep] = useState(embedded ? 1 : 0);
+  const [furthest, setFurthest] = useState(embedded ? 1 : 0);
+  const [productTypeId, setProductTypeId] = useState(startProductId ?? "riser-doors");
   const [specType, setSpecType] = useState("branded");
   const [projectData, setProjectData] = useState({
     businessName: "", contactName: "", email: "", phone: "",
@@ -866,14 +869,19 @@ export default function SpecGenerator() {
       const raw = window.sessionStorage.getItem(STORAGE_KEY);
       if (raw) {
         const saved = JSON.parse(raw);
-        if (saved.productTypeId && getProduct(saved.productTypeId)) {
+        const savedFitsMount = !embedded || saved.productTypeId === startProductId;
+        if (savedFitsMount && saved.productTypeId && getProduct(saved.productTypeId)) {
           setProductTypeId(saved.productTypeId);
           setConfig({ ...buildInitialConfig(getProduct(saved.productTypeId)), ...(saved.config ?? {}) });
         }
         if (saved.specType) setSpecType(saved.specType);
         if (saved.projectData) setProjectData(pd => ({ ...pd, ...saved.projectData }));
-        if (typeof saved.furthest === "number") setFurthest(saved.furthest);
-        if (typeof saved.currentStep === "number") setCurrentStep(saved.currentStep);
+        if (typeof saved.furthest === "number") {
+          setFurthest(embedded ? Math.max(1, saved.furthest) : saved.furthest);
+        }
+        if (typeof saved.currentStep === "number") {
+          setCurrentStep(embedded ? Math.max(1, saved.currentStep) : saved.currentStep);
+        }
       }
     } catch { /* corrupt or unavailable storage is not worth breaking the tool over */ }
     restored.current = true;
@@ -897,7 +905,8 @@ export default function SpecGenerator() {
     setCurrentStep(0);
     setFurthest(0);
     setNotice(null);
-  }, []);
+    onChangeProduct?.();
+  }, [onChangeProduct]);
 
   const validation = validateSpec(product, config, projectData);
   const resolution = validation.resolution ?? resolveProduct(product, config);
@@ -940,8 +949,16 @@ export default function SpecGenerator() {
     if (railRef.current) railRef.current.scrollTop = 0;
   };
   const goBack = () => {
+    if (currentStep <= 1 && onChangeProduct) { onChangeProduct(); return; }
     setCurrentStep(s => Math.max(s - 1, 0));
     if (railRef.current) railRef.current.scrollTop = 0;
+  };
+
+  // Stepping back to "Product" hands control to the shared chooser
+  // when this is mounted inside the Specification Tool.
+  const goToStep = i => {
+    if (i === 0 && onChangeProduct) { onChangeProduct(); return; }
+    setCurrentStep(i);
   };
 
   const handleGenerate = async () => {
@@ -986,7 +1003,7 @@ export default function SpecGenerator() {
     }}>
       <span style={{ display: "flex", gap: 10 }}>
         <button
-          type="button" onClick={goBack} disabled={currentStep === 0}
+          type="button" onClick={goBack} disabled={currentStep === 0 && !onChangeProduct}
           style={{
             padding: "10px 18px", fontSize: 13.5, fontWeight: 500, fontFamily: FONT,
             border: `1px solid ${UI.ruleStrong}`, background: UI.surface,
@@ -1030,7 +1047,7 @@ export default function SpecGenerator() {
   if (currentStep === 0) {
     return (
       <div style={{ ...shell, display: "flex", flexDirection: "column", minHeight: "calc(100vh - 136px)" }}>
-        <StepBar currentStep={currentStep} setCurrentStep={setCurrentStep} furthest={furthest} />
+        <StepBar currentStep={currentStep} setCurrentStep={goToStep} furthest={furthest} />
         <div style={{ flex: 1 }}>
           <ProductStep productTypeId={productTypeId} onChoose={chooseProduct} />
         </div>
@@ -1057,7 +1074,7 @@ export default function SpecGenerator() {
           </p>
         </header>
 
-        <StepBar currentStep={currentStep} setCurrentStep={setCurrentStep} furthest={furthest} />
+        <StepBar currentStep={currentStep} setCurrentStep={goToStep} furthest={furthest} />
 
         {currentStep === 1 && <OutstandingList errors={specifyErrors} />}
 
