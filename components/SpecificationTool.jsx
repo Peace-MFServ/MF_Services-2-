@@ -2,6 +2,7 @@
 import { useState, useCallback, useEffect } from "react";
 import SpecGenerator from "./SpecGenerator";
 import CablePlanConfigurator from "./CablePlanConfigurator";
+import QuickSpec from "./QuickSpec";
 import { PRODUCT_ART, CABLE_ART, CableSingleArt } from "./ProductIllustrations";
 import { PRODUCT_TYPES } from "../lib/hardwareSpec";
 import { UI, FONT } from "../lib/theme";
@@ -21,6 +22,39 @@ const CABLE_COMING_SOON = [
 ];
 
 const STORAGE_KEY = "mf-specification-tool-selection";
+const MODE_KEY = "mf-specification-tool-mode";
+
+/** Guided walks you through it; quick puts the whole thing on one
+ *  screen for someone who specifies these every week. */
+function ModeSwitch({ mode, onChange }) {
+  const opts = [
+    { id: "guided", label: "Guided", title: "Step by step, with the drawing beside you" },
+    { id: "quick", label: "Quick spec", title: "Everything on one screen" },
+  ];
+  return (
+    <div role="radiogroup" aria-label="Layout" style={{ display: "flex", flexShrink: 0 }}>
+      {opts.map((o, i) => {
+        const on = mode === o.id;
+        return (
+          <button
+            key={o.id} type="button" role="radio" aria-checked={on} title={o.title}
+            onClick={() => onChange(o.id)}
+            style={{
+              padding: "7px 14px", fontSize: 12.5, fontWeight: on ? 600 : 400, fontFamily: FONT,
+              border: `1px solid ${on ? UI.accent : UI.ruleStrong}`,
+              background: on ? UI.accent : UI.surface,
+              color: on ? "#FFFFFF" : UI.body,
+              cursor: "pointer", marginLeft: i === 0 ? 0 : -1,
+              position: "relative", zIndex: on ? 1 : 0, whiteSpace: "nowrap",
+            }}
+          >
+            {o.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
 
 function Card({ art, label, summary, comingSoon, onSelect }) {
   const [hover, setHover] = useState(false);
@@ -147,7 +181,13 @@ function Chooser({ onChoose }) {
 
 export default function SpecificationTool() {
   const [selection, setSelection] = useState(null);
-  const restored = useRestoredSelection(setSelection);
+  const [mode, setMode] = useState("guided");
+  const restored = useRestoredSelection(setSelection, setMode);
+
+  const chooseMode = useCallback(m => {
+    setMode(m);
+    try { window.sessionStorage.setItem(MODE_KEY, m); } catch { /* best-effort */ }
+  }, []);
 
   const choose = useCallback(sel => {
     setSelection(sel);
@@ -165,16 +205,28 @@ export default function SpecificationTool() {
 
   if (!selection) return <Chooser onChoose={choose} />;
 
+  // The cable plan is a checklist already — the quick layout is for
+  // doorsets, where the guided flow is the slow part.
   if (selection.kind === "cable") {
     return <CablePlanConfigurator startSystemId={selection.id} onChangeSystem={clear} />;
   }
-  return <SpecGenerator startProductId={selection.id} onChangeProduct={clear} />;
+
+  const modeSwitch = <ModeSwitch mode={mode} onChange={chooseMode} />;
+
+  if (mode === "quick") {
+    return <QuickSpec productTypeId={selection.id} onChangeProduct={clear} modeSwitch={modeSwitch} />;
+  }
+  return <SpecGenerator startProductId={selection.id} onChangeProduct={clear} modeSwitch={modeSwitch} />;
 }
 
 /** Bring back what was being specified before a refresh. */
-function useRestoredSelection(setSelection) {
+function useRestoredSelection(setSelection, setMode) {
   const [done, setDone] = useState(false);
   useEffect(() => {
+    try {
+      const savedMode = window.sessionStorage.getItem(MODE_KEY);
+      if (savedMode === "quick" || savedMode === "guided") setMode(savedMode);
+    } catch { /* best-effort */ }
     try {
       const raw = window.sessionStorage.getItem(STORAGE_KEY);
       if (raw) {
@@ -186,6 +238,6 @@ function useRestoredSelection(setSelection) {
       }
     } catch { /* corrupt or unavailable storage is not worth breaking the tool over */ }
     setDone(true);
-  }, [setSelection]);
+  }, [setSelection, setMode]);
   return done;
 }

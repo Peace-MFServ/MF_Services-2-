@@ -951,7 +951,7 @@ function ReviewStep({ product, config, specType, validation, onGenerate, generat
 // rather than merged.
 const STORAGE_KEY = "mf-hardware-spec-v2";
 
-export default function SpecGenerator({ startProductId, onChangeProduct }) {
+export default function SpecGenerator({ startProductId, onChangeProduct, modeSwitch }) {
   // Mounted inside the Specification Tool the product is already
   // chosen, so step 0 belongs to the shared chooser rather than here.
   const embedded = !!startProductId;
@@ -970,7 +970,10 @@ export default function SpecGenerator({ startProductId, onChangeProduct }) {
   const [notice, setNotice] = useState(null);
 
   const railRef = useRef(null);
-  const restored = useRef(false);
+  // State, not a ref: saving must wait for a render in which the
+  // restored configuration is present, or the first save writes the
+  // empty initial state back over it.
+  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
     // Earlier builds saved to localStorage, which outlives the window —
@@ -995,17 +998,17 @@ export default function SpecGenerator({ startProductId, onChangeProduct }) {
         }
       }
     } catch { /* corrupt or unavailable storage is not worth breaking the tool over */ }
-    restored.current = true;
+    setHydrated(true);
   }, []);
 
   useEffect(() => {
-    if (!restored.current) return;
+    if (!hydrated) return;
     try {
       window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify({
         productTypeId, config, specType, projectData, currentStep, furthest,
       }));
     } catch { /* storage full or blocked — persistence is best-effort */ }
-  }, [productTypeId, config, specType, projectData, currentStep, furthest]);
+  }, [hydrated, productTypeId, config, specType, projectData, currentStep, furthest]);
 
   const startOver = useCallback(() => {
     try { window.sessionStorage.removeItem(STORAGE_KEY); } catch { /* best-effort */ }
@@ -1176,13 +1179,18 @@ export default function SpecGenerator({ startProductId, onChangeProduct }) {
         borderRight: `1px solid ${UI.ruleStrong}`, minHeight: 0,
       }}>
         <header style={{ padding: "18px 22px 16px", borderBottom: `1px solid ${UI.rule}`, flexShrink: 0 }}>
-          <h1 style={{ margin: 0, fontSize: 19, fontWeight: 600, letterSpacing: "-0.01em", color: UI.ink, lineHeight: 1.3 }}>
-            {product?.label ?? "Doorset"}
-          </h1>
-          <p style={{ margin: "6px 0 0", fontSize: 13, color: UI.body, lineHeight: 1.5 }}>
-            {SPEC_TYPES.find(s => s.id === specType)?.label} specification
-            {projectData.projectName?.trim() ? ` · ${projectData.projectName.trim()}` : ""}
-          </p>
+          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
+            <div style={{ minWidth: 0 }}>
+              <h1 style={{ margin: 0, fontSize: 19, fontWeight: 600, letterSpacing: "-0.01em", color: UI.ink, lineHeight: 1.3 }}>
+                {product?.label ?? "Doorset"}
+              </h1>
+              <p style={{ margin: "6px 0 0", fontSize: 13, color: UI.body, lineHeight: 1.5 }}>
+                {SPEC_TYPES.find(s => s.id === specType)?.label} specification
+                {projectData.projectName?.trim() ? ` · ${projectData.projectName.trim()}` : ""}
+              </p>
+            </div>
+            {modeSwitch}
+          </div>
         </header>
 
         <StepBar currentStep={currentStep} setCurrentStep={goToStep} furthest={furthest} />
