@@ -3,6 +3,7 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import RiserDoorPreview from "./RiserDoorPreview";
 import { PRODUCT_ART } from "./ProductIllustrations";
 import { generateHardwareSpecPDF } from "../lib/generateHardwareSpecPDF";
+import BackArrow from "./BackArrow";
 import { UI, FONT, fieldStyle, focusField, blurField } from "../lib/theme";
 import {
   PRODUCT_TYPES, SPEC_TYPES, CHRISTO, getProduct,
@@ -812,7 +813,7 @@ function LockStep({ config, setConfig, leaves }) {
 
 /** Who the specification is for and which project it belongs to —
  *  its own step, the same as on the cable plan. */
-function ProjectStep({ projectData, setProjectData, specType, setSpecType, markTouched, errorFor }) {
+function ProjectStep({ projectData, setProjectData, specType, setSpecType, markTouched, errorFor, config, setQuantity }) {
   return (
     <div style={{ padding: "20px 22px" }}>
       <RailSection title="Specification type">
@@ -857,6 +858,11 @@ function ProjectStep({ projectData, setProjectData, specType, setSpecType, markT
       </RailSection>
 
       <RailSection title="Project">
+        <TextField
+          id="pd-quantity" label="Quantity of this doorset"
+          value={config.quantity}
+          onChange={v => setQuantity(v.replace(/\D/g, "").slice(0, 3))}
+        />
         <TextField
           id="pd-projectName" label="Project name"
           value={projectData.projectName}
@@ -1175,16 +1181,19 @@ export default function SpecGenerator({ startProductId, onChangeProduct, modeSwi
       minHeight: 640, overflow: "hidden",
     }}>
       <aside style={{
-        width: 448, flexShrink: 0, display: "flex", flexDirection: "column",
+        width: 496, flexShrink: 0, display: "flex", flexDirection: "column",
         borderRight: `1px solid ${UI.ruleStrong}`, minHeight: 0,
       }}>
         <header style={{ padding: "18px 22px 16px", borderBottom: `1px solid ${UI.rule}`, flexShrink: 0 }}>
           {/* The layout switch sits beside the product name here and in
               the quick layout, so it does not move between the two. */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, minWidth: 0 }}>
-            <h1 style={{ margin: 0, fontSize: 19, fontWeight: 600, letterSpacing: "-0.01em", color: UI.ink, lineHeight: 1.3 }}>
-              {product?.label ?? "Doorset"}
-            </h1>
+            <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
+              <BackArrow onClick={goBack} />
+              <h1 style={{ margin: 0, fontSize: 19, fontWeight: 600, letterSpacing: "-0.01em", color: UI.ink, lineHeight: 1.3 }}>
+                {product?.label ?? "Doorset"}
+              </h1>
+            </div>
             {modeSwitch}
           </div>
           <p style={{ margin: "8px 0 0", fontSize: 13, color: UI.body, lineHeight: 1.5 }}>
@@ -1217,6 +1226,8 @@ export default function SpecGenerator({ startProductId, onChangeProduct, modeSwi
           )}
           {currentStep === 4 && (
             <ProjectStep
+              config={config}
+              setQuantity={v => setConfig(c => ({ ...c, quantity: v }))}
               projectData={projectData} setProjectData={setProjectData}
               specType={specType} setSpecType={setSpecType}
               markTouched={markTouched} errorFor={errorFor}

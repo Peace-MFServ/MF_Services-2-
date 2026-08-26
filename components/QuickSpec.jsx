@@ -1,6 +1,7 @@
 'use client'
 import { useState, useCallback, useEffect } from "react";
 import { generateHardwareSpecPDF } from "../lib/generateHardwareSpecPDF";
+import BackArrow from "./BackArrow";
 import { UI, FONT, fieldStyle, focusField, blurField } from "../lib/theme";
 import {
   SPEC_TYPES, CHRISTO, getProduct,
@@ -218,11 +219,14 @@ export default function QuickSpec({ productTypeId = "riser-doors", onChangeProdu
             not move when you change between them. */}
         <div style={{
           display: "flex", alignItems: "center", justifyContent: "space-between",
-          gap: 16, width: 404, flexShrink: 0, minWidth: 0,
+          gap: 16, width: 452, flexShrink: 0, minWidth: 0,
         }}>
-          <h1 style={{ margin: 0, fontSize: 19, fontWeight: 600, letterSpacing: "-0.01em", color: UI.ink }}>
-            {product.label}
-          </h1>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
+            <BackArrow onClick={onChangeProduct} label="Change product" />
+            <h1 style={{ margin: 0, fontSize: 19, fontWeight: 600, letterSpacing: "-0.01em", color: UI.ink }}>
+              {product.label}
+            </h1>
+          </div>
           {modeSwitch}
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
@@ -350,6 +354,9 @@ export default function QuickSpec({ productTypeId = "riser-doors", onChangeProdu
                 />
               </Field>
               <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
+                <Field label="Quantity" width={90}>
+                  <Input id="qs-quantity" value={config.quantity} onChange={v => set("quantity", v.replace(/\D/g, "").slice(0, 3))} />
+                </Field>
                 <Field label="Project name"><Input id="qs-project" value={projectData.projectName} onChange={v => setPd("projectName", v)} /></Field>
                 <Field label="Architectural firm"><Input id="qs-firm" value={projectData.architecturalFirm} onChange={v => setPd("architecturalFirm", v)} /></Field>
               </div>

@@ -1,6 +1,7 @@
 'use client'
 import { useState, useCallback, useRef, useEffect } from "react";
 import DoorElevation from "./DoorElevation";
+import BackArrow from "./BackArrow";
 import ReviewAndGenerate from "./ReviewAndGenerate";
 import {
   UI, FONT, CABLE_TYPES, resolveCable,
@@ -531,9 +532,12 @@ export default function CablePlanConfigurator({ startSystemId, onChangeSystem })
       }}>
 
         <header style={{ padding: "18px 22px 16px", borderBottom: `1px solid ${UI.rule}`, flexShrink: 0 }}>
-          <h1 style={{ margin: 0, fontSize: 19, fontWeight: 600, letterSpacing: "-0.01em", color: UI.ink, lineHeight: 1.3 }}>
-            {system.name}
-          </h1>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
+            <BackArrow onClick={goBack} />
+            <h1 style={{ margin: 0, fontSize: 19, fontWeight: 600, letterSpacing: "-0.01em", color: UI.ink, lineHeight: 1.3 }}>
+              {system.name}
+            </h1>
+          </div>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 6, flexWrap: "wrap" }}>
             <span style={{ fontSize: 13, color: UI.body }}>{system.leafType}</span>
             <span aria-hidden="true" style={{ width: 1, height: 12, background: UI.ruleStrong }} />

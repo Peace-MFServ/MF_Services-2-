@@ -4,6 +4,7 @@ import { useSteelSpecState } from "./steelSpecState";
 import { describeSteelDoor, steelSpecRows } from "../lib/steelDoor";
 import { SPEC_TYPES } from "../lib/hardwareSpec";
 import SteelDoorsetFields, { SectionTitle, Field, Chips, Input } from "./SteelDoorsetFields";
+import BackArrow from "./BackArrow";
 
 // ─────────────────────────────────────────────────────────────────
 // Steel doorsets — quick specification
@@ -60,11 +61,14 @@ export default function SteelQuickSpec({ onChangeProduct, modeSwitch, saveButton
             not move when you change between them. */}
         <div style={{
           display: "flex", alignItems: "center", justifyContent: "space-between",
-          gap: 16, width: 404, flexShrink: 0, minWidth: 0,
+          gap: 16, width: 452, flexShrink: 0, minWidth: 0,
         }}>
-          <h1 style={{ margin: 0, fontSize: 19, fontWeight: 600, letterSpacing: "-0.01em", color: UI.ink }}>
-            Steel Doors
-          </h1>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
+            <BackArrow onClick={onChangeProduct} label="Change product" />
+            <h1 style={{ margin: 0, fontSize: 19, fontWeight: 600, letterSpacing: "-0.01em", color: UI.ink }}>
+              Steel Doors
+            </h1>
+          </div>
           <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
             {modeSwitch}
             {saveButton}
@@ -95,6 +99,9 @@ export default function SteelQuickSpec({ onChangeProduct, modeSwitch, saveButton
                 />
               </Field>
               <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
+                <Field label="Quantity" width={90}>
+                  <Input id="sq-quantity" value={config.quantity} onChange={v => set("quantity", v.replace(/\D/g, "").slice(0, 3))} />
+                </Field>
                 <Field label="Project name"><Input id="sq-project" value={projectData.projectName} onChange={v => setPd("projectName", v)} /></Field>
                 <Field label="Architectural firm"><Input id="sq-firm" value={projectData.architecturalFirm} onChange={v => setPd("architecturalFirm", v)} /></Field>
               </div>

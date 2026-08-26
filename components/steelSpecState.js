@@ -30,6 +30,7 @@ export const initialConfig = () => ({
   height: "",
   handing: "left",
   ral: "",
+  quantity: "1",
 });
 
 export const emptyProject = () => ({

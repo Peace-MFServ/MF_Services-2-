@@ -1,6 +1,7 @@
 'use client'
 import { useRef } from "react";
 import SteelDoorPreview from "./SteelDoorPreview";
+import BackArrow from "./BackArrow";
 import { useSteelSpecState, mmDigits } from "./steelSpecState";
 import { UI, FONT, fieldStyle, focusField, blurField } from "../lib/theme";
 import {
@@ -435,7 +436,7 @@ function HardwareStep({ config, set, hardware, errorFor }) {
 
 /** Who the specification is for and which project it belongs to —
  *  its own step, the same as on the riser doors and the cable plan. */
-function ProjectStep({ projectData, setProjectData, specType, setSpecType, markTouched, errorFor }) {
+function ProjectStep({ projectData, setProjectData, specType, setSpecType, markTouched, errorFor, config, setQuantity }) {
   return (
     <div style={{ padding: "20px 22px" }}>
       <Section title="Specification type" note={SPEC_TYPES.find(sp => sp.id === specType)?.summary}>
@@ -482,6 +483,11 @@ function ProjectStep({ projectData, setProjectData, specType, setSpecType, markT
       </Section>
 
       <Section title="Project">
+        <TextField
+          id="steel-quantity" label="Quantity of this doorset"
+          value={config.quantity}
+          onChange={v => setQuantity(v.replace(/\D/g, "").slice(0, 3))}
+        />
         <TextField
           id="steel-projectName" label="Project name"
           value={projectData.projectName}
@@ -633,14 +639,17 @@ export default function SteelDoorSpec({ onChangeProduct, modeSwitch, saveButton 
       fontFamily: FONT, color: UI.body, overflow: "hidden",
     }}>
       <aside style={{
-        width: 448, flexShrink: 0, display: "flex", flexDirection: "column",
+        width: 496, flexShrink: 0, display: "flex", flexDirection: "column",
         borderRight: `1px solid ${UI.ruleStrong}`, minHeight: 0,
       }}>
         <header style={{ padding: "18px 22px 16px", borderBottom: `1px solid ${UI.rule}`, flexShrink: 0 }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, minWidth: 0 }}>
-            <h1 style={{ margin: 0, fontSize: 19, fontWeight: 600, letterSpacing: "-0.01em", color: UI.ink }}>
-              Steel Doors
-            </h1>
+            <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
+              <BackArrow onClick={goBack} />
+              <h1 style={{ margin: 0, fontSize: 19, fontWeight: 600, letterSpacing: "-0.01em", color: UI.ink }}>
+                Steel Doors
+              </h1>
+            </div>
             <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
               {modeSwitch}
               {saveButton}
@@ -668,6 +677,7 @@ export default function SteelDoorSpec({ onChangeProduct, modeSwitch, saveButton 
               projectData={projectData} setProjectData={setProjectData}
               specType={specType} setSpecType={setSpecType}
               markTouched={markTouched} errorFor={errorFor}
+              config={config} setQuantity={v => set("quantity", v)}
             />
           )}
           {currentStep === 4 && (
