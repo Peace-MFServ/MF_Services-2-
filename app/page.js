@@ -1,17 +1,22 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { FONT } from '../lib/theme'
 import SpecificationTool from '../components/SpecificationTool'
 import OverpressureCalculator from '../components/OverpressureCalculator'
+import Pricer from '../components/Pricer'
 import AuthProvider from '../components/AuthProvider'
 import { AccountBar } from '../components/AccountPanel'
 import SignInDialog from '../components/SignInDialog'
 import ProjectsProvider from '../components/ProjectsProvider'
 import ProjectsDialog from '../components/ProjectsDialog'
+import { useAuth } from '../components/AuthProvider'
 
 const TABS = [
   { id: 'specification', label: 'Specification Tool' },
   { id: 'overpressure',  label: 'Overpressure' },
+  // The estimator is ours. It is not shown to anyone else, and the
+  // endpoint behind it refuses anyone else regardless.
+  { id: 'pricer', label: 'Pricer', staffOnly: true },
 ]
 
 // The specification tool is a two-pane workspace — a configuration
@@ -20,17 +25,34 @@ const TABS = [
 // width.
 const CONTENT_MAX_WIDTH = {
   overpressure: 1400,
+  pricer: 1100,
 }
 const FULL_BLEED = new Set(["specification"])
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState('specification')
-
   return (
     <AuthProvider>
     <ProjectsProvider>
     <SignInDialog />
     <ProjectsDialog />
+    <Toolbox />
+    </ProjectsProvider>
+    </AuthProvider>
+  )
+}
+
+function Toolbox() {
+  const [activeTab, setActiveTab] = useState('specification')
+  const { isStaff } = useAuth()
+  const tabs = TABS.filter(t => !t.staffOnly || isStaff)
+
+  // Losing the role mid-session should not leave you looking at a tab
+  // that is no longer yours.
+  useEffect(() => {
+    if (!tabs.some(t => t.id === activeTab)) setActiveTab('specification')
+  }, [tabs, activeTab])
+
+  return (
     <div style={{ minHeight: '100vh', background: '#F8F9FA', fontFamily: FONT }}>
 
       {/* ── GLOBAL HEADER ── */}
@@ -48,7 +70,7 @@ export default function Home() {
       {/* ── TAB NAV ── */}
       <nav className="mf-nav" aria-label="Sections">
         <div className="mf-nav-inner" style={{ maxWidth: 'none' }}>
-          {TABS.map(tab => (
+          {tabs.map(tab => (
             <button
               key={tab.id}
               type="button"
@@ -70,10 +92,9 @@ export default function Home() {
       }}>
         {activeTab === 'specification' && <SpecificationTool />}
         {activeTab === 'overpressure'  && <OverpressureCalculator />}
+        {activeTab === 'pricer'        && <Pricer />}
       </div>
 
     </div>
-    </ProjectsProvider>
-    </AuthProvider>
   )
 }
