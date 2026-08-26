@@ -1,0 +1,992 @@
+{
+  "_internal": "PRICES — never served to a browser. Read from the DFM ETA/CE price configurator of October 2025; the figures are the manufacturer's own and are commercially confidential.",
+  "currency": "EUR",
+  "exchangeRate": 4.25,
+  "base": {
+    "DS 00-1": {
+      "widthBands": [
+        1030,
+        1130,
+        1230,
+        1350
+      ],
+      "heightBands": [
+        2250,
+        2350,
+        2450,
+        2550
+      ],
+      "grid": [
+        [
+          441,
+          481,
+          504,
+          518
+        ],
+        [
+          449,
+          489,
+          512,
+          526
+        ],
+        [
+          529,
+          572,
+          574,
+          615
+        ],
+        [
+          544,
+          617,
+          619,
+          652
+        ]
+      ]
+    },
+    "DS 00-2": {
+      "widthBands": [
+        1500,
+        1750,
+        2000,
+        2250,
+        2600
+      ],
+      "heightBands": [
+        2250,
+        2350,
+        2450,
+        2550
+      ],
+      "grid": [
+        [
+          934,
+          996,
+          998,
+          1031
+        ],
+        [
+          977,
+          1033,
+          1050,
+          1068
+        ],
+        [
+          979,
+          1063,
+          1081,
+          1098
+        ],
+        [
+          1005,
+          1144,
+          1162,
+          1179
+        ],
+        [
+          1268,
+          1330,
+          1332,
+          1400
+        ]
+      ]
+    },
+    "DS 30-1": {
+      "widthBands": [
+        1030,
+        1130,
+        1230,
+        1350
+      ],
+      "heightBands": [
+        2250,
+        2350,
+        2450,
+        2550
+      ],
+      "grid": [
+        [
+          467,
+          512,
+          536,
+          551
+        ],
+        [
+          475,
+          520,
+          545,
+          559
+        ],
+        [
+          549,
+          605,
+          634,
+          651
+        ],
+        [
+          565,
+          651,
+          653,
+          687
+        ]
+      ]
+    },
+    "DS 30-2": {
+      "widthBands": [
+        1500,
+        1750,
+        2000,
+        2250,
+        2600
+      ],
+      "heightBands": [
+        2250,
+        2350,
+        2450,
+        2550
+      ],
+      "grid": [
+        [
+          971,
+          1038,
+          1056,
+          1068
+        ],
+        [
+          1007,
+          1158,
+          1176,
+          1192
+        ],
+        [
+          1028,
+          1141,
+          1195,
+          1227
+        ],
+        [
+          1036,
+          1204,
+          1229,
+          1254
+        ],
+        [
+          1306,
+          1395,
+          1397,
+          1469
+        ]
+      ]
+    },
+    "DS 60-1": {
+      "widthBands": [
+        1030,
+        1130,
+        1230,
+        1350
+      ],
+      "heightBands": [
+        2250,
+        2350,
+        2450,
+        2550
+      ],
+      "grid": [
+        [
+          511,
+          554,
+          581,
+          596
+        ],
+        [
+          520,
+          563,
+          590,
+          606
+        ],
+        [
+          602,
+          648,
+          679,
+          697
+        ],
+        [
+          619,
+          697,
+          699,
+          736
+        ]
+      ]
+    },
+    "DS 60-2": {
+      "widthBands": [
+        1500,
+        1750,
+        2000,
+        2250,
+        2600
+      ],
+      "heightBands": [
+        2250,
+        2350,
+        2450,
+        2550
+      ],
+      "grid": [
+        [
+          1055,
+          1145,
+          1200,
+          1232
+        ],
+        [
+          1099,
+          1191,
+          1247,
+          1281
+        ],
+        [
+          1122,
+          1213,
+          1281,
+          1308
+        ],
+        [
+          1132,
+          1281,
+          1308,
+          1334
+        ],
+        [
+          1409,
+          1472,
+          1472,
+          1548
+        ]
+      ]
+    },
+    "DS 90-1": {
+      "widthBands": [
+        1030,
+        1130,
+        1230,
+        1309
+      ],
+      "heightBands": [
+        2250,
+        2350,
+        2450,
+        2550
+      ],
+      "grid": [
+        [
+          689,
+          710,
+          742,
+          795
+        ],
+        [
+          731,
+          763,
+          795,
+          848
+        ],
+        [
+          784,
+          816,
+          848,
+          null
+        ],
+        [
+          821,
+          869,
+          null,
+          null
+        ]
+      ]
+    },
+    "DS 120-1 (EI2)": {
+      "widthBands": [
+        1030,
+        1130,
+        1230,
+        1350
+      ],
+      "heightBands": [
+        2250,
+        2350,
+        2450,
+        2550
+      ],
+      "grid": [
+        [
+          921,
+          1006,
+          1047,
+          1101
+        ],
+        [
+          1008,
+          1101,
+          1147,
+          1207
+        ],
+        [
+          1095,
+          1197,
+          1247,
+          1312
+        ],
+        [
+          1191,
+          1302,
+          1356,
+          1427
+        ]
+      ]
+    },
+    "DS 120-2 (EI2)": {
+      "widthBands": [
+        1500,
+        1750,
+        2000,
+        2250,
+        2600
+      ],
+      "heightBands": [
+        2250,
+        2350,
+        2450,
+        2550
+      ],
+      "grid": [
+        [
+          1791,
+          2011,
+          2094,
+          2203
+        ],
+        [
+          1848,
+          2112,
+          2200,
+          2314
+        ],
+        [
+          1936,
+          2174,
+          2265,
+          2382
+        ],
+        [
+          2121,
+          2382,
+          2482,
+          2611
+        ],
+        [
+          2571,
+          2757,
+          2872,
+          3023
+        ]
+      ]
+    },
+    "DS 00-1 HP": {
+      "widthBands": [
+        1030,
+        1130,
+        1230,
+        1350
+      ],
+      "heightBands": [
+        2250,
+        2350,
+        2450,
+        2550
+      ],
+      "grid": [
+        [
+          441,
+          481,
+          504,
+          518
+        ],
+        [
+          449,
+          489,
+          512,
+          526
+        ],
+        [
+          529,
+          572,
+          574,
+          615
+        ],
+        [
+          544,
+          617,
+          619,
+          652
+        ]
+      ]
+    },
+    "DS 00-2 HP": {
+      "widthBands": [
+        1500,
+        1750,
+        2000,
+        2250,
+        2600
+      ],
+      "heightBands": [
+        2250,
+        2350,
+        2450,
+        2550
+      ],
+      "grid": [
+        [
+          934,
+          996,
+          998,
+          1031
+        ],
+        [
+          977,
+          1033,
+          1050,
+          1068
+        ],
+        [
+          979,
+          1063,
+          1081,
+          1098
+        ],
+        [
+          1005,
+          1144,
+          1162,
+          1179
+        ],
+        [
+          1268,
+          1330,
+          1332,
+          1400
+        ]
+      ]
+    },
+    "DS 30-1 HP": {
+      "widthBands": [
+        1030,
+        1130,
+        1230,
+        1350
+      ],
+      "heightBands": [
+        2250,
+        2350,
+        2450,
+        2550
+      ],
+      "grid": [
+        [
+          467,
+          512,
+          536,
+          551
+        ],
+        [
+          475,
+          520,
+          545,
+          559
+        ],
+        [
+          549,
+          605,
+          634,
+          651
+        ],
+        [
+          565,
+          651,
+          653,
+          687
+        ]
+      ]
+    },
+    "DS 30-2 HP": {
+      "widthBands": [
+        1500,
+        1750,
+        2000,
+        2250,
+        2600
+      ],
+      "heightBands": [
+        2250,
+        2350,
+        2450,
+        2550
+      ],
+      "grid": [
+        [
+          971,
+          1038,
+          1056,
+          1068
+        ],
+        [
+          1007,
+          1158,
+          1176,
+          1192
+        ],
+        [
+          1028,
+          1141,
+          1195,
+          1227
+        ],
+        [
+          1036,
+          1204,
+          1229,
+          1254
+        ],
+        [
+          1306,
+          1395,
+          1397,
+          1469
+        ]
+      ]
+    },
+    "DS 60-1 HP": {
+      "widthBands": [
+        1030,
+        1130,
+        1230,
+        1350
+      ],
+      "heightBands": [
+        2250,
+        2350,
+        2450,
+        2550
+      ],
+      "grid": [
+        [
+          511,
+          554,
+          581,
+          596
+        ],
+        [
+          520,
+          563,
+          590,
+          606
+        ],
+        [
+          602,
+          648,
+          679,
+          697
+        ],
+        [
+          619,
+          697,
+          699,
+          736
+        ]
+      ]
+    },
+    "DS 60-2 HP": {
+      "widthBands": [
+        1500,
+        1750,
+        2000,
+        2250,
+        2600
+      ],
+      "heightBands": [
+        2250,
+        2350,
+        2450,
+        2550
+      ],
+      "grid": [
+        [
+          1055,
+          1145,
+          1200,
+          1232
+        ],
+        [
+          1099,
+          1191,
+          1247,
+          1281
+        ],
+        [
+          1122,
+          1213,
+          1281,
+          1308
+        ],
+        [
+          1132,
+          1281,
+          1308,
+          1334
+        ],
+        [
+          1409,
+          1472,
+          1472,
+          1548
+        ]
+      ]
+    }
+  },
+  "option": {
+    "corner": 0,
+    "corner thermal": 18,
+    "block": 10,
+    "block thermal": 24,
+    "block with plaster board": 29,
+    "block thermal with plaster board": 43,
+    "block with mineral wool": 23,
+    "block small": 10,
+    "block small filled with plaster board": 22,
+    "standard": 0,
+    "panic B": 88,
+    "panic D": 37,
+    "panic E": 35,
+    "3 pts": 218,
+    "3 pts panic D": 285,
+    "3 pts panic E": 318,
+    "panic B for 2 Lv": 270,
+    "panic D for 2 Lv": 270,
+    "panic E for 2 Lv": 270,
+    "WC": 21,
+    "roller": 62,
+    "GBS 90": 329,
+    "WITHOUT (NFR surface m. silver)": 0,
+    "WITHOUT (NFR surface m. black)": 0,
+    "WITHOUT (EI surface m. silver)": 0,
+    "WITHOUT (EI surface m. black)": 0,
+    "EL 560": 635,
+    "EL 561": 635,
+    "EL 518": 930,
+    "EL 520": 1260,
+    "Dorma SVP 6000": 630,
+    "Dorma SVZ 6000": 630,
+    "Dorma SVP 2000": 918,
+    "handle on long shield": 0,
+    "handle on round rossette": 10,
+    "knob on long shield": 24,
+    "knob on round rossette": 12,
+    "handle on blind long shield standard DFM": 15,
+    "knob on blind long shield Eco Schulte": 31,
+    "preparation": 0,
+    "without preparation": 0,
+    "PHT001-handle surface m. NFR silver": 63,
+    "PHT06-knob surface m. NFR silver": 55,
+    "PHT001-handle surface m. NFR black": 78,
+    "PHT06-knob surface m. NFR black": 69,
+    "PHT001-handle surface m. EI silver": 73,
+    "PHT06-knob surface m. EI silver": 63,
+    "PHT001-handle surface m. EI black": 95,
+    "PHT06-knob surface m. EI black": 80,
+    "panic bar EPN 900 black": 84,
+    "panic bar EPN 900 alu": 146,
+    "panic bar EPN 900 inox": 236,
+    "pushbar inox": 446,
+    "handle Eco WC": 24,
+    "PHA2000 1 pt NFR silver panic bar": 89,
+    "PHB3000 1 pt NFR silver pushbar": 115,
+    "PHA2000 3 pts h2270 NFR silver panic bar": 162,
+    "PHA2000 3 pts h3400 NFR silver panic bar": 179,
+    "PHB3000 3 pts h2270 NFR silver pushbar": 190,
+    "PHB3000 3 pts h3400 NFR silver pushbar": 207,
+    "PHA2000 1 pt NFR black panic bar": 113,
+    "PHB3000 1 pt NFR black pushbar": 139,
+    "PHA2000 3 pts h2270 NFR black panic bar": 209,
+    "PHA2000 3 pts h3400 NFR black panic bar": 222,
+    "PHB3000 3 pts h2270 NFR black pushbar": 245,
+    "PHB3000 3 pts h3400 NFR black pushbar": 260,
+    "PHA2000 1 pt EI silver panic bar": 100,
+    "PHB3000 1 pt EI silver pushbar": 145,
+    "PHA2000 3 pts h2270 EI silver panic bar": 198,
+    "PHA2000 3 pts h3400 EI silver panic bar": 210,
+    "PHB3000 3 pts h2270 EI silver pushbar": 240,
+    "PHB3000 3 pts h3400 EI silver pushbar": 260,
+    "PHA2000 1 pt EI black panic bar": 122,
+    "PHB3000 1 pt EI black pushbar": 193,
+    "PHA2000 3 pts h2270 EI black panic bar": 234,
+    "PHA2000 3 pts h3400 EI black panic bar": 259,
+    "PHB3000 3 pts h2270 EI black pushbar": 291,
+    "PHB3000 3 pts h3400 EI black pushbar": 313,
+    "PHA2000 2 pts h2270 NFR silver panic bar": 162,
+    "PHA2000 2 pts h3400 NFR silver panic bar": 179,
+    "PHB3000 2 pts h2270 NFR silver pushbar": 190,
+    "PHB3000 2 pts h3400 NFR silver pushbar": 207,
+    "PHA2000 2 pts h2270 NFR black panic bar": 209,
+    "PHA2000 2 pts h3400 NFR black panic bar": 222,
+    "PHB3000 2 pts h2270 NFR black pushbar": 245,
+    "PHB3000 2 pts h3400 NFR black pushbar": 260,
+    "PHA2000 2 pts h2270 EI silver panic bar": 198,
+    "PHA2000 2 pts h3400 EI silver panic bar": 210,
+    "PHB3000 2 pts h2270 EI silver pushbar": 240,
+    "PHB3000 2 pts h3400 EI silver pushbar": 260,
+    "PHA2000 2 pts h2270 EI black panic bar": 234,
+    "PHA2000 2 pts h3400 EI black panic bar": 259,
+    "PHB3000 2 pts h2270 EI black pushbar": 291,
+    "PHB3000 2 pts h3400 EI black pushbar": 313,
+    "total blind shiled Eco Schulte": 20,
+    "double cylinder": 0,
+    "half cylinder HS": 0,
+    "half cylinder OHS": 0,
+    "thumb turn HS": 19,
+    "thumb turn OHS": 19,
+    "thumb turn HS/nothing": 19,
+    "thumb turn OHS/nothing": 19,
+    "without preparation for cylinder": 0,
+    "standard - mortise": 0,
+    "EXIT PAD h2270 NFR silver": 165,
+    "EXIT PAD h3400 NFR silver": 187,
+    "EXIT PAD h2270 NFR black": 190,
+    "EXIT PAD h3400 NFR black": 211,
+    "without (reinforcement) NFR": 0,
+    "standard - mortise EI": 0,
+    "EXIT PAD, h2270 EI (PV) silver": 175,
+    "EXIT PAD, h3400, EI (PV) silver": 215,
+    "EXIT PAD, h2270 EI (PV) black": 201,
+    "EXIT PAD, h3400, EI (PV) black": 239,
+    "NC for NFR 12V, 1 L": 45,
+    "NC for NFR 24V, 1 L": 45,
+    "NO for NFR 12V, 1 L, ab. main lock": 70,
+    "NO for NFR 24V, 1 L, ab. main lock": 70,
+    "NO for NFR 12V, 1 L, with main lock": 70,
+    "NO for NFR 24V, 1 L, with main lock": 70,
+    "NC for NFR 12V, 2 Lv + cable transfer": 107,
+    "NC for NFR 24V, 2 Lv + cable transfer": 107,
+    "NO for NFR 12V, 2 Lv, ab. main lock + cable tran.": 130,
+    "NO for NFR 24V, 2 Lv, ab. main lock + cable tran.": 130,
+    "NO for NFR 12V, 2 Lv, with main lock + cable tran.": 130,
+    "NO for NFR 24V, 2 Lv, with main lock + cable tran.": 130,
+    "NC for EI 12V, 1 leaf": 185,
+    "NC for EI 24V, 1 leaf": 185,
+    "NO for EI 12V, 1 leaf, ab. main lock": 199,
+    "NO for EI 24V, 1 leaf, ab. main lock": 199,
+    "NC for EI 12V, 2 Lv + cable transfer": 240,
+    "NC for EI 24V, 2 Lv + cable transfer": 240,
+    "NO for EI 12V, 2 Lv, ab. main lock + cable tran.": 263,
+    "NO for EI 24V, 2 Lv, ab. main lock + cable tran.": 263,
+    "TS 11": 34,
+    "TS 20": 39,
+    "TS 50": 69,
+    "TS 41 B": 69,
+    "TS 41 G": 69,
+    "TS 61 B": 138,
+    "TS 61 G": 138,
+    "TS 11 x 2 + RKZ 402": 95,
+    "TS 20 x 2 + RKZ 402": 105,
+    "TS 50 x2 + RKZ 402": 165,
+    "TS 41 SR": 215,
+    "TS 41 SR BG": 292,
+    "TS 61 SR": 349.99999999999994,
+    "TS 61 SR BG": 439,
+    "TS 41 B x 2 + RKZ 402": 165,
+    "TS 41 G x 2 + RKZ 402": 165,
+    "TS 61 B x 2 + RKZ 402": 303,
+    "TS 61 G x 2 + RKZ 402": 303,
+    "NFR size up to 0,3m2 single": 122,
+    "NFR fi350": 148,
+    "EI30 size up to 0,3m2 single": 187,
+    "EI30 fi350": 221,
+    "EI60 size up to 0,3m2 single": 261,
+    "EI60 fi350": 322,
+    "EI120 size up to 0,3m2 single": 661,
+    "NFR size up to 0,3m2 single, act. L": 122,
+    "NFR size up to 0,3m2 single, 2 Lv": 243,
+    "NFR fi350, act L": 148,
+    "NFR fi350, 2 Lv": 296,
+    "EI30 size up to 0,3m2 single, act. L": 187,
+    "EI30 size up to 0,3m2 single, 2 Lv": 374,
+    "EI30 fi350, act L": 221,
+    "EI30 fi350, 2 Lv": 442,
+    "EI60 size up to 0,3m2 single, act. L": 260.9,
+    "EI60 size up to 0,3m2 singlee, 2 Lv": 522,
+    "EI60 fi350, act L": 322,
+    "EI60 fi350, 2 Lv": 644,
+    "EI120 size up to 0,3m2 single, 2 Lv": 1321,
+    "NFR size up to 0,3m2 double": 154,
+    "EI30 size up to 0,3m2 double": 217,
+    "EI60 size up to 0,3m2 double": 292,
+    "NFR size up to 0,3m2 double, act. L": 154,
+    "NFR size up to 0,3m2 double, 2 Lv": 307,
+    "EI30 size up to 0,3m2 double, act. L": 217,
+    "EI30 size up to 0,3m2 double, 2 Lv": 433,
+    "EI60 size up to 0,3m2 double, act. L": 292,
+    "EI60 size up to 0,3m2 double, 2 Lv": 583,
+    "EI 120 fi350, act L": 884,
+    "EI 120 fi350, 2 Lv": 1768,
+    "KWZ: 440x120": 80,
+    "Z:400x200": 165,
+    "Z:400x400": 165,
+    "Z: max 0,5m2": 218,
+    "KWZ: 440x120 act L": 80,
+    "Z:400x200 act L": 165,
+    "Z:400x400 act L": 165,
+    "Z: max 0,5m2 act L": 218,
+    "KWZ: 440x120 2 Lv": 160,
+    "Z:400x200 2 Lv": 330,
+    "Z:400x400 2 Lv": 330,
+    "Z: max 0,5m2, 2 Lv": 436,
+    "KWZ: 440x120 +mosquito net": 127,
+    "Z:400x200 +mosquito net": 212,
+    "Z:400x400 +mosquito net": 212,
+    "Z: max 0,5m2 +mosquito net": 265,
+    "KWZ: 440x120 +mosquito net, act L": 127,
+    "Z:400x200+mosquito net, act L": 212,
+    "Z:400x400 +mosquito net, act L": 212,
+    "Z: max 0,5m2+mosquito net,act L": 265,
+    "KWZ: 440x120+mosquito net, 2 Lv": 254,
+    "Z:400x200+mosquito net, 2Lv": 424,
+    "Z:400x400+mosquito net, 2 Lv": 424,
+    "Z: max 0,5m2+mosquito net, 2 Lv": 530,
+    "EI 400x200 int": 288,
+    "EI 400x400 int": 425,
+    "EI 400x600 int": 563,
+    "EI 400x200 int act L": 288,
+    "EI 400x400 int act L": 425,
+    "EI 400x600 int act L": 563,
+    "EI 400x200 int 2 Lv": 576,
+    "EI 400x400 int 2 Lv": 850,
+    "EI 400x600 int 2 Lv": 1126,
+    "EI 400x200 ext": 382,
+    "EI 400x400 ext": 519,
+    "EI 400x600 ext": 656,
+    "EI 400x200 ext act L": 382,
+    "EI 400x400 ext act L": 519,
+    "EI 400x600 ext act L": 656,
+    "EI 400x200 ext 2 Lv": 764,
+    "EI 400x400 ext 2 Lv": 1038,
+    "EI 400x600 ext 2 Lv": 1312,
+    "EI 400x200 ext +mosquito net, act L": 429,
+    "EI 400x400 ext +mosquito net, act L": 566,
+    "EI 400x600 ext +mosquito net, act L": 703,
+    "EI 400x200 ext +mosquito net, 2 Lv": 858,
+    "EI 400x400 ext +mosquito net, 2 Lv": 1132,
+    "automatic 1 L": 30,
+    "automatic 2 Lv": 60,
+    "1 pc door stopper": 14,
+    "2 pcs door stopper": 28,
+    "MC - 1 L": 23,
+    "Eff Eff - 1 L": 0,
+    "MC - 2 Lv": 46,
+    "Eff Eff - 2 Lv": 0,
+    "standard banded treshold with gasket, h=16mm, Inox, 1L": 26,
+    "standard banded treshold with gasket, h=20mm, INOX for 1-leaf door": 26,
+    "Flat, thickness 3mm, Inox 1L": 25,
+    "Assembly threshold, 1L": 18,
+    "standard banded treshold with gasket, h=16mm, Inox, 2Lv": 52,
+    "standard banded treshold with gasket, h=20mm, INOX for 2-leaves door": 52,
+    "Flat, thickness 3mm, Inox 2Lv": 50,
+    "Assembly threshold, 2Lv": 36,
+    "upper drip cap": 14,
+    "upper and bottom drip cap": 28,
+    "bottom drip cap": 14,
+    "upper drip cap, 2 Lv": 23,
+    "upper and bottom drip cap, 2 Lv": 46,
+    "bottom drip cap, 2Lv": 23,
+    "PANEL FOR HP": 84
+  },
+  "hingeByCount": {
+    "embracing": {
+      "2": 18,
+      "3": 29,
+      "4": 31
+    },
+    "embracing thermal": {
+      "2": 36,
+      "3": 42,
+      "4": 44
+    },
+    "3D INOX 95mm": {
+      "2": 20,
+      "3": 50,
+      "4": 80
+    },
+    "standard INOX without regul.": {
+      "2": 0,
+      "3": 20,
+      "4": 40
+    },
+    "3D INOX 160mm": {
+      "2": 0,
+      "3": 54,
+      "4": 108
+    },
+    "3D INOX HP": {
+      "2": 0,
+      "3": 41,
+      "4": 82
+    },
+    "hidden for HP - opening angle max 90 degrees": {
+      "2": 96,
+      "3": 144,
+      "4": 192
+    },
+    "PANEL FOR HP": {
+      "2": 0
+    }
+  },
+  "wallBands": [
+    99,
+    200,
+    225,
+    450
+  ],
+  "embracingByWall": {
+    "embracing": [
+      null,
+      18,
+      29,
+      31
+    ],
+    "embracing thermal": [
+      null,
+      36,
+      42,
+      44
+    ]
+  },
+  "surcharge": {
+    "smokeProtection": {
+      "1": 10,
+      "2": 20
+    },
+    "highPerformance": {
+      "1": 0,
+      "2": 0
+    },
+    "highPerformanceExtra": {
+      "unrated": {
+        "1": 87,
+        "2": 128
+      },
+      "rated": {
+        "1": 116,
+        "2": 187
+      }
+    },
+    "hpPanelPerSquareMetre": 84
+  }
+}
