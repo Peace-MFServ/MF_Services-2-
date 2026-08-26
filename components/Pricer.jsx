@@ -7,6 +7,7 @@ import {
   hardwareNeedsText, validateSteelDoor,
 } from "../lib/steelDoor";
 import { useDoorsetConfig, initialConfig } from "./steelSpecState";
+import { buildQuote } from "../lib/quote";
 import SteelDoorsetFields from "./SteelDoorsetFields";
 import { UI, FONT, fieldStyle, focusField, blurField } from "../lib/theme";
 
@@ -298,6 +299,8 @@ export default function Pricer() {
   const [lines, setLines] = useState([]);
   const [markup, setMarkup] = useState("");
   const [transport, setTransport] = useState("");
+  const [project, setProject] = useState("");
+  const [exporting, setExporting] = useState(null);   // null | "pdf" | "xlsx"
   const [projects, setProjects] = useState(null);
   const [notice, setNotice] = useState(null);
   const [editing, setEditing] = useState(null);   // null | { lineId, config, name }
@@ -312,6 +315,7 @@ export default function Pricer() {
         if (Array.isArray(saved.lines)) setLines(saved.lines);
         if (saved.markup) setMarkup(saved.markup);
         if (saved.transport) setTransport(saved.transport);
+        if (saved.project) setProject(saved.project);
       }
     } catch { /* a corrupt quote is not worth breaking the tab over */ }
     setHydrated(true);
@@ -320,9 +324,9 @@ export default function Pricer() {
   useEffect(() => {
     if (!hydrated) return;
     try {
-      window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ lines, markup, transport }));
+      window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ lines, markup, transport, project }));
     } catch { /* best-effort */ }
-  }, [hydrated, lines, markup, transport]);
+  }, [hydrated, lines, markup, transport, project]);
 
   // Whatever is open in the Specification Tool, described so the offer
   // to bring it across says what it actually is.
@@ -441,6 +445,24 @@ export default function Pricer() {
   const total = withMarkup + carriage;
   const unpriced = lines.length - priceable.length;
 
+  // Both files are renderings of one quote, built at the moment of
+  // download so they always match the screen. The generators are
+  // loaded on demand — no reason for exceljs to travel with the page.
+  const download = async kind => {
+    setExporting(kind);
+    try {
+      const quote = buildQuote({ lines, markup, transport, project });
+      const generate = kind === "pdf"
+        ? (await import("../lib/generateQuotePDF")).generateQuotePDF
+        : (await import("../lib/generateQuoteXLSX")).generateQuoteXLSX;
+      await generate(quote);
+    } catch {
+      flash("The download failed. Try again in a moment.");
+    } finally {
+      setExporting(null);
+    }
+  };
+
   if (editing) {
     return (
       <div style={{ padding: "28px 0 60px", fontFamily: FONT, color: UI.body }}>
@@ -468,6 +490,21 @@ export default function Pricer() {
           in euro, from the manufacturer&rsquo;s October 2025 list — the same
           numbers as the spreadsheet, without the spreadsheet.
         </p>
+      </div>
+
+      <div style={{ marginBottom: 26, maxWidth: 340 }}>
+        <div style={{
+          fontSize: 11, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase",
+          color: UI.muted, marginBottom: 6,
+        }}>
+          Project
+        </div>
+        <input
+          id="pricer-project" value={project} placeholder="e.g. Docklands Block C"
+          onChange={e => setProject(e.target.value)}
+          style={{ ...fieldStyle, padding: "8px 10px", fontSize: 13 }}
+          onFocus={focusField} onBlur={blurField}
+        />
       </div>
 
       <div style={{ marginBottom: 30 }}>
@@ -570,6 +607,36 @@ export default function Pricer() {
               {unpriced === 1 ? " is" : " are"} not in this total.
             </p>
           )}
+
+          <div style={{
+            display: "flex", gap: 8, marginTop: 16, paddingTop: 14,
+            borderTop: `1px solid ${UI.ruleStrong}`,
+          }}>
+            <button
+              type="button" onClick={() => download("pdf")} disabled={!!exporting}
+              style={{
+                flex: 1, padding: "11px 14px", fontSize: 13, fontWeight: 600, fontFamily: FONT,
+                border: `1px solid ${UI.accent}`, background: UI.accent, color: "#FFFFFF",
+                cursor: exporting ? "progress" : "pointer",
+              }}
+            >
+              {exporting === "pdf" ? "Generating" : "Download PDF"}
+            </button>
+            <button
+              type="button" onClick={() => download("xlsx")} disabled={!!exporting}
+              title="Every component on its own row, with live formulas — fill a missing price in Excel and the totals recalculate"
+              style={{
+                flex: 1, padding: "11px 14px", fontSize: 13, fontWeight: 600, fontFamily: FONT,
+                border: `1px solid ${UI.accent}`, background: UI.surface, color: UI.accent,
+                cursor: exporting ? "progress" : "pointer",
+              }}
+            >
+              {exporting === "xlsx" ? "Generating" : "Download Excel"}
+            </button>
+          </div>
+          <p style={{ margin: "10px 0 0", fontSize: 11.5, lineHeight: 1.45, color: UI.muted }}>
+            Both carry the cost breakdown — internal use only.
+          </p>
         </div>
       )}
     </div>
