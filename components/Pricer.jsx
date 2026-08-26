@@ -2,7 +2,12 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useAuth } from "./AuthProvider";
 import { listProjects } from "../lib/projects";
-import { resolveSteelDoor, describeSteelDoor, hardwareGroupsFor, hardwareNeedsText } from "../lib/steelDoor";
+import {
+  resolveSteelDoor, describeSteelDoor, hardwareGroupsFor,
+  hardwareNeedsText, validateSteelDoor,
+} from "../lib/steelDoor";
+import { useDoorsetConfig, initialConfig } from "./steelSpecState";
+import SteelDoorsetFields from "./SteelDoorsetFields";
 import { UI, FONT, fieldStyle, focusField, blurField } from "../lib/theme";
 
 // ─────────────────────────────────────────────────────────────────
@@ -89,7 +94,7 @@ function outstanding(line) {
   return gaps;
 }
 
-function Line({ line, onChange, onRemove }) {
+function Line({ line, onChange, onEdit, onRemove }) {
   const [open, setOpen] = useState(false);
   const resolution = resolveSteelDoor(line.config);
   const priced = line.priced;
@@ -150,15 +155,26 @@ function Line({ line, onChange, onRemove }) {
           </div>
         </div>
 
-        <button
-          type="button" onClick={onRemove} aria-label={`Remove ${line.name}`}
-          style={{
-            flexShrink: 0, marginTop: 22, padding: "5px 10px", fontSize: 12, fontFamily: FONT,
-            border: `1px solid ${UI.ruleStrong}`, background: UI.surface, color: UI.muted, cursor: "pointer",
-          }}
-        >
-          Remove
-        </button>
+        <div style={{ flexShrink: 0, marginTop: 22, display: "flex", gap: 6 }}>
+          <button
+            type="button" onClick={onEdit} aria-label={`Edit ${line.name}`}
+            style={{
+              padding: "5px 10px", fontSize: 12, fontFamily: FONT,
+              border: `1px solid ${UI.ruleStrong}`, background: UI.surface, color: UI.body, cursor: "pointer",
+            }}
+          >
+            Edit
+          </button>
+          <button
+            type="button" onClick={onRemove} aria-label={`Remove ${line.name}`}
+            style={{
+              padding: "5px 10px", fontSize: 12, fontFamily: FONT,
+              border: `1px solid ${UI.ruleStrong}`, background: UI.surface, color: UI.muted, cursor: "pointer",
+            }}
+          >
+            Remove
+          </button>
+        </div>
       </div>
 
       {gaps.length > 0 && (
@@ -206,6 +222,75 @@ function Line({ line, onChange, onRemove }) {
   );
 }
 
+// ─── Configuring a doorset ────────────────────────────────────────
+
+/** The same questions the specification tool asks, asked here, so the
+ *  estimator never has to go somewhere else and come back. */
+function DoorsetEditor({ initial, initialName, onCancel, onDone, existing }) {
+  const { config, set, resolution } = useDoorsetConfig(initial ?? initialConfig());
+  const [name, setName] = useState(initialName ?? "");
+  const validation = validateSteelDoor(config);
+  const ready = validation.isValid;
+
+  return (
+    <div style={{ fontFamily: FONT }}>
+      <div style={{
+        display: "flex", alignItems: "baseline", justifyContent: "space-between",
+        gap: 16, flexWrap: "wrap", marginBottom: 22,
+      }}>
+        <h2 style={{ margin: 0, fontSize: 19, fontWeight: 600, letterSpacing: "-0.01em", color: UI.ink }}>
+          {existing ? "Edit doorset" : "New doorset"}
+        </h2>
+        <Button onClick={onCancel}>Cancel</Button>
+      </div>
+
+      <div style={{ marginBottom: 26, maxWidth: 340 }}>
+        <div style={{
+          fontSize: 11, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase",
+          color: UI.muted, marginBottom: 6,
+        }}>
+          Reference
+        </div>
+        <input
+          id="pricer-line-name" value={name} placeholder="e.g. D-01, ground floor plant room"
+          onChange={e => setName(e.target.value)}
+          style={{ ...fieldStyle, padding: "8px 10px", fontSize: 13 }}
+          onFocus={focusField} onBlur={blurField}
+        />
+      </div>
+
+      {/* The action bar is pinned to the foot of the window, so the
+          form is given room to clear it rather than ending underneath. */}
+      <div style={{ paddingBottom: 96 }}>
+        <SteelDoorsetFields config={config} set={set} resolution={resolution} idPrefix="pr" />
+      </div>
+
+      <div style={{
+        position: "sticky", bottom: 16, marginTop: -80,
+        display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16,
+        padding: "16px 20px", background: UI.surface,
+        border: `1px solid ${UI.ruleStrong}`, flexWrap: "wrap",
+      }}>
+        <div style={{ minWidth: 0 }}>
+          <div style={{ fontSize: 13.5, fontWeight: 600, color: UI.ink }}>
+            {resolution.type ? describeSteelDoor(resolution.type) : "No doorset yet"}
+          </div>
+          <div style={{ fontSize: 12.5, color: UI.muted, marginTop: 2 }}>
+            {ready
+              ? `${config.width} × ${config.height} mm · ${resolution.frame?.label} frame`
+              : validation.errors[0]?.message ?? "Answer the questions above."}
+          </div>
+        </div>
+        <Button primary disabled={!ready} onClick={() => onDone({ config, name: name.trim() })}>
+          {ready
+            ? (existing ? "Save changes" : "Add to the quote")
+            : `${validation.errors.length} to fix`}
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 // ─── Main ─────────────────────────────────────────────────────────
 
 export default function Pricer() {
@@ -215,6 +300,7 @@ export default function Pricer() {
   const [transport, setTransport] = useState("");
   const [projects, setProjects] = useState(null);
   const [notice, setNotice] = useState(null);
+  const [editing, setEditing] = useState(null);   // null | { lineId, config, name }
   const [hydrated, setHydrated] = useState(false);
   const priceRef = useRef(null);
 
@@ -237,6 +323,22 @@ export default function Pricer() {
       window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ lines, markup, transport }));
     } catch { /* best-effort */ }
   }, [hydrated, lines, markup, transport]);
+
+  // Whatever is open in the Specification Tool, described so the offer
+  // to bring it across says what it actually is.
+  const [fromTool, setFromTool] = useState(null);
+  useEffect(() => {
+    if (editing) return;
+    let saved;
+    try { saved = JSON.parse(window.sessionStorage.getItem(WORKING_KEY) || "null"); } catch { saved = null; }
+    const config = saved?.config;
+    const type = config ? resolveSteelDoor(config).type : null;
+    setFromTool(type ? {
+      config,
+      name: saved.projectData?.projectName?.trim() || "",
+      description: `${describeSteelDoor(type)}${config.width && config.height ? `, ${config.width} × ${config.height} mm` : ""}`,
+    } : null);
+  }, [editing]);
 
   useEffect(() => {
     if (!isStaff || !user) return;
@@ -295,20 +397,29 @@ export default function Pricer() {
 
   const flash = msg => { setNotice(msg); setTimeout(() => setNotice(null), 4000); };
 
-  const addLine = (config, name) => {
-    const resolution = resolveSteelDoor(config);
-    if (!resolution.type) { flash("That doorset is not complete enough to price."); return; }
-    setLines(cur => [...cur, {
-      id: lineId(), name: name || `Doorset ${cur.length + 1}`,
-      config, quantity: "1", signature: null, priced: null,
-    }]);
+  /** Take what the editor produced, as a new line or over an old one. */
+  const commit = ({ config, name }) => {
+    setLines(cur => {
+      if (editing?.lineId) {
+        return cur.map(l => (l.id === editing.lineId
+          ? { ...l, config, name: name || l.name, signature: null }
+          : l));
+      }
+      return [...cur, {
+        id: lineId(), name: name || `Doorset ${cur.length + 1}`,
+        config, quantity: "1", signature: null, priced: null,
+      }];
+    });
+    setEditing(null);
   };
 
-  const addFromTool = () => {
-    let saved;
-    try { saved = JSON.parse(window.sessionStorage.getItem(WORKING_KEY) || "null"); } catch { saved = null; }
-    if (!saved?.config) { flash("Nothing in the Specification Tool yet."); return; }
-    addLine(saved.config, saved.projectData?.projectName?.trim() || null);
+  const editLine = line => setEditing({ lineId: line.id, config: line.config, name: line.name });
+
+  const addFrom = (config, name) => {
+    if (!resolveSteelDoor(config).type) { flash("That doorset is not complete enough to price."); return; }
+    // Opened in the editor rather than dropped straight in, so it is
+    // obvious what came across and it can be adjusted before it counts.
+    setEditing({ lineId: null, config, name });
   };
 
   if (!ready) return <div style={{ minHeight: 400 }} />;
@@ -330,6 +441,21 @@ export default function Pricer() {
   const total = withMarkup + carriage;
   const unpriced = lines.length - priceable.length;
 
+  if (editing) {
+    return (
+      <div style={{ padding: "28px 0 60px", fontFamily: FONT, color: UI.body }}>
+        <DoorsetEditor
+          key={editing.lineId ?? "new"}
+          initial={editing.config}
+          initialName={editing.name}
+          existing={!!editing.lineId}
+          onCancel={() => setEditing(null)}
+          onDone={commit}
+        />
+      </div>
+    );
+  }
+
   return (
     <div style={{ padding: "28px 0 60px", fontFamily: FONT, color: UI.body }}>
 
@@ -344,13 +470,33 @@ export default function Pricer() {
         </p>
       </div>
 
-      <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 28 }}>
-        <Button onClick={addFromTool}>Add the doorset from the Specification Tool</Button>
-        {(projects ?? []).map(p => (
-          <Button key={p.id} onClick={() => addLine(p.payload?.config ?? {}, p.name)}>
-            Add “{p.name}”
-          </Button>
-        ))}
+      <div style={{ marginBottom: 30 }}>
+        <Button primary onClick={() => setEditing({ lineId: null, config: initialConfig(), name: "" })}>
+          Add a doorset
+        </Button>
+
+        {(fromTool || (projects ?? []).length > 0) && (
+          <div style={{ marginTop: 16 }}>
+            <div style={{
+              fontSize: 11, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase",
+              color: UI.muted, marginBottom: 8,
+            }}>
+              Or start from one you already have
+            </div>
+            <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+              {fromTool && (
+                <Button onClick={() => addFrom(fromTool.config, fromTool.name)}>
+                  Open in the Specification Tool — {fromTool.description}
+                </Button>
+              )}
+              {(projects ?? []).map(p => (
+                <Button key={p.id} onClick={() => addFrom(p.payload?.config ?? {}, p.name)}>
+                  Saved project — {p.name}
+                </Button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {notice && (
@@ -363,7 +509,11 @@ export default function Pricer() {
         </div>
       )}
 
-      <Heading note={lines.length === 0 ? "Nothing on the quote yet." : undefined}>Schedule</Heading>
+      <Heading note={lines.length === 0
+        ? "Nothing on the quote yet. Add a doorset above and it will price itself."
+        : undefined}>
+        Schedule
+      </Heading>
 
       {lines.length > 0 && (
         <div style={{ marginBottom: 30 }}>
@@ -371,6 +521,7 @@ export default function Pricer() {
             <Line
               key={line.id} line={line}
               onChange={next => setLines(cur => cur.map(l => (l.id === next.id ? next : l)))}
+              onEdit={() => editLine(line)}
               onRemove={() => setLines(cur => cur.filter(l => l.id !== line.id))}
             />
           ))}

@@ -39,55 +39,23 @@ export const emptyProject = () => ({
 
 export const mmDigits = v => String(v).replace(/\D/g, "").slice(0, 4);
 
-export function useSteelSpecState() {
-  const [config, setConfig] = useState(initialConfig);
-  const [specType, setSpecType] = useState("branded");
-  const [projectData, setProjectData] = useState(emptyProject);
-  const [currentStep, setCurrentStep] = useState(0);
-  const [furthest, setFurthest] = useState(0);
-  const [touched, setTouched] = useState(() => new Set());
-  const [hydrated, setHydrated] = useState(false);
-  const [generating, setGenerating] = useState(false);
-  const [notice, setNotice] = useState(null);
-
-  // Restore before the first save runs, or the save writes an empty
-  // configuration over the stored one.
-  useEffect(() => {
-    try {
-      const raw = window.sessionStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        const saved = JSON.parse(raw);
-        if (saved.config) setConfig(c => ({ ...c, ...saved.config }));
-        if (saved.projectData) setProjectData(pd => ({ ...pd, ...saved.projectData }));
-        if (saved.specType) setSpecType(saved.specType);
-        if (typeof saved.currentStep === "number") setCurrentStep(saved.currentStep);
-        if (typeof saved.furthest === "number") setFurthest(saved.furthest);
-      }
-    } catch { /* corrupt or unavailable storage is not worth breaking the tool over */ }
-    setHydrated(true);
-  }, []);
-
-  useEffect(() => {
-    if (!hydrated) return;
-    try {
-      window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify({
-        config, specType, projectData, currentStep, furthest,
-      }));
-    } catch { /* best-effort */ }
-  }, [hydrated, config, specType, projectData, currentStep, furthest]);
+/**
+ * One doorset's answers, kept consistent with themselves.
+ *
+ * This is the part the pricer needs too — it configures doorsets of
+ * its own without any of the specification tool's steps, storage or
+ * PDF. Everything that keeps a configuration honest lives here so both
+ * ends of the app behave identically.
+ */
+export function useDoorsetConfig(initial) {
+  const [config, setConfig] = useState(initial ?? initialConfig);
 
   const set = useCallback((key, value) => {
-    setTouched(t => (t.has(key) ? t : new Set(t).add(key)));
     setConfig(c => ({ ...c, [key]: value }));
-  }, []);
-
-  const markTouched = useCallback(field => {
-    setTouched(t => (t.has(field) ? t : new Set(t).add(field)));
   }, []);
 
   const resolution = resolveSteelDoor(config);
   const hardware = hardwareGroupsFor(config, resolution);
-  const validation = withContactChecks(validateSteelDoor(config), projectData);
 
   // A change further up can invalidate what was chosen below it — drop
   // anything the new answers no longer offer, rather than carrying a
@@ -136,6 +104,57 @@ export function useSteelSpecState() {
       setConfig(c => ({ ...c, highPerformance: false }));
     }
   }, [config.minutes, config.leaves, config.highPerformance]);
+
+  return { config, setConfig, set, resolution, hardware };
+}
+
+export function useSteelSpecState() {
+  const { config, setConfig, set: setField, resolution, hardware } = useDoorsetConfig();
+  const [specType, setSpecType] = useState("branded");
+  const [projectData, setProjectData] = useState(emptyProject);
+  const [currentStep, setCurrentStep] = useState(0);
+  const [furthest, setFurthest] = useState(0);
+  const [touched, setTouched] = useState(() => new Set());
+  const [hydrated, setHydrated] = useState(false);
+  const [generating, setGenerating] = useState(false);
+  const [notice, setNotice] = useState(null);
+
+  // Restore before the first save runs, or the save writes an empty
+  // configuration over the stored one.
+  useEffect(() => {
+    try {
+      const raw = window.sessionStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const saved = JSON.parse(raw);
+        if (saved.config) setConfig(c => ({ ...c, ...saved.config }));
+        if (saved.projectData) setProjectData(pd => ({ ...pd, ...saved.projectData }));
+        if (saved.specType) setSpecType(saved.specType);
+        if (typeof saved.currentStep === "number") setCurrentStep(saved.currentStep);
+        if (typeof saved.furthest === "number") setFurthest(saved.furthest);
+      }
+    } catch { /* corrupt or unavailable storage is not worth breaking the tool over */ }
+    setHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    try {
+      window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify({
+        config, specType, projectData, currentStep, furthest,
+      }));
+    } catch { /* best-effort */ }
+  }, [hydrated, config, specType, projectData, currentStep, furthest]);
+
+  const set = useCallback((key, value) => {
+    setTouched(t => (t.has(key) ? t : new Set(t).add(key)));
+    setField(key, value);
+  }, [setField]);
+
+  const markTouched = useCallback(field => {
+    setTouched(t => (t.has(field) ? t : new Set(t).add(field)));
+  }, []);
+
+  const validation = withContactChecks(validateSteelDoor(config), projectData);
 
   const errorFor = useCallback(field => {
     if (!touched.has(field)) return null;
