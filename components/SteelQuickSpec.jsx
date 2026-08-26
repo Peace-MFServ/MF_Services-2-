@@ -3,7 +3,7 @@ import { UI, FONT, fieldStyle, focusField, blurField } from "../lib/theme";
 import { useSteelSpecState, mmDigits } from "./steelSpecState";
 import {
   fireRatings, leafCountsFor, highPerformanceAvailable,
-  describeSteelDoor, steelSpecRows,
+  describeSteelDoor, steelSpecRows, hardwareNeedsText,
 } from "../lib/steelDoor";
 import { SPEC_TYPES } from "../lib/hardwareSpec";
 
@@ -105,11 +105,40 @@ function Input({ id, value, onChange, placeholder, type = "text" }) {
   );
 }
 
+// Same trades as the guided flow, laid out across the page rather
+// than down it.
+const HARDWARE_SECTIONS = [
+  { title: "Locking", ids: ["lock", "cylinder", "handleActiveInside", "handleActiveOutside", "handlePassiveOutside", "flushBolt", "electricStrike"] },
+  { title: "Hanging and closing", ids: ["smokeProtection", "hinge", "hingeCount", "doorCloser", "doorStopper", "magnetContact"] },
+  { title: "Openings in the leaf", ids: ["glazing", "ventilationGrill"] },
+  { title: "Sealing and thresholds", ids: ["dropSeal", "threshold", "dripCap"] },
+];
+
+function Select({ id, group, value, onChange }) {
+  const blocked = group.options.length === 0;
+  return (
+    <select
+      id={id} value={blocked ? "" : value || ""} disabled={blocked}
+      onChange={e => onChange(e.target.value)}
+      style={{
+        ...fieldStyle, padding: "8px 10px", fontSize: 13,
+        background: blocked ? UI.sunken : UI.surface,
+        color: blocked ? UI.muted : UI.ink,
+        cursor: blocked ? "not-allowed" : "pointer",
+      }}
+    >
+      {blocked && <option value="">Choose a lock first</option>}
+      {group.options.map(o => <option key={o} value={o}>{o}</option>)}
+    </select>
+  );
+}
+
 export default function SteelQuickSpec({ onChangeProduct, modeSwitch, saveButton }) {
   const {
     config, set, specType, setSpecType, projectData, setProjectData,
-    resolution, validation, generating, notice, startOver, generate,
+    resolution, validation, hardware, generating, notice, startOver, generate,
   } = useSteelSpecState();
+  const hardwareById = Object.fromEntries(hardware.map(g => [g.id, g]));
 
   const setPd = (key, value) => setProjectData(pd => ({ ...pd, [key]: value }));
 
@@ -268,6 +297,61 @@ export default function SteelQuickSpec({ onChangeProduct, modeSwitch, saveButton
                     Clear opening <strong style={{ color: UI.ink }}>{clear.width} × {clear.height} mm</strong>
                   </p>
                 )}
+              </div>
+            </section>
+          )}
+
+          {hardware.length > 0 && (
+            <section style={{ marginBottom: 30 }}>
+              <SectionTitle hint="Nothing is fitted unless you ask for it, apart from the lock, cylinder and hinges.">
+                Hardware
+              </SectionTitle>
+              <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+                {HARDWARE_SECTIONS.map(section => {
+                  const groups = section.ids.map(id => hardwareById[id]).filter(Boolean);
+                  if (!groups.length) return null;
+                  return (
+                    <div key={section.title}>
+                      <div style={{
+                        fontSize: 11, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase",
+                        color: UI.ink, marginBottom: 8,
+                      }}>
+                        {section.title}
+                      </div>
+                      <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
+                        {groups.map(g => (
+                          <div key={g.id} style={{ flex: "1 1 220px", minWidth: 200, maxWidth: 320 }}>
+                            <Field label={g.label}>
+                              <Select id={`sq-${g.id}`} group={g} value={config[g.id]} onChange={v => set(g.id, v)} />
+                              {hardwareNeedsText(config[g.id]) && (
+                                <div style={{ marginTop: 8 }}>
+                                  <Input
+                                    id={`sq-${g.id}-text`} value={config[`${g.id}Text`]}
+                                    onChange={v => set(`${g.id}Text`, v)}
+                                    placeholder={`Describe the ${g.label.toLowerCase()} required`}
+                                  />
+                                </div>
+                              )}
+                            </Field>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+                <div>
+                  <div style={{
+                    fontSize: 11, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase",
+                    color: UI.ink, marginBottom: 8,
+                  }}>
+                    Finish
+                  </div>
+                  <div style={{ maxWidth: 220 }}>
+                    <Field label="Colour (RAL)">
+                      <Input id="sq-ral" value={config.ral} onChange={v => set("ral", v)} placeholder="7016" />
+                    </Field>
+                  </div>
+                </div>
               </div>
             </section>
           )}

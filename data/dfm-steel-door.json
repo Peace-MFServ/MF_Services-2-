@@ -588,6 +588,2074 @@
       }
     }
   ],
+  "hardware": {
+    "_internal": "Hardware options and their cascade, read from the DFM ETA/CE configurator of October 2025. Each table is keyed exactly as the spreadsheet keys it, so a rule change there is a data edit here.",
+    "hingeSets": {
+      "standard": [
+        "standard INOX without regul.",
+        "3D INOX 95mm"
+      ],
+      "smoke": [
+        "3D INOX 95mm"
+      ],
+      "ei120": [
+        "3D INOX 160mm"
+      ],
+      "hp": [
+        "3D INOX HP",
+        "hidden for HP - opening angle max 90 degrees"
+      ]
+    },
+    "hingeCounts": {
+      "standard": [
+        2,
+        3,
+        4
+      ],
+      "smoke": [
+        3,
+        4
+      ]
+    },
+    "lock": {
+      "DS 00-1": [
+        "standard",
+        "panic B",
+        "panic D",
+        "panic E",
+        "GBS 90",
+        "3 pts",
+        "3 pts panic D",
+        "3 pts panic E",
+        "WC",
+        "roller",
+        "other",
+        "WITHOUT (NFR surface m. silver)",
+        "WITHOUT (NFR surface m. black)",
+        "EL 560",
+        "EL 561",
+        "EL 518",
+        "EL 520",
+        "Dorma SVP 6000",
+        "Dorma SVZ 6000",
+        "Dorma SVP 2000"
+      ],
+      "DS 00-2": [
+        "standard",
+        "panic B",
+        "panic D",
+        "panic E",
+        "GBS 90",
+        "3 pts",
+        "3 pts panic D",
+        "3 pts panic E",
+        "panic B for 2 Lv",
+        "panic D for 2 Lv",
+        "panic E for 2 Lv",
+        "WC",
+        "roller",
+        "other",
+        "WITHOUT (NFR surface m. silver)",
+        "WITHOUT (NFR surface m. black)"
+      ],
+      "DS 30-1": [
+        "standard",
+        "panic B",
+        "panic D",
+        "panic E",
+        "GBS 90",
+        "3 pts",
+        "3 pts panic D",
+        "3 pts panic E",
+        "other",
+        "WITHOUT (EI surface m. silver)",
+        "WITHOUT (EI surface m. black)",
+        "EL 560",
+        "EL 561",
+        "EL 518",
+        "EL 520",
+        "Dorma SVP 6000",
+        "Dorma SVZ 6000",
+        "Dorma SVP 2000"
+      ],
+      "DS 30-2": [
+        "standard",
+        "panic B",
+        "panic D",
+        "panic E",
+        "GBS 90",
+        "3 pts",
+        "3 pts panic D",
+        "3 pts panic E",
+        "panic B for 2 Lv",
+        "panic D for 2 Lv",
+        "panic E for 2 Lv",
+        "other",
+        "WITHOUT (EI surface m. silver)",
+        "WITHOUT (EI surface m. black)"
+      ],
+      "DS 60-1": [
+        "standard",
+        "panic B",
+        "panic D",
+        "panic E",
+        "GBS 90",
+        "3 pts",
+        "3 pts panic D",
+        "3 pts panic E",
+        "other",
+        "WITHOUT (EI surface m. silver)",
+        "WITHOUT (EI surface m. black)",
+        "EL 560",
+        "EL 561",
+        "EL 518",
+        "EL 520",
+        "Dorma SVP 6000",
+        "Dorma SVZ 6000",
+        "Dorma SVP 2000"
+      ],
+      "DS 60-2": [
+        "standard",
+        "panic B",
+        "panic D",
+        "panic E",
+        "GBS 90",
+        "3 pts",
+        "3 pts panic D",
+        "3 pts panic E",
+        "panic B for 2 Lv",
+        "panic D for 2 Lv",
+        "panic E for 2 Lv",
+        "other",
+        "WITHOUT (EI surface m. silver)",
+        "WITHOUT (EI surface m. black)"
+      ],
+      "DS 90-1": [
+        "standard",
+        "panic B",
+        "panic D",
+        "panic E",
+        "GBS 90",
+        "3 pts",
+        "3 pts panic D",
+        "3 pts panic E",
+        "EL 560",
+        "EL 561",
+        "EL 518",
+        "EL 520",
+        "Dorma SVP 6000",
+        "Dorma SVZ 6000",
+        "Dorma SVP 2000"
+      ],
+      "DS 120-1 (EI2)": [
+        "standard",
+        "panic B",
+        "panic D",
+        "panic E",
+        "GBS 90",
+        "other",
+        "WITHOUT (EI surface m. silver)",
+        "WITHOUT (EI surface m. black)",
+        "EL 560",
+        "EL 561",
+        "EL 518",
+        "EL 520",
+        "Dorma SVP 6000",
+        "Dorma SVZ 6000",
+        "Dorma SVP 2000"
+      ],
+      "DS 120-2 (EI2)": [
+        "standard",
+        "panic B",
+        "panic D",
+        "panic E",
+        "GBS 90",
+        "panic B for 2 Lv",
+        "panic D for 2 Lv",
+        "panic E for 2 Lv",
+        "other",
+        "WITHOUT (EI surface m. silver)",
+        "WITHOUT (EI surface m. black)"
+      ],
+      "DS 00-1 HP": [
+        "standard",
+        "panic B",
+        "panic D",
+        "panic E",
+        "GBS 90",
+        "3 pts",
+        "3 pts panic D",
+        "3 pts panic E",
+        "WC",
+        "roller",
+        "other",
+        "WITHOUT (NFR surface m. silver)",
+        "WITHOUT (NFR surface m. black)",
+        "EL 560",
+        "EL 561",
+        "EL 518",
+        "EL 520",
+        "Dorma SVP 6000",
+        "Dorma SVZ 6000",
+        "Dorma SVP 2000"
+      ],
+      "DS 00-2 HP": [
+        "standard",
+        "panic B",
+        "panic D",
+        "panic E",
+        "GBS 90",
+        "3 pts",
+        "3 pts panic D",
+        "3 pts panic E",
+        "panic B for 2 Lv",
+        "panic D for 2 Lv",
+        "panic E for 2 Lv",
+        "WC",
+        "roller",
+        "other",
+        "WITHOUT (NFR surface m. silver)",
+        "WITHOUT (NFR surface m. black)"
+      ],
+      "DS 30-1 HP": [
+        "standard",
+        "panic B",
+        "panic D",
+        "panic E",
+        "GBS 90",
+        "3 pts",
+        "3 pts panic D",
+        "3 pts panic E",
+        "other",
+        "WITHOUT (EI surface m. silver)",
+        "WITHOUT (EI surface m. black)",
+        "EL 560",
+        "EL 561",
+        "EL 518",
+        "EL 520",
+        "Dorma SVP 6000",
+        "Dorma SVZ 6000",
+        "Dorma SVP 2000"
+      ],
+      "DS 30-2 HP": [
+        "standard",
+        "panic B",
+        "panic D",
+        "panic E",
+        "GBS 90",
+        "3 pts",
+        "3 pts panic D",
+        "3 pts panic E",
+        "panic B for 2 Lv",
+        "panic D for 2 Lv",
+        "panic E for 2 Lv",
+        "other",
+        "WITHOUT (EI surface m. silver)",
+        "WITHOUT (EI surface m. black)"
+      ],
+      "DS 60-1 HP": [
+        "standard",
+        "panic B",
+        "panic D",
+        "panic E",
+        "GBS 90",
+        "3 pts",
+        "3 pts panic D",
+        "3 pts panic E",
+        "other",
+        "WITHOUT (EI surface m. silver)",
+        "WITHOUT (EI surface m. black)",
+        "EL 560",
+        "EL 561",
+        "EL 518",
+        "EL 520",
+        "Dorma SVP 6000",
+        "Dorma SVZ 6000",
+        "Dorma SVP 2000"
+      ],
+      "DS 60-2 HP": [
+        "standard",
+        "panic B",
+        "panic D",
+        "panic E",
+        "GBS 90",
+        "3 pts",
+        "3 pts panic D",
+        "3 pts panic E",
+        "panic B for 2 Lv",
+        "panic D for 2 Lv",
+        "panic E for 2 Lv",
+        "other",
+        "WITHOUT (EI surface m. silver)",
+        "WITHOUT (EI surface m. black)"
+      ]
+    },
+    "handleActiveInside": {
+      "standard": [
+        "handle on long shield",
+        "handle on round rossette",
+        "knob on long shield",
+        "knob on round rossette",
+        "knob on blind long shield Eco Schulte",
+        "handle on blind long shield standard DFM",
+        "preparation",
+        "without preparation",
+        "total blind shiled Eco Schulte",
+        "other"
+      ],
+      "panic B": [
+        "handle on long shield",
+        "handle on round rossette",
+        "preparation",
+        "other"
+      ],
+      "panic D": [
+        "handle on long shield",
+        "handle on round rossette",
+        "preparation",
+        "other"
+      ],
+      "panic E": [
+        "knob on long shield",
+        "knob on round rossette",
+        "knob on blind long shield Eco Schulte",
+        "preparation",
+        "without preparation",
+        "total blind shiled Eco Schulte",
+        "other"
+      ],
+      "3 pts": [
+        "handle on long shield",
+        "handle on round rossette",
+        "knob on long shield",
+        "knob on round rossette",
+        "handle on blind long shield standard DFM",
+        "preparation",
+        "without preparation",
+        "other"
+      ],
+      "3 pts panic D": [
+        "handle on long shield",
+        "handle on round rossette",
+        "preparation",
+        "other"
+      ],
+      "3 pts panic E": [
+        "knob on long shield",
+        "knob on round rossette",
+        "knob on blind long shield Eco Schulte",
+        "preparation",
+        "without preparation",
+        "total blind shiled Eco Schulte",
+        "other"
+      ],
+      "panic B for 2 Lv": [
+        "handle on long shield",
+        "handle on round rossette",
+        "preparation",
+        "other"
+      ],
+      "panic D for 2 Lv": [
+        "handle on long shield",
+        "handle on round rossette",
+        "preparation",
+        "other"
+      ],
+      "panic E for 2 Lv": [
+        "knob on long shield",
+        "knob on round rossette",
+        "knob on blind long shield Eco Schulte",
+        "preparation",
+        "without preparation",
+        "other"
+      ],
+      "WC": [
+        "handle on long shield",
+        "handle on round rossette",
+        "handle Eco WC",
+        "knob on long shield",
+        "knob on round rossette",
+        "preparation",
+        "without preparation",
+        "other"
+      ],
+      "roller": [
+        "knob on long shield",
+        "knob on round rossette",
+        "preparation",
+        "without preparation",
+        "other"
+      ],
+      "GBS 90": [
+        "handle on long shield",
+        "handle on round rossette",
+        "without preparation",
+        "other"
+      ],
+      "other": [
+        "other"
+      ],
+      "WITHOUT (NFR surface m. silver)": [
+        "PHT001-handle surface m. NFR silver",
+        "PHT06-knob surface m. NFR silver",
+        "without"
+      ],
+      "WITHOUT (NFR surface m. black)": [
+        "PHT001-handle surface m. NFR black",
+        "PHT06-knob surface m. NFR black",
+        "without"
+      ],
+      "WITHOUT (EI surface m. silver)": [
+        "PHT001-handle surface m. EI silver",
+        "PHT06-knob surface m. EI silver",
+        "without"
+      ],
+      "WITHOUT (EI surface m. black)": [
+        "PHT001-handle surface m. EI black",
+        "PHT06-knob surface m. EI black",
+        "without"
+      ],
+      "EL 560": [
+        "handle on long shield",
+        "handle on round rossette",
+        "without preparation",
+        "other"
+      ],
+      "EL 561": [
+        "handle on long shield",
+        "handle on round rossette",
+        "without preparation",
+        "other"
+      ],
+      "EL 518": [
+        "handle on long shield",
+        "handle on round rossette",
+        "without preparation",
+        "other"
+      ],
+      "EL 520": [
+        "handle on long shield",
+        "handle on round rossette",
+        "without preparation",
+        "other"
+      ],
+      "Dorma SVP 6000": [
+        "handle on long shield",
+        "handle on round rossette",
+        "without preparation",
+        "other"
+      ],
+      "Dorma SVZ 6000": [
+        "handle on long shield",
+        "handle on round rossette",
+        "without preparation",
+        "other"
+      ],
+      "Dorma SVP 2000": [
+        "handle on long shield",
+        "handle on round rossette",
+        "without preparation",
+        "other"
+      ]
+    },
+    "handleActiveOutside": {
+      "standard": [
+        "handle on long shield",
+        "handle on round rossette",
+        "knob on long shield",
+        "knob on round rossette",
+        "handle on blind long shield standard DFM",
+        "preparation",
+        "without preparation",
+        "other"
+      ],
+      "panic B": [
+        "handle on long shield",
+        "handle on round rossette",
+        "panic bar EPN 900 black",
+        "panic bar EPN 900 alu",
+        "panic bar EPN 900 inox",
+        "pushbar inox",
+        "preparation",
+        "without preparation",
+        "other"
+      ],
+      "panic D": [
+        "handle on long shield",
+        "handle on round rossette",
+        "panic bar EPN 900 black",
+        "panic bar EPN 900 alu",
+        "panic bar EPN 900 inox",
+        "pushbar inox",
+        "preparation",
+        "without preparation",
+        "other"
+      ],
+      "panic E": [
+        "handle on long shield",
+        "handle on round rossette",
+        "panic bar EPN 900 black",
+        "panic bar EPN 900 alu",
+        "panic bar EPN 900 inox",
+        "pushbar inox",
+        "preparation",
+        "without preparation",
+        "other"
+      ],
+      "3 pts": [
+        "handle on long shield",
+        "handle on round rossette",
+        "knob on long shield",
+        "knob on round rossette",
+        "handle on blind long shield standard DFM",
+        "preparation",
+        "without preparation",
+        "other"
+      ],
+      "3 pts panic D": [
+        "handle on long shield",
+        "handle on round rossette",
+        "panic bar EPN 900 black",
+        "panic bar EPN 900 alu",
+        "panic bar EPN 900 inox",
+        "pushbar inox",
+        "preparation",
+        "without preparation",
+        "other"
+      ],
+      "3 pts panic E": [
+        "handle on long shield",
+        "handle on round rossette",
+        "panic bar EPN 900 black",
+        "panic bar EPN 900 alu",
+        "panic bar EPN 900 inox",
+        "pushbar inox",
+        "preparation",
+        "without preparation",
+        "other"
+      ],
+      "panic B for 2 Lv": [
+        "handle on long shield",
+        "handle on round rossette",
+        "panic bar EPN 900 black",
+        "panic bar EPN 900 alu",
+        "panic bar EPN 900 inox",
+        "pushbar inox",
+        "preparation",
+        "without preparation",
+        "other"
+      ],
+      "panic D for 2 Lv": [
+        "handle on long shield",
+        "handle on round rossette",
+        "panic bar EPN 900 black",
+        "panic bar EPN 900 alu",
+        "panic bar EPN 900 inox",
+        "pushbar inox",
+        "preparation",
+        "without preparation",
+        "other"
+      ],
+      "panic E for 2 Lv": [
+        "handle on long shield",
+        "handle on round rossette",
+        "panic bar EPN 900 black",
+        "panic bar EPN 900 alu",
+        "panic bar EPN 900 inox",
+        "pushbar inox",
+        "preparation",
+        "without preparation",
+        "other"
+      ],
+      "WC": [
+        "handle on long shield",
+        "handle on round rossette",
+        "handle Eco WC",
+        "preparation",
+        "without preparation",
+        "other"
+      ],
+      "roller": [
+        "knob on long shield",
+        "knob on round rossette",
+        "preparation",
+        "without preparation",
+        "other"
+      ],
+      "GBS 90": [
+        "handle on long shield",
+        "handle on round rossette",
+        "panic bar EPN 900 black",
+        "panic bar EPN 900 alu",
+        "panic bar EPN 900 inox",
+        "pushbar inox"
+      ],
+      "other": [
+        "other"
+      ],
+      "WITHOUT (NFR surface m. silver)": [
+        "PHA2000 1 pt NFR silver panic bar",
+        "PHB3000 1 pt NFR silver pushbar",
+        "PHA2000 3 pts h2270 NFR silver panic bar",
+        "PHA2000 3 pts h3400 NFR silver panic bar",
+        "PHB3000 3 pts h2270 NFR silver pushbar",
+        "PHB3000 3 pts h3400 NFR silver pushbar"
+      ],
+      "WITHOUT (NFR surface m. black)": [
+        "PHA2000 1 pt NFR black panic bar",
+        "PHB3000 1 pt NFR black pushbar",
+        "PHA2000 3 pts h2270 NFR black panic bar",
+        "PHA2000 3 pts h3400 NFR black panic bar",
+        "PHB3000 3 pts h2270 NFR black pushbar",
+        "PHB3000 3 pts h3400 NFR black pushbar"
+      ],
+      "WITHOUT (EI surface m. silver)": [
+        "PHA2000 1 pt EI silver panic bar",
+        "PHB3000 1 pt EI silver pushbar",
+        "PHA2000 3 pts h2270 EI silver panic bar",
+        "PHA2000 3 pts h3400 EI silver panic bar",
+        "PHB3000 3 pts h2270 EI silver pushbar",
+        "PHB3000 3 pts h3400 EI silver pushbar"
+      ],
+      "WITHOUT (EI surface m. black)": [
+        "PHA2000 1 pt EI black panic bar",
+        "PHB3000 1 pt EI black pushbar",
+        "PHA2000 3 pts h2270 EI black panic bar",
+        "PHA2000 3 pts h3400 EI black panic bar",
+        "PHB3000 3 pts h2270 EI black pushbar",
+        "PHB3000 3 pts h3400 EI black pushbar"
+      ],
+      "EL 560": [
+        "handle on long shield",
+        "handle on round rossette",
+        "panic bar EPN 900 black",
+        "panic bar EPN 900 alu",
+        "panic bar EPN 900 inox",
+        "pushbar inox"
+      ],
+      "EL 561": [
+        "handle on long shield",
+        "handle on round rossette",
+        "panic bar EPN 900 black",
+        "panic bar EPN 900 alu",
+        "panic bar EPN 900 inox",
+        "pushbar inox"
+      ],
+      "EL 518": [
+        "handle on long shield",
+        "handle on round rossette",
+        "panic bar EPN 900 black",
+        "panic bar EPN 900 alu",
+        "panic bar EPN 900 inox",
+        "pushbar inox"
+      ],
+      "EL 520": [
+        "handle on long shield",
+        "handle on round rossette",
+        "panic bar EPN 900 black",
+        "panic bar EPN 900 alu",
+        "panic bar EPN 900 inox",
+        "pushbar inox"
+      ],
+      "Dorma SVP 6000": [
+        "handle on long shield",
+        "handle on round rossette",
+        "panic bar EPN 900 black",
+        "panic bar EPN 900 alu",
+        "panic bar EPN 900 inox",
+        "pushbar inox"
+      ],
+      "Dorma SVZ 6000": [
+        "handle on long shield",
+        "handle on round rossette",
+        "panic bar EPN 900 black",
+        "panic bar EPN 900 alu",
+        "panic bar EPN 900 inox",
+        "pushbar inox"
+      ],
+      "Dorma SVP 2000": [
+        "handle on long shield",
+        "handle on round rossette",
+        "panic bar EPN 900 black",
+        "panic bar EPN 900 alu",
+        "panic bar EPN 900 inox",
+        "pushbar inox"
+      ]
+    },
+    "handlePassiveOutside": {
+      "standard": [
+        "without"
+      ],
+      "panic B": [
+        "without"
+      ],
+      "panic D": [
+        "without"
+      ],
+      "panic E": [
+        "without"
+      ],
+      "3 pts": [
+        "without"
+      ],
+      "3 pts panic D": [
+        "without"
+      ],
+      "3 pts panic E": [
+        "without"
+      ],
+      "panic B for 2 Lv": [
+        "handle on long shield",
+        "handle on round rossette",
+        "panic bar EPN 900 black",
+        "panic bar EPN 900 alu",
+        "panic bar EPN 900 inox",
+        "pushbar inox"
+      ],
+      "panic D for 2 Lv": [
+        "handle on long shield",
+        "handle on round rossette",
+        "panic bar EPN 900 black",
+        "panic bar EPN 900 alu",
+        "panic bar EPN 900 inox",
+        "pushbar inox"
+      ],
+      "panic E for 2 Lv": [
+        "handle on long shield",
+        "handle on round rossette",
+        "panic bar EPN 900 black",
+        "panic bar EPN 900 alu",
+        "panic bar EPN 900 inox",
+        "pushbar inox"
+      ],
+      "WC": [
+        "without"
+      ],
+      "roller": [
+        "without"
+      ],
+      "GBS 90": [
+        "without"
+      ],
+      "other": [
+        "other"
+      ],
+      "WITHOUT (NFR surface m. silver)": [
+        "PHA2000 2 pts h2270 NFR silver panic bar",
+        "PHA2000 2 pts h3400 NFR silver panic bar",
+        "PHB3000 2 pts h2270 NFR silver pushbar",
+        "PHB3000 2 pts h3400 NFR silver pushbar"
+      ],
+      "WITHOUT (NFR surface m. black)": [
+        "PHA2000 2 pts h2270 NFR black panic bar",
+        "PHA2000 2 pts h3400 NFR black panic bar",
+        "PHB3000 2 pts h2270 NFR black pushbar",
+        "PHB3000 2 pts h3400 NFR black pushbar"
+      ],
+      "WITHOUT (EI surface m. silver)": [
+        "PHA2000 2 pts h2270 EI silver panic bar",
+        "PHA2000 2 pts h3400 EI silver panic bar",
+        "PHB3000 2 pts h2270 EI silver pushbar",
+        "PHB3000 2 pts h3400 EI silver pushbar"
+      ],
+      "WITHOUT (EI surface m. black)": [
+        "PHA2000 2 pts h2270 EI black panic bar",
+        "PHA2000 2 pts h3400 EI black panic bar",
+        "PHB3000 2 pts h2270 EI black pushbar",
+        "PHB3000 2 pts h3400 EI black pushbar"
+      ],
+      "EL 560": [
+        "without"
+      ],
+      "EL 561": [
+        "without"
+      ],
+      "EL 518": [
+        "without"
+      ],
+      "EL 520": [
+        "without"
+      ],
+      "Dorma SVP 6000": [
+        "without"
+      ],
+      "Dorma SVZ 6000": [
+        "without"
+      ],
+      "Dorma SVP 2000": [
+        "without"
+      ]
+    },
+    "cylinder": {
+      "standard": [
+        "double cylinder",
+        "half cylinder HS",
+        "half cylinder OHS",
+        "thumb turn HS",
+        "thumb turn OHS",
+        "thumb turn HS/nothing",
+        "thumb turn OHS/nothing",
+        "without preparation for cylinder"
+      ],
+      "panic B": [
+        "double cylinder",
+        "half cylinder HS",
+        "half cylinder OHS",
+        "thumb turn HS",
+        "thumb turn OHS",
+        "thumb turn HS/nothing",
+        "thumb turn OHS/nothing",
+        "without preparation for cylinder"
+      ],
+      "panic D": [
+        "double cylinder",
+        "half cylinder HS",
+        "half cylinder OHS",
+        "thumb turn HS",
+        "thumb turn OHS",
+        "thumb turn HS/nothing",
+        "thumb turn OHS/nothing",
+        "without preparation for cylinder"
+      ],
+      "panic E": [
+        "double cylinder",
+        "half cylinder HS",
+        "half cylinder OHS",
+        "thumb turn HS",
+        "thumb turn OHS",
+        "thumb turn HS/nothing",
+        "thumb turn OHS/nothing",
+        "without preparation for cylinder"
+      ],
+      "3 pts": [
+        "double cylinder",
+        "half cylinder HS",
+        "half cylinder OHS",
+        "thumb turn HS",
+        "thumb turn OHS",
+        "thumb turn HS/nothing",
+        "thumb turn OHS/nothing",
+        "without preparation for cylinder"
+      ],
+      "3 pts panic D": [
+        "double cylinder",
+        "half cylinder HS",
+        "half cylinder OHS",
+        "thumb turn HS",
+        "thumb turn OHS",
+        "thumb turn HS/nothing",
+        "thumb turn OHS/nothing",
+        "without preparation for cylinder"
+      ],
+      "3 pts panic E": [
+        "double cylinder",
+        "half cylinder HS",
+        "half cylinder OHS",
+        "thumb turn HS",
+        "thumb turn OHS",
+        "thumb turn HS/nothing",
+        "thumb turn OHS/nothing",
+        "without preparation for cylinder"
+      ],
+      "panic B for 2 Lv": [
+        "double cylinder",
+        "half cylinder HS",
+        "half cylinder OHS",
+        "thumb turn HS",
+        "thumb turn OHS",
+        "thumb turn HS/nothing",
+        "thumb turn OHS/nothing",
+        "without preparation for cylinder"
+      ],
+      "panic D for 2 Lv": [
+        "double cylinder",
+        "half cylinder HS",
+        "half cylinder OHS",
+        "thumb turn HS",
+        "thumb turn OHS",
+        "thumb turn HS/nothing",
+        "thumb turn OHS/nothing",
+        "without preparation for cylinder"
+      ],
+      "panic E for 2 Lv": [
+        "double cylinder",
+        "half cylinder HS",
+        "half cylinder OHS",
+        "thumb turn HS",
+        "thumb turn OHS",
+        "thumb turn HS/nothing",
+        "thumb turn OHS/nothing",
+        "without preparation for cylinder"
+      ],
+      "WC": [
+        "double cylinder",
+        "half cylinder HS",
+        "half cylinder OHS",
+        "thumb turn HS",
+        "thumb turn OHS",
+        "thumb turn HS/nothing",
+        "thumb turn OHS/nothing",
+        "without preparation for cylinder",
+        "indicator HS / thumb turn OHS"
+      ],
+      "roller": [
+        "double cylinder",
+        "half cylinder HS",
+        "half cylinder OHS",
+        "thumb turn HS",
+        "thumb turn OHS",
+        "thumb turn HS/nothing",
+        "thumb turn OHS/nothing",
+        "without preparation for cylinder"
+      ],
+      "GBS 90": [
+        "double cylinder",
+        "half cylinder HS",
+        "half cylinder OHS",
+        "without preparation for cylinder"
+      ],
+      "other": [
+        "double cylinder",
+        "half cylinder HS",
+        "half cylinder OHS",
+        "thumb turn HS",
+        "thumb turn OHS",
+        "thumb turn HS/nothing",
+        "thumb turn OHS/nothing",
+        "without preparation for cylinder"
+      ],
+      "WITHOUT (NFR surface m. silver)": [
+        "half cylinder HS",
+        "double cylinder",
+        "without"
+      ],
+      "WITHOUT (NFR surface m. black)": [
+        "half cylinder HS",
+        "double cylinder",
+        "without"
+      ],
+      "WITHOUT (EI surface m. silver)": [
+        "half cylinder HS",
+        "double cylinder",
+        "without"
+      ],
+      "WITHOUT (EI surface m. black)": [
+        "half cylinder HS",
+        "double cylinder",
+        "without"
+      ],
+      "EL 560": [
+        "double cylinder",
+        "half cylinder HS",
+        "half cylinder OHS",
+        "without preparation for cylinder"
+      ],
+      "EL 561": [
+        "double cylinder",
+        "half cylinder HS",
+        "half cylinder OHS",
+        "without preparation for cylinder"
+      ],
+      "EL 518": [
+        "double cylinder",
+        "half cylinder HS",
+        "half cylinder OHS",
+        "without preparation for cylinder"
+      ],
+      "EL 520": [
+        "double cylinder",
+        "half cylinder HS",
+        "half cylinder OHS",
+        "without preparation for cylinder"
+      ],
+      "Dorma SVP 6000": [
+        "double cylinder",
+        "half cylinder HS",
+        "half cylinder OHS",
+        "without preparation for cylinder"
+      ],
+      "Dorma SVZ 6000": [
+        "double cylinder",
+        "half cylinder HS",
+        "half cylinder OHS",
+        "without preparation for cylinder"
+      ],
+      "Dorma SVP 2000": [
+        "double cylinder",
+        "half cylinder HS",
+        "half cylinder OHS",
+        "without preparation for cylinder"
+      ]
+    },
+    "flushBolt": {
+      "2standard 00": [
+        "standard - mortise",
+        "EXIT PAD h2270 NFR silver",
+        "EXIT PAD h3400 NFR silver",
+        "EXIT PAD h2270 NFR black",
+        "EXIT PAD h3400 NFR black",
+        "without (reinforcement) NFR",
+        "without"
+      ],
+      "2panic B 00": [
+        "standard - mortise",
+        "EXIT PAD h2270 NFR silver",
+        "EXIT PAD h3400 NFR silver",
+        "EXIT PAD h2270 NFR black",
+        "EXIT PAD h3400 NFR black",
+        "without (reinforcement) NFR",
+        "without"
+      ],
+      "2panic D 00": [
+        "standard - mortise",
+        "EXIT PAD h2270 NFR silver",
+        "EXIT PAD h3400 NFR silver",
+        "EXIT PAD h2270 NFR black",
+        "EXIT PAD h3400 NFR black",
+        "without (reinforcement) NFR",
+        "without"
+      ],
+      "2panic E 00": [
+        "standard - mortise",
+        "EXIT PAD h2270 NFR silver",
+        "EXIT PAD h3400 NFR silver",
+        "EXIT PAD h2270 NFR black",
+        "EXIT PAD h3400 NFR black",
+        "without (reinforcement) NFR",
+        "without"
+      ],
+      "23 pts 00": [
+        "standard - mortise",
+        "EXIT PAD h2270 NFR silver",
+        "EXIT PAD h3400 NFR silver",
+        "EXIT PAD h2270 NFR black",
+        "EXIT PAD h3400 NFR black",
+        "without (reinforcement) NFR",
+        "without"
+      ],
+      "23 pts panic D 00": [
+        "standard - mortise",
+        "EXIT PAD h2270 NFR silver",
+        "EXIT PAD h3400 NFR silver",
+        "EXIT PAD h2270 NFR black",
+        "EXIT PAD h3400 NFR black",
+        "without (reinforcement) NFR",
+        "without"
+      ],
+      "23 pts panic E 00": [
+        "standard - mortise",
+        "EXIT PAD h2270 NFR silver",
+        "EXIT PAD h3400 NFR silver",
+        "EXIT PAD h2270 NFR black",
+        "EXIT PAD h3400 NFR black",
+        "without (reinforcement) NFR",
+        "without"
+      ],
+      "2panic B for 2 Lv 00": [],
+      "2panic D for 2 Lv 00": [],
+      "2panic E for 2 Lv 00": [],
+      "2WC 00": [
+        "standard - mortise",
+        "EXIT PAD h2270 NFR silver",
+        "EXIT PAD h3400 NFR silver",
+        "EXIT PAD h2270 NFR black",
+        "EXIT PAD h3400 NFR black",
+        "without (reinforcement) NFR",
+        "without"
+      ],
+      "2roller 00": [
+        "standard - mortise",
+        "EXIT PAD h2270 NFR silver",
+        "EXIT PAD h3400 NFR silver",
+        "EXIT PAD h2270 NFR black",
+        "EXIT PAD h3400 NFR black",
+        "without (reinforcement) NFR",
+        "without"
+      ],
+      "2GBS 90 00": [
+        "standard - mortise"
+      ],
+      "2other 00": [
+        "standard - mortise",
+        "EXIT PAD h2270 NFR silver",
+        "EXIT PAD h3400 NFR silver",
+        "EXIT PAD h2270 NFR black",
+        "EXIT PAD h3400 NFR black",
+        "without (reinforcement) NFR",
+        "without"
+      ],
+      "2WITHOUT (NFR surface m. silver) 00": [
+        "standard - mortise",
+        "EXIT PAD h2270 NFR silver",
+        "EXIT PAD h3400 NFR silver",
+        "without (reinforcement) NFR",
+        "without"
+      ],
+      "2WITHOUT (NFR surface m. black) 00": [
+        "standard - mortise",
+        "EXIT PAD h2270 NFR black",
+        "EXIT PAD h3400 NFR black",
+        "without (reinforcement) NFR",
+        "without"
+      ],
+      "2EL 560 00": [
+        "standard - mortise"
+      ],
+      "2EL 561 00": [
+        "standard - mortise"
+      ],
+      "2EL 518 00": [
+        "standard - mortise"
+      ],
+      "2EL 520 00": [
+        "standard - mortise"
+      ],
+      "2Dorma SVP 6000 00": [
+        "standard - mortise"
+      ],
+      "2Dorma SVZ 6000 00": [
+        "standard - mortise"
+      ],
+      "2Dorma SVP 2000 00": [
+        "standard - mortise"
+      ],
+      "2standard 30": [
+        "standard - mortise EI",
+        "EXIT PAD, h2270 EI (PV) silver",
+        "EXIT PAD, h3400, EI (PV) silver",
+        "EXIT PAD, h2270 EI (PV) black",
+        "EXIT PAD, h3400, EI (PV) black"
+      ],
+      "2panic B 30": [
+        "standard - mortise EI",
+        "EXIT PAD, h2270 EI (PV) silver",
+        "EXIT PAD, h3400, EI (PV) silver",
+        "EXIT PAD, h2270 EI (PV) black",
+        "EXIT PAD, h3400, EI (PV) black"
+      ],
+      "2panic D 30": [
+        "standard - mortise EI",
+        "EXIT PAD, h2270 EI (PV) silver",
+        "EXIT PAD, h3400, EI (PV) silver",
+        "EXIT PAD, h2270 EI (PV) black",
+        "EXIT PAD, h3400, EI (PV) black"
+      ],
+      "2panic E 30": [
+        "standard - mortise EI",
+        "EXIT PAD, h2270 EI (PV) silver",
+        "EXIT PAD, h3400, EI (PV) silver",
+        "EXIT PAD, h2270 EI (PV) black",
+        "EXIT PAD, h3400, EI (PV) black"
+      ],
+      "23 pts 30": [
+        "standard - mortise EI",
+        "EXIT PAD, h2270 EI (PV) silver",
+        "EXIT PAD, h3400, EI (PV) silver",
+        "EXIT PAD, h2270 EI (PV) black",
+        "EXIT PAD, h3400, EI (PV) black"
+      ],
+      "23 pts panic D 30": [
+        "standard - mortise EI",
+        "EXIT PAD, h2270 EI (PV) silver",
+        "EXIT PAD, h3400, EI (PV) silver",
+        "EXIT PAD, h2270 EI (PV) black",
+        "EXIT PAD, h3400, EI (PV) black"
+      ],
+      "23 pts panic E 30": [
+        "standard - mortise EI",
+        "EXIT PAD, h2270 EI (PV) silver",
+        "EXIT PAD, h3400, EI (PV) silver",
+        "EXIT PAD, h2270 EI (PV) black",
+        "EXIT PAD, h3400, EI (PV) black"
+      ],
+      "2panic B for 2 Lv 30": [],
+      "2panic D for 2 Lv 30": [],
+      "2panic E for 2 Lv 30": [],
+      "2GBS 90 30": [
+        "standard - mortise"
+      ],
+      "2other 30": [
+        "standard - mortise EI",
+        "EXIT PAD, h2270 EI (PV) silver",
+        "EXIT PAD, h3400, EI (PV) silver",
+        "EXIT PAD, h2270 EI (PV) black",
+        "EXIT PAD, h3400, EI (PV) black"
+      ],
+      "2WITHOUT (EI surface m. silver) 30": [
+        "standard - mortise EI",
+        "EXIT PAD, h2270 EI (PV) silver",
+        "EXIT PAD, h3400, EI (PV) silver",
+        "without"
+      ],
+      "2WITHOUT (EI surface m. black) 30": [
+        "standard - mortise EI",
+        "EXIT PAD, h2270 EI (PV) black",
+        "EXIT PAD, h3400, EI (PV) black",
+        "without"
+      ],
+      "2EL 560 30": [
+        "standard - mortise"
+      ],
+      "2EL 561 30": [
+        "standard - mortise"
+      ],
+      "2EL 518 30": [
+        "standard - mortise"
+      ],
+      "2EL 520 30": [
+        "standard - mortise"
+      ],
+      "2Dorma SVP 6000 30": [
+        "standard - mortise"
+      ],
+      "2Dorma SVZ 6000 30": [
+        "standard - mortise"
+      ],
+      "2Dorma SVP 2000 30": [
+        "standard - mortise"
+      ],
+      "2standard 60": [
+        "standard - mortise EI",
+        "EXIT PAD, h2270 EI (PV) silver",
+        "EXIT PAD, h3400, EI (PV) silver",
+        "EXIT PAD, h2270 EI (PV) black",
+        "EXIT PAD, h3400, EI (PV) black"
+      ],
+      "2panic B 60": [
+        "standard - mortise EI",
+        "EXIT PAD, h2270 EI (PV) silver",
+        "EXIT PAD, h3400, EI (PV) silver",
+        "EXIT PAD, h2270 EI (PV) black",
+        "EXIT PAD, h3400, EI (PV) black"
+      ],
+      "2panic D 60": [
+        "standard - mortise EI",
+        "EXIT PAD, h2270 EI (PV) silver",
+        "EXIT PAD, h3400, EI (PV) silver",
+        "EXIT PAD, h2270 EI (PV) black",
+        "EXIT PAD, h3400, EI (PV) black"
+      ],
+      "2panic E 60": [
+        "standard - mortise EI",
+        "EXIT PAD, h2270 EI (PV) silver",
+        "EXIT PAD, h3400, EI (PV) silver",
+        "EXIT PAD, h2270 EI (PV) black",
+        "EXIT PAD, h3400, EI (PV) black"
+      ],
+      "23 pts 60": [
+        "standard - mortise EI",
+        "EXIT PAD, h2270 EI (PV) silver",
+        "EXIT PAD, h3400, EI (PV) silver",
+        "EXIT PAD, h2270 EI (PV) black",
+        "EXIT PAD, h3400, EI (PV) black"
+      ],
+      "23 pts panic D 60": [
+        "standard - mortise EI",
+        "EXIT PAD, h2270 EI (PV) silver",
+        "EXIT PAD, h3400, EI (PV) silver",
+        "EXIT PAD, h2270 EI (PV) black",
+        "EXIT PAD, h3400, EI (PV) black"
+      ],
+      "23 pts panic E 60": [
+        "standard - mortise EI",
+        "EXIT PAD, h2270 EI (PV) silver",
+        "EXIT PAD, h3400, EI (PV) silver",
+        "EXIT PAD, h2270 EI (PV) black",
+        "EXIT PAD, h3400, EI (PV) black"
+      ],
+      "2panic B for 2 Lv 60": [],
+      "2panic D for 2 Lv 60": [],
+      "2panic E for 2 Lv 60": [],
+      "2GBS 90 60": [
+        "standard - mortise"
+      ],
+      "2other 60": [
+        "standard - mortise EI",
+        "EXIT PAD, h2270 EI (PV) silver",
+        "EXIT PAD, h3400, EI (PV) silver",
+        "EXIT PAD, h2270 EI (PV) black",
+        "EXIT PAD, h3400, EI (PV) black"
+      ],
+      "2WITHOUT (EI surface m. silver) 60": [
+        "standard - mortise EI",
+        "EXIT PAD, h2270 EI (PV) silver",
+        "EXIT PAD, h3400, EI (PV) silver",
+        "without"
+      ],
+      "2WITHOUT (EI surface m. black) 60": [
+        "standard - mortise EI",
+        "EXIT PAD, h2270 EI (PV) black",
+        "EXIT PAD, h3400, EI (PV) black",
+        "without"
+      ],
+      "2EL 560 60": [
+        "standard - mortise"
+      ],
+      "2EL 561 60": [
+        "standard - mortise"
+      ],
+      "2EL 518 60": [
+        "standard - mortise"
+      ],
+      "2EL 520 60": [
+        "standard - mortise"
+      ],
+      "2Dorma SVP 6000 60": [
+        "standard - mortise"
+      ],
+      "2Dorma SVZ 6000 60": [
+        "standard - mortise"
+      ],
+      "2Dorma SVP 2000 60": [
+        "standard - mortise"
+      ],
+      "2standard 12": [
+        "standard - mortise EI"
+      ],
+      "2panic B 12": [
+        "standard - mortise EI"
+      ],
+      "2panic D 12": [
+        "standard - mortise EI"
+      ],
+      "2panic E 12": [
+        "standard - mortise EI"
+      ],
+      "23 pts 12": [],
+      "23 pts panic D 12": [],
+      "23 pts panic E 12": [],
+      "2panic B for 2 Lv 12": [],
+      "2panic D for 2 Lv 12": [],
+      "2panic E for 2 Lv 12": [],
+      "2GBS 90 12": [
+        "standard - mortise"
+      ],
+      "2other 12": [
+        "standard - mortise EI"
+      ],
+      "2WITHOUT (EI surface m. silver) 12": [
+        "standard - mortise EI",
+        "EXIT PAD, h2270 EI (PV) silver",
+        "EXIT PAD, h3400, EI (PV) silver",
+        "without"
+      ],
+      "2WITHOUT (EI surface m. black) 12": [
+        "standard - mortise EI",
+        "EXIT PAD, h2270 EI (PV) black",
+        "EXIT PAD, h3400, EI (PV) black",
+        "without"
+      ],
+      "2EL 560 12": [
+        "standard - mortise"
+      ],
+      "2EL 561 12": [
+        "standard - mortise"
+      ],
+      "2EL 518 12": [
+        "standard - mortise"
+      ],
+      "2EL 520 12": [
+        "standard - mortise"
+      ],
+      "2Dorma SVP 6000 12": [
+        "standard - mortise"
+      ],
+      "2Dorma SVZ 6000 12": [
+        "standard - mortise"
+      ],
+      "2Dorma SVP 2000 12": [
+        "standard - mortise"
+      ]
+    },
+    "electricStrike": {
+      "B1standard": [
+        "without",
+        "NC for NFR 12V, 1 L",
+        "NC for NFR 24V, 1 L",
+        "NO for NFR 12V, 1 L, ab. main lock",
+        "NO for NFR 24V, 1 L, ab. main lock",
+        "NO for NFR 12V, 1 L, with main lock",
+        "NO for NFR 24V, 1 L, with main lock",
+        "other"
+      ],
+      "B1panic B": [],
+      "B1panic D": [],
+      "B1panic E": [
+        "without",
+        "NC for NFR 12V, 1 L",
+        "NC for NFR 24V, 1 L",
+        "NO for NFR 12V, 1 L, ab. main lock",
+        "NO for NFR 24V, 1 L, ab. main lock",
+        "NO for NFR 12V, 1 L, with main lock",
+        "NO for NFR 24V, 1 L, with main lock",
+        "other"
+      ],
+      "B13 pts": [
+        "without",
+        "NC for NFR 12V, 1 L",
+        "NC for NFR 24V, 1 L",
+        "NO for NFR 12V, 1 L, ab. main lock",
+        "NO for NFR 24V, 1 L, ab. main lock",
+        "NO for NFR 12V, 1 L, with main lock",
+        "NO for NFR 24V, 1 L, with main lock",
+        "other"
+      ],
+      "B13 pts panic D": [],
+      "B13 pts panic E": [
+        "without",
+        "NC for NFR 12V, 1 L",
+        "NC for NFR 24V, 1 L",
+        "NO for NFR 12V, 1 L, with main lock",
+        "NO for NFR 24V, 1 L, with main lock",
+        "other"
+      ],
+      "B1panic B for 2 Lv": [],
+      "B1panic D for 2 Lv": [],
+      "B1panic E for 2 Lv": [],
+      "B1WC": [],
+      "B1roller": [],
+      "B1GBS 90": [
+        "other",
+        "without"
+      ],
+      "B1other": [
+        "without",
+        "NC for NFR 12V, 1 L",
+        "NC for NFR 24V, 1 L",
+        "NO for NFR 12V, 1 L, ab. main lock",
+        "NO for NFR 24V, 1 L, ab. main lock",
+        "NO for NFR 12V, 1 L, with main lock",
+        "NO for NFR 24V, 1 L, with main lock",
+        "other"
+      ],
+      "B1WITHOUT (NFR surface m. silver)": [],
+      "B1WITHOUT (NFR surface m. black)": [],
+      "B1EL 560": [
+        "other",
+        "without"
+      ],
+      "B1EL 561": [
+        "other",
+        "without"
+      ],
+      "B1EL 518": [
+        "other",
+        "without"
+      ],
+      "B1EL 520": [
+        "other",
+        "without"
+      ],
+      "B1Dorma SVP 6000": [
+        "other",
+        "without"
+      ],
+      "B1Dorma SVZ 6000": [
+        "other",
+        "without"
+      ],
+      "B1Dorma SVP 2000": [
+        "other",
+        "without"
+      ],
+      "B2standard": [
+        "without",
+        "NC for NFR 12V, 2 Lv + cable transfer",
+        "NC for NFR 24V, 2 Lv + cable transfer",
+        "NO for NFR 12V, 2 Lv, ab. main lock + cable tran.",
+        "NO for NFR 24V, 2 Lv, ab. main lock + cable tran.",
+        "NO for NFR 12V, 2 Lv, with main lock + cable tran.",
+        "NO for NFR 24V, 2 Lv, with main lock + cable tran.",
+        "other"
+      ],
+      "B2panic B": [],
+      "B2panic D": [],
+      "B2panic E": [
+        "without",
+        "NC for NFR 12V, 2 Lv + cable transfer",
+        "NC for NFR 24V, 2 Lv + cable transfer",
+        "NO for NFR 12V, 2 Lv, ab. main lock + cable tran.",
+        "NO for NFR 24V, 2 Lv, ab. main lock + cable tran.",
+        "NO for NFR 12V, 2 Lv, with main lock + cable tran.",
+        "NO for NFR 24V, 2 Lv, with main lock + cable tran.",
+        "other"
+      ],
+      "B23 pts": [
+        "without",
+        "NC for NFR 12V, 2 Lv + cable transfer",
+        "NC for NFR 24V, 2 Lv + cable transfer",
+        "NO for NFR 12V, 2 Lv, ab. main lock + cable tran.",
+        "NO for NFR 24V, 2 Lv, ab. main lock + cable tran.",
+        "NO for NFR 12V, 2 Lv, with main lock + cable tran.",
+        "NO for NFR 24V, 2 Lv, with main lock + cable tran.",
+        "other"
+      ],
+      "B23 pts panic D": [],
+      "B23 pts panic E": [
+        "without",
+        "NC for NFR 12V, 2 Lv + cable transfer",
+        "NC for NFR 24V, 2 Lv + cable transfer",
+        "NO for NFR 12V, 2 Lv, with main lock + cable tran.",
+        "NO for NFR 24V, 2 Lv, with main lock + cable tran.",
+        "other"
+      ],
+      "B2panic B for 2 Lv": [],
+      "B2panic D for 2 Lv": [],
+      "B2panic E for 2 Lv": [],
+      "B2WC": [],
+      "B2roller": [],
+      "B2other": [
+        "without",
+        "NC for NFR 12V, 2 Lv + cable transfer",
+        "NC for NFR 24V, 2 Lv + cable transfer",
+        "NO for NFR 12V, 2 Lv, ab. main lock + cable tran.",
+        "NO for NFR 24V, 2 Lv, ab. main lock + cable tran.",
+        "NO for NFR 12V, 2 Lv, with main lock + cable tran.",
+        "NO for NFR 24V, 2 Lv, with main lock + cable tran.",
+        "other"
+      ],
+      "B2WITHOUT (NFR surface m. silver)": [],
+      "B2WITHOUT (NFR surface m. black)": [],
+      "B2GBS 90": [
+        "other",
+        "without"
+      ],
+      "B2EL 560": [
+        "other",
+        "without"
+      ],
+      "B2EL 561": [
+        "other",
+        "without"
+      ],
+      "B2EL 518": [
+        "other",
+        "without"
+      ],
+      "B2EL 520": [
+        "other",
+        "without"
+      ],
+      "B2Dorma SVP 6000": [
+        "other",
+        "without"
+      ],
+      "B2Dorma SVZ 6000": [
+        "other",
+        "without"
+      ],
+      "B2Dorma SVP 2000": [
+        "other",
+        "without"
+      ],
+      "E1standard": [
+        "without",
+        "NC for EI 12V, 1 leaf",
+        "NC for EI 24V, 1 leaf",
+        "NO for EI 12V, 1 leaf, ab. main lock",
+        "NO for EI 24V, 1 leaf, ab. main lock",
+        "other"
+      ],
+      "E1panic B": [],
+      "E1panic D": [],
+      "E1panic E": [
+        "without",
+        "NC for EI 12V, 1 leaf",
+        "NC for EI 24V, 1 leaf",
+        "NO for EI 12V, 1 leaf, ab. main lock",
+        "NO for EI 24V, 1 leaf, ab. main lock",
+        "other"
+      ],
+      "E13 pts": [
+        "without",
+        "NC for EI 12V, 1 leaf",
+        "NC for EI 24V, 1 leaf",
+        "NO for EI 12V, 1 leaf, ab. main lock",
+        "NO for EI 24V, 1 leaf, ab. main lock",
+        "other"
+      ],
+      "E13 pts panic D": [],
+      "E13 pts panic E": [
+        "without",
+        "NC for EI 12V, 1 leaf",
+        "NC for EI 24V, 1 leaf",
+        "NO for EI 12V, 1 leaf, ab. main lock",
+        "NO for EI 24V, 1 leaf, ab. main lock",
+        "other"
+      ],
+      "E1panic B for 2 Lv": [],
+      "E1panic D for 2 Lv": [],
+      "E1panic E for 2 Lv": [],
+      "E1GBS 90": [
+        "other"
+      ],
+      "E1WC": [],
+      "E1roller": [],
+      "E1other": [
+        "without",
+        "NC for EI 12V, 1 leaf",
+        "NC for EI 24V, 1 leaf",
+        "NO for EI 12V, 1 leaf, ab. main lock",
+        "NO for EI 24V, 1 leaf, ab. main lock",
+        "other"
+      ],
+      "E1WITHOUT (NFR surface m. silver)": [],
+      "E1WITHOUT (NFR surface m. black)": [],
+      "E1EL 560": [
+        "other"
+      ],
+      "E1EL 561": [
+        "other"
+      ],
+      "E1EL 518": [
+        "other"
+      ],
+      "E1EL 520": [
+        "other"
+      ],
+      "E1Dorma SVP 6000": [
+        "other"
+      ],
+      "E1Dorma SVZ 6000": [
+        "other"
+      ],
+      "E1Dorma SVP 2000": [
+        "other"
+      ],
+      "E2standard": [
+        "without",
+        "NC for EI 12V, 2 Lv + cable transfer",
+        "NC for EI 24V, 2 Lv + cable transfer",
+        "NO for EI 12V, 2 Lv, ab. main lock + cable tran.",
+        "NO for EI 24V, 2 Lv, ab. main lock + cable tran.",
+        "other"
+      ],
+      "E2panic B": [],
+      "E2panic D": [],
+      "E2panic E": [
+        "without",
+        "NC for EI 12V, 2 Lv + cable transfer",
+        "NC for EI 24V, 2 Lv + cable transfer",
+        "NO for EI 12V, 2 Lv, ab. main lock + cable tran.",
+        "NO for EI 24V, 2 Lv, ab. main lock + cable tran.",
+        "other"
+      ],
+      "E23 pts": [
+        "without",
+        "NC for EI 12V, 2 Lv + cable transfer",
+        "NC for EI 24V, 2 Lv + cable transfer",
+        "NO for EI 12V, 2 Lv, ab. main lock + cable tran.",
+        "NO for EI 24V, 2 Lv, ab. main lock + cable tran.",
+        "other"
+      ],
+      "E23 pts panic D": [],
+      "E23 pts panic E": [
+        "without",
+        "NC for EI 12V, 2 Lv + cable transfer",
+        "NC for EI 24V, 2 Lv + cable transfer",
+        "NO for EI 12V, 2 Lv, ab. main lock + cable tran.",
+        "NO for EI 24V, 2 Lv, ab. main lock + cable tran.",
+        "other"
+      ],
+      "E2panic B for 2 Lv": [],
+      "E2panic D for 2 Lv": [],
+      "E2panic E for 2 Lv": [],
+      "E2GBS 90": [
+        "other"
+      ],
+      "E2WC": [],
+      "E2roller": [],
+      "E2other": [
+        "without",
+        "NC for EI 12V, 2 Lv + cable transfer",
+        "NC for EI 24V, 2 Lv + cable transfer",
+        "NO for EI 12V, 2 Lv, ab. main lock + cable tran.",
+        "NO for EI 24V, 2 Lv, ab. main lock + cable tran.",
+        "other"
+      ],
+      "E2WITHOUT (NFR surface m. silver)": [],
+      "E2WITHOUT (NFR surface m. black)": [],
+      "E2EL 560": [
+        "other"
+      ],
+      "E2EL 561": [
+        "other"
+      ],
+      "E2EL 518": [
+        "other"
+      ],
+      "E2EL 520": [
+        "other"
+      ],
+      "E2Dorma SVP 6000": [
+        "other"
+      ],
+      "E2Dorma SVZ 6000": [
+        "other"
+      ],
+      "E2Dorma SVP 2000": [
+        "other"
+      ]
+    },
+    "doorCloser": {
+      "1": [
+        "TS 11",
+        "TS 20",
+        "TS 50",
+        "TS 41 B",
+        "TS 41 G",
+        "TS 61 B",
+        "TS 61 G",
+        "other",
+        "without"
+      ],
+      "2": [
+        "TS 11 x 2 + RKZ 402",
+        "TS 20 x 2 + RKZ 402",
+        "TS 50 x2 + RKZ 402",
+        "TS 41 SR",
+        "TS 41 SR BG",
+        "TS 61 SR",
+        "TS 61 SR BG",
+        "TS 41 B x 2 + RKZ 402",
+        "TS 41 G x 2 + RKZ 402",
+        "TS 61 B x 2 + RKZ 402",
+        "TS 61 G x 2 + RKZ 402",
+        "other",
+        "without"
+      ]
+    },
+    "glazing": {
+      "INT1DS 00": [
+        "without",
+        "NFR size up to 0,3m2 single",
+        "NFR fi350",
+        "other"
+      ],
+      "INT1DS 30": [
+        "without",
+        "EI30 size up to 0,3m2 single",
+        "EI30 fi350",
+        "other"
+      ],
+      "INT1DS 60": [
+        "without",
+        "EI60 size up to 0,3m2 single",
+        "EI60 fi350",
+        "other"
+      ],
+      "INT1DS 12": [
+        "without",
+        "EI120 size up to 0,3m2 single",
+        "EI 120 fi350, act L",
+        "other"
+      ],
+      "INT2DS 00": [
+        "without",
+        "NFR size up to 0,3m2 single, act. L",
+        "NFR size up to 0,3m2 single, 2 Lv",
+        "NFR fi350, act L",
+        "NFR fi350, 2 Lv",
+        "other"
+      ],
+      "INT2DS 30": [
+        "without",
+        "EI30 size up to 0,3m2 single, act. L",
+        "EI30 size up to 0,3m2 single, 2 Lv",
+        "EI30 fi350, act L",
+        "EI30 fi350, 2 Lv",
+        "other"
+      ],
+      "INT2DS 60": [
+        "without",
+        "EI60 size up to 0,3m2 single, act. L",
+        "EI60 size up to 0,3m2 singlee, 2 Lv",
+        "EI60 fi350, act L",
+        "EI60 fi350, 2 Lv",
+        "other"
+      ],
+      "INT2DS 12": [
+        "without",
+        "EI120 size up to 0,3m2 single",
+        "EI120 size up to 0,3m2 single, 2 Lv",
+        "EI 120 fi350, act L",
+        "EI 120 fi350, 2 Lv",
+        "other"
+      ],
+      "EXT1DS 00": [
+        "without",
+        "NFR size up to 0,3m2 double",
+        "NFR fi350",
+        "other"
+      ],
+      "EXT1DS 30": [
+        "without",
+        "EI30 size up to 0,3m2 double",
+        "EI30 fi350",
+        "other"
+      ],
+      "EXT1DS 60": [
+        "without",
+        "EI60 size up to 0,3m2 double",
+        "EI60 fi350",
+        "other"
+      ],
+      "EXT1DS 12": [
+        "without"
+      ],
+      "EXT2DS 00": [
+        "without",
+        "NFR size up to 0,3m2 double, act. L",
+        "NFR size up to 0,3m2 double, 2 Lv",
+        "NFR fi350, act L",
+        "NFR fi350, 2 Lv",
+        "other"
+      ],
+      "EXT2DS 30": [
+        "without",
+        "EI30 size up to 0,3m2 double, act. L",
+        "EI30 size up to 0,3m2 double, 2 Lv",
+        "EI30 fi350, act L",
+        "EI30 fi350, 2 Lv",
+        "other"
+      ],
+      "EXT2DS 60": [
+        "without",
+        "EI60 size up to 0,3m2 double, act. L",
+        "EI60 size up to 0,3m2 double, 2 Lv",
+        "EI60 fi350, act L",
+        "EI60 fi350, 2 Lv",
+        "other"
+      ],
+      "EXT2DS 12": [
+        "without"
+      ],
+      "EXT2DS 90": [
+        "without"
+      ],
+      "EXT1DS 90": [
+        "without"
+      ],
+      "INT1DS 90": [
+        "without"
+      ]
+    },
+    "ventilationGrill": {
+      "INT1DS 00": [
+        "without",
+        "KWZ: 440x120",
+        "Z:400x200",
+        "Z:400x400",
+        "Z: max 0,5m2",
+        "other"
+      ],
+      "INT1DS 30": [
+        "without",
+        "EI 400x200 int",
+        "EI 400x400 int",
+        "EI 400x600 int",
+        "other"
+      ],
+      "INT1DS 60": [
+        "without",
+        "EI 400x200 int",
+        "EI 400x400 int",
+        "EI 400x600 int",
+        "other"
+      ],
+      "INT1DS 12": [],
+      "INT2DS 00": [
+        "without",
+        "KWZ: 440x120 act L",
+        "Z:400x200 act L",
+        "Z:400x400 act L",
+        "Z: max 0,5m2 act L",
+        "KWZ: 440x120 2 Lv",
+        "Z:400x200 2 Lv",
+        "Z:400x400 2 Lv",
+        "Z: max 0,5m2, 2 Lv",
+        "other"
+      ],
+      "INT2DS 30": [
+        "without",
+        "EI 400x200 int act L",
+        "EI 400x400 int act L",
+        "EI 400x600 int act L",
+        "EI 400x200 int 2 Lv",
+        "EI 400x400 int 2 Lv",
+        "EI 400x600 int 2 Lv",
+        "other"
+      ],
+      "INT2DS 60": [
+        "without",
+        "EI 400x200 int act L",
+        "EI 400x400 int act L",
+        "EI 400x600 int act L",
+        "EI 400x200 int 2 Lv",
+        "EI 400x400 int 2 Lv",
+        "EI 400x600 int 2 Lv",
+        "other"
+      ],
+      "INT2DS 12": [],
+      "EXT1DS 00": [
+        "without",
+        "KWZ: 440x120",
+        "Z:400x200",
+        "Z:400x400",
+        "Z: max 0,5m2",
+        "KWZ: 440x120 +mosquito net",
+        "Z:400x200 +mosquito net",
+        "Z:400x400 +mosquito net",
+        "Z: max 0,5m2 +mosquito net",
+        "other"
+      ],
+      "EXT1DS 30": [
+        "without",
+        "EI 400x200 ext",
+        "EI 400x400 ext",
+        "EI 400x600 ext",
+        "EI 400x200 ext",
+        "EI 400x400 ext",
+        "EI 400x600 ext",
+        "other"
+      ],
+      "EXT1DS 60": [
+        "without",
+        "EI 400x200 ext",
+        "EI 400x400 ext",
+        "EI 400x600 ext",
+        "EI 400x200 ext",
+        "EI 400x400 ext",
+        "EI 400x600 ext",
+        "other"
+      ],
+      "EXT1DS 12": [],
+      "EXT2DS 00": [
+        "without",
+        "KWZ: 440x120 act L",
+        "Z:400x200 act L",
+        "Z:400x400 act L",
+        "Z: max 0,5m2 act L",
+        "KWZ: 440x120 2 Lv",
+        "Z:400x200 2 Lv",
+        "Z:400x400 2 Lv",
+        "Z: max 0,5m2, 2 Lv",
+        "KWZ: 440x120 +mosquito net, act L",
+        "Z:400x200+mosquito net, act L",
+        "Z:400x400 +mosquito net, act L",
+        "Z: max 0,5m2+mosquito net,act L",
+        "KWZ: 440x120+mosquito net, 2 Lv",
+        "Z:400x200+mosquito net, 2Lv",
+        "Z:400x400+mosquito net, 2 Lv",
+        "Z: max 0,5m2+mosquito net, 2 Lv",
+        "other"
+      ],
+      "EXT2DS 30": [
+        "without",
+        "EI 400x200 ext act L",
+        "EI 400x400 ext act L",
+        "EI 400x600 ext act L",
+        "EI 400x200 ext 2 Lv",
+        "EI 400x400 ext 2 Lv",
+        "EI 400x600 ext 2 Lv",
+        "EI 400x200 ext +mosquito net, act L",
+        "EI 400x400 ext +mosquito net, act L",
+        "EI 400x600 ext +mosquito net, act L",
+        "EI 400x200 ext +mosquito net, 2 Lv",
+        "EI 400x400 ext +mosquito net, 2 Lv",
+        "EI 120 fi350, act L",
+        "other"
+      ],
+      "EXT2DS 60": [
+        "without",
+        "EI 400x200 ext act L",
+        "EI 400x400 ext act L",
+        "EI 400x600 ext act L",
+        "EI 400x200 ext 2 Lv",
+        "EI 400x400 ext 2 Lv",
+        "EI 400x600 ext 2 Lv",
+        "EI 400x200 ext +mosquito net, act L",
+        "EI 400x400 ext +mosquito net, act L",
+        "EI 400x600 ext +mosquito net, act L",
+        "EI 400x200 ext +mosquito net, 2 Lv",
+        "EI 400x400 ext +mosquito net, 2 Lv",
+        "EI 120 fi350, act L",
+        "other"
+      ],
+      "EXT2DS 12": []
+    },
+    "dropSeal": {
+      "1NO": [
+        "automatic 1 L",
+        "no"
+      ],
+      "2NO": [
+        "automatic 2 Lv",
+        "no"
+      ],
+      "1YES": [
+        "automatic 1 L"
+      ],
+      "2YES": [
+        "automatic 2 Lv"
+      ]
+    },
+    "doorStopper": {
+      "1": [
+        "without",
+        "1 pc door stopper"
+      ],
+      "2": [
+        "without",
+        "1 pc door stopper",
+        "2 pcs door stopper"
+      ]
+    },
+    "magnetContact": {
+      "1": [
+        "without",
+        "MC - 1 L",
+        "Eff Eff - 1 L"
+      ],
+      "2": [
+        "without",
+        "MC - 1 L",
+        "Eff Eff - 1 L",
+        "MC - 2 Lv",
+        "Eff Eff - 2 Lv"
+      ]
+    },
+    "threshold": {
+      "1": [
+        "without",
+        "standard banded treshold with gasket, h=16mm, Inox, 1L",
+        "standard banded treshold with gasket, h=20mm, INOX for 1-leaf door",
+        "Flat, thickness 3mm, Inox 1L",
+        "Assembly threshold, 1L"
+      ],
+      "2": [
+        "without",
+        "standard banded treshold with gasket, h=16mm, Inox, 2Lv",
+        "standard banded treshold with gasket, h=20mm, INOX for 2-leaves door",
+        "Flat, thickness 3mm, Inox 2Lv",
+        "Assembly threshold, 2Lv"
+      ]
+    },
+    "dripCap": {
+      "EXT1": [
+        "without",
+        "upper drip cap",
+        "upper and bottom drip cap",
+        "bottom drip cap"
+      ],
+      "EXT2": [
+        "without",
+        "upper drip cap, 2 Lv",
+        "upper and bottom drip cap, 2 Lv",
+        "bottom drip cap, 2Lv"
+      ]
+    }
+  },
   "limits": {
     "DS 00-1corneINT": {
       "minWidth": 254,

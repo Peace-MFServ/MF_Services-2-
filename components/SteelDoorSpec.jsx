@@ -5,7 +5,7 @@ import { useSteelSpecState, mmDigits } from "./steelSpecState";
 import { UI, FONT, fieldStyle, focusField, blurField } from "../lib/theme";
 import {
   fireRatings, leafCountsFor, highPerformanceAvailable,
-  describeSteelDoor, steelSpecRows, standardsFor,
+  describeSteelDoor, steelSpecRows, standardsFor, hardwareNeedsText,
 } from "../lib/steelDoor";
 import { SPEC_TYPES, REQUIRE_ENQUIRY_DETAILS } from "../lib/hardwareSpec";
 
@@ -18,10 +18,19 @@ import { SPEC_TYPES, REQUIRE_ENQUIRY_DETAILS } from "../lib/hardwareSpec";
 // offers a choice the answers above it have ruled out.
 // ─────────────────────────────────────────────────────────────────
 
-const STEPS = ["Doorset", "Opening", "Project", "Review"];
+const STEPS = ["Doorset", "Opening", "Hardware", "Project", "Review"];
 
 const OPENING_FIELDS = new Set(["exposure", "frameId", "width", "height"]);
 const PROJECT_FIELDS = new Set(["businessName", "email", "phone"]);
+
+// The ironmongery reads better in trades than in one long list. Any
+// group the doorset does not ask simply does not appear.
+const HARDWARE_SECTIONS = [
+  { title: "Locking", ids: ["lock", "cylinder", "handleActiveInside", "handleActiveOutside", "handlePassiveOutside", "flushBolt", "electricStrike"] },
+  { title: "Hanging and closing", ids: ["smokeProtection", "hinge", "hingeCount", "doorCloser", "doorStopper", "magnetContact"] },
+  { title: "Openings in the leaf", ids: ["glazing", "ventilationGrill"] },
+  { title: "Sealing and thresholds", ids: ["dropSeal", "threshold", "dripCap"] },
+];
 
 // ─── Primitives ───────────────────────────────────────────────────
 
@@ -338,6 +347,92 @@ function TextField({ id, label, required, value, onChange, onBlurTouch, error, t
   );
 }
 
+/** One hardware question: the manufacturer's own list, plus a place to
+ *  write it down when the answer is "other". */
+function HardwareField({ group, value, text, onChange, onChangeText, error }) {
+  const blocked = group.options.length === 0;
+  return (
+    <div style={{ marginBottom: 16 }}>
+      <label htmlFor={`hw-${group.id}`} style={{
+        display: "block", fontSize: 11, fontWeight: 600, letterSpacing: "0.06em",
+        textTransform: "uppercase", color: UI.muted, fontFamily: FONT, marginBottom: 6,
+      }}>
+        {group.label}
+      </label>
+      <select
+        id={`hw-${group.id}`} value={blocked ? "" : value || ""} disabled={blocked}
+        onChange={e => onChange(e.target.value)}
+        style={{
+          ...fieldStyle, padding: "9px 10px", fontSize: 13,
+          borderColor: error ? UI.warn : UI.ruleStrong,
+          background: blocked ? UI.sunken : UI.surface,
+          color: blocked ? UI.muted : UI.ink,
+          cursor: blocked ? "not-allowed" : "pointer",
+        }}
+      >
+        {blocked && <option value="">Choose a lock first</option>}
+        {group.options.map(o => <option key={o} value={o}>{o}</option>)}
+      </select>
+      {hardwareNeedsText(value) && (
+        <input
+          id={`hw-${group.id}-text`} value={text || ""}
+          placeholder={`Describe the ${group.label.toLowerCase()} required`}
+          onChange={e => onChangeText(e.target.value)}
+          style={{ ...fieldStyle, marginTop: 8, padding: "9px 10px", fontSize: 13 }}
+          onFocus={focusField} onBlur={blurField}
+        />
+      )}
+      {group.note && (
+        <p style={{ margin: "6px 0 0", fontSize: 12, lineHeight: 1.45, color: UI.muted, fontFamily: FONT }}>
+          {group.note}
+        </p>
+      )}
+      <FieldError>{error}</FieldError>
+    </div>
+  );
+}
+
+/** Everything that gets fitted to the doorset. What is on offer comes
+ *  from the doorset itself and, for most of it, from the lock. */
+function HardwareStep({ config, set, hardware, errorFor }) {
+  const byId = Object.fromEntries(hardware.map(g => [g.id, g]));
+  return (
+    <div style={{ padding: "20px 22px" }}>
+      <p style={{ margin: "0 0 20px", fontSize: 13, lineHeight: 1.55, color: UI.body, fontFamily: FONT }}>
+        Nothing is fitted unless you ask for it, apart from the lock,
+        cylinder and hinges every doorset needs.
+      </p>
+      {HARDWARE_SECTIONS.map(section => {
+        const groups = section.ids.map(id => byId[id]).filter(Boolean);
+        if (!groups.length) return null;
+        return (
+          <div key={section.title} style={{ marginBottom: 26 }}>
+            <Label>{section.title}</Label>
+            {groups.map(g => (
+              <HardwareField
+                key={g.id} group={g}
+                value={config[g.id]} text={config[`${g.id}Text`]}
+                onChange={v => set(g.id, v)}
+                onChangeText={v => set(`${g.id}Text`, v)}
+                error={errorFor(g.id)}
+              />
+            ))}
+          </div>
+        );
+      })}
+
+      <div style={{ marginBottom: 8 }}>
+        <Label>Finish</Label>
+        <TextField
+          id="steel-ral" label="Colour (RAL)"
+          value={config.ral}
+          onChange={v => set("ral", v)}
+        />
+      </div>
+    </div>
+  );
+}
+
 /** Who the specification is for and which project it belongs to —
  *  its own step, the same as on the riser doors and the cable plan. */
 function ProjectStep({ projectData, setProjectData, specType, setSpecType, markTouched, errorFor }) {
@@ -491,19 +586,21 @@ export default function SteelDoorSpec({ onChangeProduct, modeSwitch, saveButton 
   const {
     config, set, specType, setSpecType, projectData, setProjectData,
     currentStep, setCurrentStep, furthest, setFurthest,
-    markTouched, errorFor, resolution, validation,
+    markTouched, errorFor, resolution, validation, hardware,
     generating, notice, startOver, generate,
   } = useSteelSpecState();
   const railRef = useRef(null);
 
   const stepErrors = fields => validation.errors.filter(e => fields.has(e.field));
   const openingErrors = stepErrors(OPENING_FIELDS);
+  const hardwareErrors = stepErrors(new Set(hardware.map(g => g.id)));
   const projectErrors = stepErrors(PROJECT_FIELDS);
 
   const stepBlocked =
     currentStep === 0 ? !resolution.type
     : currentStep === 1 ? openingErrors.length > 0
-    : currentStep === 2 ? projectErrors.length > 0
+    : currentStep === 2 ? hardwareErrors.length > 0
+    : currentStep === 3 ? projectErrors.length > 0
     : false;
 
   const goNext = () => {
@@ -518,10 +615,15 @@ export default function SteelDoorSpec({ onChangeProduct, modeSwitch, saveButton 
     if (railRef.current) railRef.current.scrollTop = 0;
   };
 
+  const blockedCount =
+    currentStep === 1 ? openingErrors.length
+    : currentStep === 2 ? hardwareErrors.length
+    : currentStep === 3 ? projectErrors.length
+    : 0;
+
   const nextLabel =
     currentStep === 0 ? (resolution.type ? "Next" : "Choose a doorset")
-    : currentStep === 1 && stepBlocked ? `${openingErrors.length} to fix`
-    : currentStep === 2 && stepBlocked ? `${projectErrors.length} to fix`
+    : stepBlocked ? `${blockedCount} to fix`
     : "Next";
 
   return (
@@ -559,13 +661,16 @@ export default function SteelDoorSpec({ onChangeProduct, modeSwitch, saveButton 
             <OpeningStep config={config} set={set} errorFor={errorFor} resolution={resolution} />
           )}
           {currentStep === 2 && (
+            <HardwareStep config={config} set={set} hardware={hardware} errorFor={errorFor} />
+          )}
+          {currentStep === 3 && (
             <ProjectStep
               projectData={projectData} setProjectData={setProjectData}
               specType={specType} setSpecType={setSpecType}
               markTouched={markTouched} errorFor={errorFor}
             />
           )}
-          {currentStep === 3 && (
+          {currentStep === 4 && (
             <ReviewStep
               config={config} resolution={resolution} specType={specType}
               validation={validation} onGenerate={generate}

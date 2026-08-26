@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback } from "react";
 import {
   resolveSteelDoor, validateSteelDoor, highPerformanceAvailable,
+  hardwareGroupsFor, reconcileHardware,
 } from "../lib/steelDoor";
 import { REQUIRE_ENQUIRY_DETAILS, isEmail, isPhone } from "../lib/hardwareSpec";
 import { generateSteelDoorPDF } from "../lib/generateSteelDoorPDF";
@@ -28,6 +29,7 @@ export const initialConfig = () => ({
   width: "",
   height: "",
   handing: "left",
+  ral: "",
 });
 
 export const emptyProject = () => ({
@@ -84,6 +86,7 @@ export function useSteelSpecState() {
   }, []);
 
   const resolution = resolveSteelDoor(config);
+  const hardware = hardwareGroupsFor(config, resolution);
   const validation = withContactChecks(validateSteelDoor(config), projectData);
 
   // A change further up can invalidate what was chosen below it — drop
@@ -112,6 +115,18 @@ export function useSteelSpecState() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [exposureIds, frameIds, config.exposure, config.frameId]);
+
+  // Hardware settles itself: a question that has just appeared takes
+  // its default, one whose options changed moves to something that
+  // exists, and one that no longer applies lets go of its answer. It
+  // runs a pass at a time so answering the lock brings the cylinder
+  // and handle questions in on the next.
+  const hardwareShape = hardware.map(g => `${g.id}:${g.options.join("|")}`).join("~");
+  useEffect(() => {
+    const changes = reconcileHardware(config);
+    if (Object.keys(changes).length) setConfig(c => ({ ...c, ...changes }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hardwareShape]);
 
   // High Performance above 60 minutes does not exist; step back down
   // rather than leaving an impossible doorset selected.
@@ -158,7 +173,7 @@ export function useSteelSpecState() {
     projectData, setProjectData,
     currentStep, setCurrentStep, furthest, setFurthest,
     markTouched, errorFor,
-    resolution, validation,
+    resolution, validation, hardware,
     hydrated, generating, notice,
     startOver, generate,
   };
