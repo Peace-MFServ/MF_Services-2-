@@ -3,6 +3,7 @@ import { useState, useCallback, useEffect } from "react";
 import SpecGenerator from "./SpecGenerator";
 import CablePlanConfigurator from "./CablePlanConfigurator";
 import QuickSpec from "./QuickSpec";
+import SteelDoorSpec from "./SteelDoorSpec";
 import { useAuth } from "./AuthProvider";
 import { SaveProjectButton } from "./SavedProjects";
 import { writeWorkingState } from "../lib/projects";
@@ -267,6 +268,13 @@ export default function SpecificationTool() {
       )}
     </div>
   );
+
+  // Steel doorsets run their own flow — what the doorset IS decides
+  // which frames, exposures and sizes exist, so the questions differ
+  // from the riser doors and the quick layout does not apply yet.
+  if (selection.id === "steel-doors") {
+    return <SteelDoorSpec onChangeProduct={clear} />;
+  }
 
   if (effectiveMode === "quick") {
     return <QuickSpec productTypeId={selection.id} onChangeProduct={clear} modeSwitch={modeSwitch} />;
