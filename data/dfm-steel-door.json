@@ -1,0 +1,1343 @@
+{
+  "_internal": "INTERNAL \u2014 never rendered customer-side. Sizes, frames, deductions and certificate references are the manufacturer's own, taken from the DFM ETA/CE configurator of October 2025. The type codes are internal too: the customer answers fire rating, leaf count and performance, and the code is derived.",
+  "range": "DS",
+  "standard": "EN 13501-2",
+  "construction": {
+    "highPerformance": "High Performance: 65 mm leaf with a high-density mineral wool core, and upgraded mechanical and corrosion resistance classes to C5 Marine."
+  },
+  "frames": [
+    {
+      "id": "corner",
+      "label": "corner",
+      "class": "c",
+      "limitKey": "corne"
+    },
+    {
+      "id": "corner-thermal",
+      "label": "corner thermal",
+      "class": "c",
+      "limitKey": "corne"
+    },
+    {
+      "id": "block",
+      "label": "block",
+      "class": "b",
+      "limitKey": "block"
+    },
+    {
+      "id": "block-thermal",
+      "label": "block thermal",
+      "class": "b",
+      "limitKey": "block"
+    },
+    {
+      "id": "block-with-plaster-board",
+      "label": "block with plaster board",
+      "class": "b",
+      "limitKey": "block"
+    },
+    {
+      "id": "block-thermal-with-plaster-board",
+      "label": "block thermal with plaster board",
+      "class": "b",
+      "limitKey": "block"
+    },
+    {
+      "id": "block-with-mineral-wool",
+      "label": "block with mineral wool",
+      "class": "b",
+      "limitKey": "block"
+    },
+    {
+      "id": "block-small",
+      "label": "block small",
+      "class": "b",
+      "limitKey": "block"
+    },
+    {
+      "id": "block-small-filled-with-plaster-board",
+      "label": "block small filled with plaster board",
+      "class": "b",
+      "limitKey": "block"
+    },
+    {
+      "id": "embracing",
+      "label": "embracing",
+      "class": "e",
+      "limitKey": "embra"
+    },
+    {
+      "id": "embracing-thermal",
+      "label": "embracing thermal",
+      "class": "e",
+      "limitKey": "embra"
+    }
+  ],
+  "types": [
+    {
+      "code": "DS 00-1",
+      "classification": "EI 00",
+      "minutes": 0,
+      "leaves": 1,
+      "highPerformance": false,
+      "certificate": null,
+      "frames": [
+        "corner",
+        "corner-thermal",
+        "block",
+        "block-with-mineral-wool",
+        "block-thermal",
+        "block-with-plaster-board",
+        "block-thermal-with-plaster-board",
+        "embracing",
+        "embracing-thermal"
+      ],
+      "exposures": [
+        "INT",
+        "EXT"
+      ],
+      "deductions": {
+        "width": {
+          "c": 80,
+          "e": 80,
+          "b": 150
+        },
+        "height": {
+          "c": 40,
+          "e": 40,
+          "b": 75
+        }
+      }
+    },
+    {
+      "code": "DS 00-2",
+      "classification": "EI 00",
+      "minutes": 0,
+      "leaves": 2,
+      "highPerformance": false,
+      "certificate": null,
+      "frames": [
+        "corner",
+        "corner-thermal",
+        "block",
+        "block-with-mineral-wool",
+        "block-thermal",
+        "block-with-plaster-board",
+        "block-thermal-with-plaster-board",
+        "embracing",
+        "embracing-thermal"
+      ],
+      "exposures": [
+        "INT",
+        "EXT"
+      ],
+      "deductions": {
+        "width": {
+          "c": 120,
+          "e": 120,
+          "b": 190
+        },
+        "height": {
+          "c": 40,
+          "e": 40,
+          "b": 75
+        }
+      }
+    },
+    {
+      "code": "DS 30-1",
+      "classification": "EI2 30",
+      "minutes": 30,
+      "leaves": 1,
+      "highPerformance": false,
+      "certificate": "EFR-17-002096 REV.1",
+      "frames": [
+        "corner",
+        "corner-thermal",
+        "block",
+        "block-thermal",
+        "block-with-plaster-board",
+        "block-thermal-with-plaster-board",
+        "embracing",
+        "embracing-thermal"
+      ],
+      "exposures": [
+        "INT",
+        "EXT"
+      ],
+      "deductions": {
+        "width": {
+          "c": 80,
+          "e": 80,
+          "b": 150
+        },
+        "height": {
+          "c": 40,
+          "e": 40,
+          "b": 75
+        }
+      }
+    },
+    {
+      "code": "DS 30-2",
+      "classification": "EI2 30",
+      "minutes": 30,
+      "leaves": 2,
+      "highPerformance": false,
+      "certificate": "EFR-17-002096 REV.1",
+      "frames": [
+        "corner",
+        "corner-thermal",
+        "block",
+        "block-thermal",
+        "block-with-plaster-board",
+        "block-thermal-with-plaster-board",
+        "embracing",
+        "embracing-thermal"
+      ],
+      "exposures": [
+        "INT",
+        "EXT"
+      ],
+      "deductions": {
+        "width": {
+          "c": 120,
+          "e": 120,
+          "b": 190
+        },
+        "height": {
+          "c": 40,
+          "e": 40,
+          "b": 75
+        }
+      }
+    },
+    {
+      "code": "DS 60-1",
+      "classification": "EI2 60",
+      "minutes": 60,
+      "leaves": 1,
+      "highPerformance": false,
+      "certificate": "EFR-17-002097 REV.1",
+      "frames": [
+        "corner",
+        "corner-thermal",
+        "block",
+        "block-thermal",
+        "block-with-plaster-board",
+        "block-thermal-with-plaster-board",
+        "embracing",
+        "embracing-thermal"
+      ],
+      "exposures": [
+        "INT",
+        "EXT"
+      ],
+      "deductions": {
+        "width": {
+          "c": 80,
+          "e": 80,
+          "b": 150
+        },
+        "height": {
+          "c": 40,
+          "e": 40,
+          "b": 75
+        }
+      }
+    },
+    {
+      "code": "DS 60-2",
+      "classification": "EI2 60",
+      "minutes": 60,
+      "leaves": 2,
+      "highPerformance": false,
+      "certificate": "EFR-17-002097 REV.1",
+      "frames": [
+        "corner",
+        "corner-thermal",
+        "block",
+        "block-thermal",
+        "block-with-plaster-board",
+        "block-thermal-with-plaster-board",
+        "embracing",
+        "embracing-thermal"
+      ],
+      "exposures": [
+        "INT",
+        "EXT"
+      ],
+      "deductions": {
+        "width": {
+          "c": 120,
+          "e": 120,
+          "b": 190
+        },
+        "height": {
+          "c": 40,
+          "e": 40,
+          "b": 75
+        }
+      }
+    },
+    {
+      "code": "DS 90-1",
+      "classification": "EI2 90",
+      "minutes": 90,
+      "leaves": 1,
+      "highPerformance": false,
+      "certificate": null,
+      "frames": [
+        "corner-thermal",
+        "block-thermal",
+        "block-thermal-with-plaster-board",
+        "embracing-thermal"
+      ],
+      "exposures": [
+        "INT"
+      ],
+      "deductions": {
+        "width": {
+          "c": 80,
+          "e": 80,
+          "b": 150
+        },
+        "height": {
+          "c": 40,
+          "e": 40,
+          "b": 75
+        }
+      }
+    },
+    {
+      "code": "DS 120-1 (EI2)",
+      "classification": "EI2 120",
+      "minutes": 120,
+      "leaves": 1,
+      "highPerformance": false,
+      "certificate": "EFR-17-004766",
+      "frames": [
+        "corner",
+        "block",
+        "block-with-plaster-board",
+        "embracing"
+      ],
+      "exposures": [
+        "INT",
+        "EXT"
+      ],
+      "deductions": {
+        "width": {
+          "c": 90,
+          "e": 90,
+          "b": 180
+        },
+        "height": {
+          "c": 40,
+          "e": 40,
+          "b": 90
+        }
+      }
+    },
+    {
+      "code": "DS 120-2 (EI2)",
+      "classification": "EI2 120",
+      "minutes": 120,
+      "leaves": 2,
+      "highPerformance": false,
+      "certificate": "EFR-17-004766",
+      "frames": [
+        "corner",
+        "block",
+        "block-with-plaster-board",
+        "embracing"
+      ],
+      "exposures": [
+        "INT",
+        "EXT"
+      ],
+      "deductions": {
+        "width": {
+          "c": 140,
+          "e": 140,
+          "b": 220
+        },
+        "height": {
+          "c": 40,
+          "e": 40,
+          "b": 90
+        }
+      }
+    },
+    {
+      "code": "DS 00-1 HP",
+      "classification": "EI 00",
+      "minutes": 0,
+      "leaves": 1,
+      "highPerformance": true,
+      "certificate": null,
+      "frames": [
+        "corner",
+        "block",
+        "block-with-plaster-board",
+        "block-with-mineral-wool",
+        "embracing",
+        "block-small",
+        "block-small-filled-with-plaster-board"
+      ],
+      "exposures": [
+        "INT",
+        "EXT"
+      ],
+      "deductions": {
+        "width": {
+          "c": 130,
+          "e": 130,
+          "b": 210
+        },
+        "height": {
+          "c": 50,
+          "e": 50,
+          "b": 90
+        }
+      }
+    },
+    {
+      "code": "DS 00-2 HP",
+      "classification": "EI 00",
+      "minutes": 0,
+      "leaves": 2,
+      "highPerformance": true,
+      "certificate": null,
+      "frames": [
+        "corner",
+        "block",
+        "block-with-plaster-board",
+        "block-with-mineral-wool",
+        "embracing",
+        "block-small",
+        "block-small-filled-with-plaster-board"
+      ],
+      "exposures": [
+        "INT",
+        "EXT"
+      ],
+      "deductions": {
+        "width": {
+          "c": 190,
+          "e": 190,
+          "b": 260
+        },
+        "height": {
+          "c": 50,
+          "e": 50,
+          "b": 90
+        }
+      }
+    },
+    {
+      "code": "DS 30-1 HP",
+      "classification": "EI2 30",
+      "minutes": 30,
+      "leaves": 1,
+      "highPerformance": true,
+      "certificate": null,
+      "frames": [
+        "corner",
+        "block",
+        "block-with-plaster-board",
+        "embracing",
+        "block-small",
+        "block-small-filled-with-plaster-board"
+      ],
+      "exposures": [
+        "INT",
+        "EXT"
+      ],
+      "deductions": {
+        "width": {
+          "c": 130,
+          "e": 130,
+          "b": 210
+        },
+        "height": {
+          "c": 50,
+          "e": 50,
+          "b": 90
+        }
+      }
+    },
+    {
+      "code": "DS 30-2 HP",
+      "classification": "EI2 30",
+      "minutes": 30,
+      "leaves": 2,
+      "highPerformance": true,
+      "certificate": null,
+      "frames": [
+        "corner",
+        "block",
+        "block-with-plaster-board",
+        "embracing",
+        "block-small",
+        "block-small-filled-with-plaster-board"
+      ],
+      "exposures": [
+        "INT",
+        "EXT"
+      ],
+      "deductions": {
+        "width": {
+          "c": 190,
+          "e": 190,
+          "b": 260
+        },
+        "height": {
+          "c": 50,
+          "e": 50,
+          "b": 90
+        }
+      }
+    },
+    {
+      "code": "DS 60-1 HP",
+      "classification": "EI2 60",
+      "minutes": 60,
+      "leaves": 1,
+      "highPerformance": true,
+      "certificate": null,
+      "frames": [
+        "corner",
+        "block",
+        "block-with-plaster-board",
+        "embracing",
+        "block-small",
+        "block-small-filled-with-plaster-board"
+      ],
+      "exposures": [
+        "INT",
+        "EXT"
+      ],
+      "deductions": {
+        "width": {
+          "c": 130,
+          "e": 130,
+          "b": 210
+        },
+        "height": {
+          "c": 50,
+          "e": 50,
+          "b": 90
+        }
+      }
+    },
+    {
+      "code": "DS 60-2 HP",
+      "classification": "EI2 60",
+      "minutes": 60,
+      "leaves": 2,
+      "highPerformance": true,
+      "certificate": null,
+      "frames": [
+        "corner",
+        "block",
+        "block-with-plaster-board",
+        "embracing",
+        "block-small",
+        "block-small-filled-with-plaster-board"
+      ],
+      "exposures": [
+        "INT",
+        "EXT"
+      ],
+      "deductions": {
+        "width": {
+          "c": 190,
+          "e": 190,
+          "b": 260
+        },
+        "height": {
+          "c": 50,
+          "e": 50,
+          "b": 90
+        }
+      }
+    }
+  ],
+  "limits": {
+    "DS 00-1corneINT": {
+      "minWidth": 254,
+      "maxWidth": 1380,
+      "minHeight": 513,
+      "maxHeight": 2800
+    },
+    "DS 00-1corneEXT": {
+      "minWidth": 254,
+      "maxWidth": 1380,
+      "minHeight": 513,
+      "maxHeight": 2800
+    },
+    "DS 00-1blockINT": {
+      "minWidth": 324,
+      "maxWidth": 1450,
+      "minHeight": 548,
+      "maxHeight": 2800
+    },
+    "DS 00-1blockEXT": {
+      "minWidth": 324,
+      "maxWidth": 1450,
+      "minHeight": 548,
+      "maxHeight": 2800
+    },
+    "DS 00-2corneINT": {
+      "minWidth": 510,
+      "maxWidth": 2762,
+      "minHeight": 513,
+      "maxHeight": 2800
+    },
+    "DS 00-2corneEXT": {
+      "minWidth": 510,
+      "maxWidth": 2762,
+      "minHeight": 513,
+      "maxHeight": 2800
+    },
+    "DS 00-2blockINT": {
+      "minWidth": 580,
+      "maxWidth": 2832,
+      "minHeight": 548,
+      "maxHeight": 2800
+    },
+    "DS 00-2blockEXT": {
+      "minWidth": 580,
+      "maxWidth": 2832,
+      "minHeight": 548,
+      "maxHeight": 2800
+    },
+    "DS 30-1corneINT": {
+      "minWidth": 572,
+      "maxWidth": 1314,
+      "minHeight": 1641,
+      "maxHeight": 2531
+    },
+    "DS 30-1blockINT": {
+      "minWidth": 642,
+      "maxWidth": 1384,
+      "minHeight": 1676,
+      "maxHeight": 2566
+    },
+    "DS 30-2corneINT": {
+      "minWidth": 1146,
+      "maxWidth": 2614,
+      "minHeight": 1641,
+      "maxHeight": 2531
+    },
+    "DS 30-2blockINT": {
+      "minWidth": 1216,
+      "maxWidth": 2684,
+      "minHeight": 1676,
+      "maxHeight": 2566
+    },
+    "DS 30-1corneEXT": {
+      "minWidth": 572,
+      "maxWidth": 1380,
+      "minHeight": 1641,
+      "maxHeight": 2800
+    },
+    "DS 30-1blockEXT": {
+      "minWidth": 642,
+      "maxWidth": 1450,
+      "minHeight": 1676,
+      "maxHeight": 2800
+    },
+    "DS 30-2corneEXT": {
+      "minWidth": 1146,
+      "maxWidth": 2760,
+      "minHeight": 1641,
+      "maxHeight": 2800
+    },
+    "DS 30-2blockEXT": {
+      "minWidth": 1216,
+      "maxWidth": 2830,
+      "minHeight": 1676,
+      "maxHeight": 2800
+    },
+    "DS 30B-1corneINT": {
+      "minWidth": 572,
+      "maxWidth": 1314,
+      "minHeight": 1641,
+      "maxHeight": 2531
+    },
+    "DS 30B-1blockINT": {
+      "minWidth": 642,
+      "maxWidth": 1384,
+      "minHeight": 1676,
+      "maxHeight": 2566
+    },
+    "DS 30B-2corneINT": {
+      "minWidth": 1146,
+      "maxWidth": 2614,
+      "minHeight": 1641,
+      "maxHeight": 2531
+    },
+    "DS 30B-2blockINT": {
+      "minWidth": 1216,
+      "maxWidth": 2684,
+      "minHeight": 1676,
+      "maxHeight": 2566
+    },
+    "DS 30B-1corneEXT": {
+      "minWidth": 572,
+      "maxWidth": 1314,
+      "minHeight": 1641,
+      "maxHeight": 2543
+    },
+    "DS 30B-1blockEXT": {
+      "minWidth": 642,
+      "maxWidth": 1384,
+      "minHeight": 1676,
+      "maxHeight": 2578
+    },
+    "DS 30B-2corneEXT": {
+      "minWidth": 1146,
+      "maxWidth": 2630,
+      "minHeight": 1641,
+      "maxHeight": 2543
+    },
+    "DS 30B-2blockEXT": {
+      "minWidth": 1216,
+      "maxWidth": 2700,
+      "minHeight": 1676,
+      "maxHeight": 2578
+    },
+    "DS 60-1corneINT": {
+      "minWidth": 572,
+      "maxWidth": 1314,
+      "minHeight": 1641,
+      "maxHeight": 2531
+    },
+    "DS 60-1blockINT": {
+      "minWidth": 642,
+      "maxWidth": 1384,
+      "minHeight": 1676,
+      "maxHeight": 2566
+    },
+    "DS 60-2corneINT": {
+      "minWidth": 1146,
+      "maxWidth": 2614,
+      "minHeight": 1641,
+      "maxHeight": 2531
+    },
+    "DS 60-2blockINT": {
+      "minWidth": 1216,
+      "maxWidth": 2684,
+      "minHeight": 1676,
+      "maxHeight": 2566
+    },
+    "DS 60-1corneEXT": {
+      "minWidth": 572,
+      "maxWidth": 1283,
+      "minHeight": 1641,
+      "maxHeight": 2540
+    },
+    "DS 60-1blockEXT": {
+      "minWidth": 642,
+      "maxWidth": 1353,
+      "minHeight": 1676,
+      "maxHeight": 2575
+    },
+    "DS 60-2corneEXT": {
+      "minWidth": 1146,
+      "maxWidth": 2760,
+      "minHeight": 1641,
+      "maxHeight": 2800
+    },
+    "DS 60-2blockEXT": {
+      "minWidth": 1216,
+      "maxWidth": 2830,
+      "minHeight": 1676,
+      "maxHeight": 2800
+    },
+    "DS 60B-1corneINT": {
+      "minWidth": 566,
+      "maxWidth": 1314,
+      "minHeight": 1702,
+      "maxHeight": 2531
+    },
+    "DS 60B-1blockINT": {
+      "minWidth": 636,
+      "maxWidth": 1384,
+      "minHeight": 1737,
+      "maxHeight": 2566
+    },
+    "DS 60B-1corneEXT": {
+      "minWidth": 566,
+      "maxWidth": 1314,
+      "minHeight": 1702,
+      "maxHeight": 2543
+    },
+    "DS 60B-1blockEXT": {
+      "minWidth": 636,
+      "maxWidth": 1384,
+      "minHeight": 1676,
+      "maxHeight": 2578
+    },
+    "DS 120-1 (EI2)corneINT": {
+      "minWidth": 665,
+      "maxWidth": 1313,
+      "minHeight": 1758,
+      "maxHeight": 2694
+    },
+    "DS 120-1 (EI2)blockINT": {
+      "minWidth": 747,
+      "maxWidth": 1395,
+      "minHeight": 1803,
+      "maxHeight": 2739
+    },
+    "DS 120-2 (EI2)corneINT": {
+      "minWidth": 1161,
+      "maxWidth": 2571,
+      "minHeight": 1735,
+      "maxHeight": 2703
+    },
+    "DS 120-2 (EI2)blockINT": {
+      "minWidth": 1243,
+      "maxWidth": 2653,
+      "minHeight": 1780,
+      "maxHeight": 2748
+    },
+    "DS 120-1 (EI2)corneEXT": {
+      "minWidth": 665,
+      "maxWidth": 1313,
+      "minHeight": 1758,
+      "maxHeight": 2694
+    },
+    "DS 120-1 (EI2)blockEXT": {
+      "minWidth": 747,
+      "maxWidth": 1395,
+      "minHeight": 1803,
+      "maxHeight": 2739
+    },
+    "DS 120-2 (EI2)corneEXT": {
+      "minWidth": 1161,
+      "maxWidth": 2543,
+      "minHeight": 1735,
+      "maxHeight": 2703
+    },
+    "DS 120-2 (EI2)blockEXT": {
+      "minWidth": 1243,
+      "maxWidth": 2625,
+      "minHeight": 1780,
+      "maxHeight": 2748
+    },
+    "DS 90-1S (EI 1 90)corneINT": {
+      "minWidth": 665,
+      "maxWidth": 1313,
+      "minHeight": 1758,
+      "maxHeight": 2343
+    },
+    "DS 90-1S (EI 1 90)blockINT": {
+      "minWidth": 747,
+      "maxWidth": 1395,
+      "minHeight": 1803,
+      "maxHeight": 2388
+    },
+    "DS 90-2S (EI 1 60)corneINT": {
+      "minWidth": 1161,
+      "maxWidth": 2273,
+      "minHeight": 1735,
+      "maxHeight": 2353
+    },
+    "DS 90-2S (EI 1 60)blockINT": {
+      "minWidth": 1243,
+      "maxWidth": 2355,
+      "minHeight": 1780,
+      "maxHeight": 2398
+    },
+    "DS 90-1S (EI 1 90)corneEXT": {
+      "minWidth": 665,
+      "maxWidth": 1313,
+      "minHeight": 1758,
+      "maxHeight": 2694
+    },
+    "DS 90-1S (EI 1 90)blockEXT": {
+      "minWidth": 747,
+      "maxWidth": 1395,
+      "minHeight": 1803,
+      "maxHeight": 2739
+    },
+    "DS 90-2S (EI 1 60)corneEXT": {
+      "minWidth": 1161,
+      "maxWidth": 2543,
+      "minHeight": 1735,
+      "maxHeight": 2703
+    },
+    "DS 90-2S (EI 1 60)blockEXT": {
+      "minWidth": 1243,
+      "maxWidth": 2625,
+      "minHeight": 1780,
+      "maxHeight": 2748
+    },
+    "DS 00-1embraINT": {
+      "minWidth": 254,
+      "maxWidth": 1380,
+      "minHeight": 513,
+      "maxHeight": 2800
+    },
+    "DS 00-1embraEXT": {
+      "minWidth": 254,
+      "maxWidth": 1380,
+      "minHeight": 513,
+      "maxHeight": 2800
+    },
+    "DS 00-2embraINT": {
+      "minWidth": 510,
+      "maxWidth": 2762,
+      "minHeight": 513,
+      "maxHeight": 2800
+    },
+    "DS 00-2embraEXT": {
+      "minWidth": 510,
+      "maxWidth": 2762,
+      "minHeight": 513,
+      "maxHeight": 2800
+    },
+    "DS 30-1embraINT": {
+      "minWidth": 572,
+      "maxWidth": 1314,
+      "minHeight": 1641,
+      "maxHeight": 2531
+    },
+    "DS 30-2embraINT": {
+      "minWidth": 1146,
+      "maxWidth": 2614,
+      "minHeight": 1641,
+      "maxHeight": 2531
+    },
+    "DS 30-1embraEXT": {
+      "minWidth": 572,
+      "maxWidth": 1380,
+      "minHeight": 1641,
+      "maxHeight": 2800
+    },
+    "DS 30-2embraEXT": {
+      "minWidth": 1146,
+      "maxWidth": 2760,
+      "minHeight": 1641,
+      "maxHeight": 2800
+    },
+    "DS 30B-1embraINT": {
+      "minWidth": 572,
+      "maxWidth": 1314,
+      "minHeight": 1641,
+      "maxHeight": 2531
+    },
+    "DS 30B-2embraINT": {
+      "minWidth": 1146,
+      "maxWidth": 2614,
+      "minHeight": 1641,
+      "maxHeight": 2531
+    },
+    "DS 30B-1embraEXT": {
+      "minWidth": 572,
+      "maxWidth": 1314,
+      "minHeight": 1641,
+      "maxHeight": 2543
+    },
+    "DS 30B-2embraEXT": {
+      "minWidth": 1146,
+      "maxWidth": 2630,
+      "minHeight": 1641,
+      "maxHeight": 2543
+    },
+    "DS 60-1embraINT": {
+      "minWidth": 572,
+      "maxWidth": 1314,
+      "minHeight": 1641,
+      "maxHeight": 2531
+    },
+    "DS 60-2embraINT": {
+      "minWidth": 1146,
+      "maxWidth": 2614,
+      "minHeight": 1641,
+      "maxHeight": 2531
+    },
+    "DS 60-1embraEXT": {
+      "minWidth": 572,
+      "maxWidth": 1283,
+      "minHeight": 1641,
+      "maxHeight": 2540
+    },
+    "DS 60-2embraEXT": {
+      "minWidth": 1146,
+      "maxWidth": 2760,
+      "minHeight": 1641,
+      "maxHeight": 2800
+    },
+    "DS 60B-1embraINT": {
+      "minWidth": 566,
+      "maxWidth": 1314,
+      "minHeight": 1702,
+      "maxHeight": 2531
+    },
+    "DS 60B-1embraEXT": {
+      "minWidth": 566,
+      "maxWidth": 1314,
+      "minHeight": 1702,
+      "maxHeight": 2543
+    },
+    "DS 120-1 (EI2)embraINT": {
+      "minWidth": 665,
+      "maxWidth": 1313,
+      "minHeight": 1758,
+      "maxHeight": 2694
+    },
+    "DS 120-2 (EI2)embraINT": {
+      "minWidth": 1161,
+      "maxWidth": 2571,
+      "minHeight": 1735,
+      "maxHeight": 2703
+    },
+    "DS 120-1 (EI2)embraEXT": {
+      "minWidth": 665,
+      "maxWidth": 1313,
+      "minHeight": 1758,
+      "maxHeight": 2694
+    },
+    "DS 120-2 (EI2)embraEXT": {
+      "minWidth": 1161,
+      "maxWidth": 2543,
+      "minHeight": 1735,
+      "maxHeight": 2703
+    },
+    "DS 90-1S (EI 1 90)embraINT": {
+      "minWidth": 665,
+      "maxWidth": 1313,
+      "minHeight": 1758,
+      "maxHeight": 2343
+    },
+    "DS 90-2S (EI 1 60)embraINT": {
+      "minWidth": 1161,
+      "maxWidth": 2273,
+      "minHeight": 1735,
+      "maxHeight": 2353
+    },
+    "DS 90-1S (EI 1 90)embraEXT": {
+      "minWidth": 665,
+      "maxWidth": 1313,
+      "minHeight": 1758,
+      "maxHeight": 2694
+    },
+    "DS 90-2S (EI 1 60)embraEXT": {
+      "minWidth": 1161,
+      "maxWidth": 2543,
+      "minHeight": 1735,
+      "maxHeight": 2703
+    },
+    "DS 00-1 HPcorneINT": {
+      "minWidth": 254,
+      "maxWidth": 1380,
+      "minHeight": 513,
+      "maxHeight": 2800
+    },
+    "DS 00-1 HPcorneEXT": {
+      "minWidth": 254,
+      "maxWidth": 1380,
+      "minHeight": 513,
+      "maxHeight": 2800
+    },
+    "DS 00-1 HPblockINT": {
+      "minWidth": 324,
+      "maxWidth": 1450,
+      "minHeight": 548,
+      "maxHeight": 2800
+    },
+    "DS 00-1 HPblockEXT": {
+      "minWidth": 324,
+      "maxWidth": 1450,
+      "minHeight": 548,
+      "maxHeight": 2800
+    },
+    "DS 00-2 HPcorneINT": {
+      "minWidth": 510,
+      "maxWidth": 2762,
+      "minHeight": 513,
+      "maxHeight": 2800
+    },
+    "DS 00-2 HPcorneEXT": {
+      "minWidth": 510,
+      "maxWidth": 2762,
+      "minHeight": 513,
+      "maxHeight": 2800
+    },
+    "DS 00-2 HPblockINT": {
+      "minWidth": 580,
+      "maxWidth": 2832,
+      "minHeight": 548,
+      "maxHeight": 2800
+    },
+    "DS 00-2 HPblockEXT": {
+      "minWidth": 580,
+      "maxWidth": 2832,
+      "minHeight": 548,
+      "maxHeight": 2800
+    },
+    "DS 30-1 HPcorneINT": {
+      "minWidth": 572,
+      "maxWidth": 1314,
+      "minHeight": 1641,
+      "maxHeight": 2531
+    },
+    "DS 30-1 HPblockINT": {
+      "minWidth": 642,
+      "maxWidth": 1384,
+      "minHeight": 1676,
+      "maxHeight": 2566
+    },
+    "DS 30-2 HPcorneINT": {
+      "minWidth": 1146,
+      "maxWidth": 2614,
+      "minHeight": 1641,
+      "maxHeight": 2531
+    },
+    "DS 30-2 HPblockINT": {
+      "minWidth": 1216,
+      "maxWidth": 2684,
+      "minHeight": 1676,
+      "maxHeight": 2566
+    },
+    "DS 30-1 HPcorneEXT": {
+      "minWidth": 572,
+      "maxWidth": 1380,
+      "minHeight": 1641,
+      "maxHeight": 2800
+    },
+    "DS 30-1 HPblockEXT": {
+      "minWidth": 642,
+      "maxWidth": 1450,
+      "minHeight": 1676,
+      "maxHeight": 2800
+    },
+    "DS 30-2 HPcorneEXT": {
+      "minWidth": 1146,
+      "maxWidth": 2760,
+      "minHeight": 1641,
+      "maxHeight": 2800
+    },
+    "DS 30-2 HPblockEXT": {
+      "minWidth": 1216,
+      "maxWidth": 2830,
+      "minHeight": 1676,
+      "maxHeight": 2800
+    },
+    "DS 60-1 HPcorneINT": {
+      "minWidth": 572,
+      "maxWidth": 1314,
+      "minHeight": 1641,
+      "maxHeight": 2531
+    },
+    "DS 60-1 HPblockINT": {
+      "minWidth": 642,
+      "maxWidth": 1384,
+      "minHeight": 1676,
+      "maxHeight": 2566
+    },
+    "DS 60-2 HPcorneINT": {
+      "minWidth": 1146,
+      "maxWidth": 2614,
+      "minHeight": 1641,
+      "maxHeight": 2531
+    },
+    "DS 60-2 HPblockINT": {
+      "minWidth": 1216,
+      "maxWidth": 2684,
+      "minHeight": 1676,
+      "maxHeight": 2566
+    },
+    "DS 60-1 HPcorneEXT": {
+      "minWidth": 572,
+      "maxWidth": 1283,
+      "minHeight": 1641,
+      "maxHeight": 2540
+    },
+    "DS 60-1 HPblockEXT": {
+      "minWidth": 642,
+      "maxWidth": 1353,
+      "minHeight": 1676,
+      "maxHeight": 2575
+    },
+    "DS 60-2 HPcorneEXT": {
+      "minWidth": 1146,
+      "maxWidth": 2760,
+      "minHeight": 1641,
+      "maxHeight": 2800
+    },
+    "DS 60-2 HPblockEXT": {
+      "minWidth": 1216,
+      "maxWidth": 2830,
+      "minHeight": 1676,
+      "maxHeight": 2800
+    },
+    "DS 00-1 HPembraINT": {
+      "minWidth": 254,
+      "maxWidth": 1380,
+      "minHeight": 513,
+      "maxHeight": 2800
+    },
+    "DS 00-1 HPembraEXT": {
+      "minWidth": 254,
+      "maxWidth": 1380,
+      "minHeight": 513,
+      "maxHeight": 2800
+    },
+    "DS 00-2 HPembraINT": {
+      "minWidth": 510,
+      "maxWidth": 2762,
+      "minHeight": 513,
+      "maxHeight": 2800
+    },
+    "DS 00-2 HPembraEXT": {
+      "minWidth": 510,
+      "maxWidth": 2762,
+      "minHeight": 513,
+      "maxHeight": 2800
+    },
+    "DS 30-1 HPembraINT": {
+      "minWidth": 572,
+      "maxWidth": 1314,
+      "minHeight": 1641,
+      "maxHeight": 2531
+    },
+    "DS 30-2 HPembraINT": {
+      "minWidth": 1146,
+      "maxWidth": 2614,
+      "minHeight": 1641,
+      "maxHeight": 2531
+    },
+    "DS 30-1 HPembraEXT": {
+      "minWidth": 572,
+      "maxWidth": 1380,
+      "minHeight": 1641,
+      "maxHeight": 2800
+    },
+    "DS 30-2 HPembraEXT": {
+      "minWidth": 1146,
+      "maxWidth": 2760,
+      "minHeight": 1641,
+      "maxHeight": 2800
+    },
+    "DS 60-1 HPembraINT": {
+      "minWidth": 572,
+      "maxWidth": 1314,
+      "minHeight": 1641,
+      "maxHeight": 2531
+    },
+    "DS 60-2 HPembraINT": {
+      "minWidth": 1146,
+      "maxWidth": 2614,
+      "minHeight": 1641,
+      "maxHeight": 2531
+    },
+    "DS 60-1 HPembraEXT": {
+      "minWidth": 572,
+      "maxWidth": 1283,
+      "minHeight": 1641,
+      "maxHeight": 2540
+    },
+    "DS 60-2 HPembraEXT": {
+      "minWidth": 1146,
+      "maxWidth": 2760,
+      "minHeight": 1641,
+      "maxHeight": 2800
+    },
+    "DS 90-1corneINT": {
+      "minWidth": 541,
+      "maxWidth": 1239,
+      "minHeight": 1683,
+      "maxHeight": 2574
+    },
+    "DS 90-1blockINT": {
+      "minWidth": 611,
+      "maxWidth": 1309,
+      "minHeight": 1718,
+      "maxHeight": 2609
+    },
+    "DS 90-1embraINT": {
+      "minWidth": 541,
+      "maxWidth": 1239,
+      "minHeight": 1683,
+      "maxHeight": 2574
+    },
+    "DS 120-1 (EI 1 60)corneINT": {
+      "minWidth": 341,
+      "maxWidth": 1313,
+      "minHeight": 603,
+      "maxHeight": 2694
+    },
+    "DS 120-1 (EI 1 60)blockINT": {
+      "minWidth": 423,
+      "maxWidth": 1395,
+      "minHeight": 648,
+      "maxHeight": 2739
+    },
+    "DS 120-1 (EI 1 60)embraINT": {
+      "minWidth": 341,
+      "maxWidth": 1313,
+      "minHeight": 603,
+      "maxHeight": 2694
+    },
+    "DS 120-2 (EI 1 60)corneINT": {
+      "minWidth": 684,
+      "maxWidth": 2628,
+      "minHeight": 603,
+      "maxHeight": 2694
+    },
+    "DS 120-2 (EI 1 60)blockINT": {
+      "minWidth": 684,
+      "maxWidth": 2653,
+      "minHeight": 648,
+      "maxHeight": 2739
+    },
+    "DS 120-2 (EI 1 60)embraINT": {
+      "minWidth": 684,
+      "maxWidth": 2628,
+      "minHeight": 603,
+      "maxHeight": 2694
+    },
+    "DS 120-1 (EI 1 60)corneEXT": {
+      "minWidth": 341,
+      "maxWidth": 1313,
+      "minHeight": 603,
+      "maxHeight": 2694
+    },
+    "DS 120-1 (EI 1 60)blockEXT": {
+      "minWidth": 423,
+      "maxWidth": 1395,
+      "minHeight": 648,
+      "maxHeight": 2739
+    },
+    "DS 120-2 (EI 1 60)corneEXT": {
+      "minWidth": 684,
+      "maxWidth": 2628,
+      "minHeight": 603,
+      "maxHeight": 2694
+    },
+    "DS 120-2 (EI 1 60)blockEXT": {
+      "minWidth": 684,
+      "maxWidth": 2653,
+      "minHeight": 648,
+      "maxHeight": 2739
+    },
+    "DS 120-1 (EI 1 60)embraEXT": {
+      "minWidth": 341,
+      "maxWidth": 1313,
+      "minHeight": 603,
+      "maxHeight": 2694
+    },
+    "DS 120-2 (EI 1 60)embraEXT": {
+      "minWidth": 684,
+      "maxWidth": 2628,
+      "minHeight": 603,
+      "maxHeight": 2694
+    }
+  }
+}
