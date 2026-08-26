@@ -3,7 +3,7 @@ import { UI, FONT, fieldStyle, focusField, blurField } from "../lib/theme";
 import { useSteelSpecState, mmDigits } from "./steelSpecState";
 import {
   fireRatings, leafCountsFor, highPerformanceAvailable,
-  describeSteelDoor, steelSpecRows, hardwareNeedsText,
+  describeSteelDoor, steelSpecRows, hardwareNeedsText, hardwareWithPlaceholders,
 } from "../lib/steelDoor";
 import { SPEC_TYPES } from "../lib/hardwareSpec";
 
@@ -127,7 +127,7 @@ function Select({ id, group, value, onChange }) {
         cursor: blocked ? "not-allowed" : "pointer",
       }}
     >
-      {blocked && <option value="">Choose a lock first</option>}
+      {blocked && <option value="">{group.blocked ?? "Not available yet"}</option>}
       {group.options.map(o => <option key={o} value={o}>{o}</option>)}
     </select>
   );
@@ -136,9 +136,9 @@ function Select({ id, group, value, onChange }) {
 export default function SteelQuickSpec({ onChangeProduct, modeSwitch, saveButton }) {
   const {
     config, set, specType, setSpecType, projectData, setProjectData,
-    resolution, validation, hardware, generating, notice, startOver, generate,
+    resolution, validation, generating, notice, startOver, generate,
   } = useSteelSpecState();
-  const hardwareById = Object.fromEntries(hardware.map(g => [g.id, g]));
+  const waiting = "Choose the doorset first";
 
   const setPd = (key, value) => setProjectData(pd => ({ ...pd, [key]: value }));
 
@@ -147,6 +147,13 @@ export default function SteelQuickSpec({ onChangeProduct, modeSwitch, saveButton
   const leafOptions = minutes == null ? [] : leafCountsFor({ minutes, highPerformance: config.highPerformance });
   const { frames, exposures, limits, clear } = resolution;
   const rows = steelSpecRows(config, resolution);
+
+  // Everything is on the page from the start; what cannot be answered
+  // yet sits there greyed out rather than appearing later and moving
+  // the rest of the form down.
+  const byId = Object.fromEntries(
+    hardwareWithPlaceholders(config, resolution).map(g => [g.id, g]),
+  );
 
   return (
     <div style={{
@@ -208,62 +215,65 @@ export default function SteelQuickSpec({ onChangeProduct, modeSwitch, saveButton
                 )}
               </div>
 
-              {minutes != null && (
-                <div style={{ display: "flex", gap: 22, flexWrap: "wrap" }}>
-                  <Field label="Leaves" width={150}>
-                    <Chips
-                      name="Leaves" value={config.leaves} onChange={v => set("leaves", v)}
-                      options={[1, 2].map(n => ({
-                        value: n, label: n === 1 ? "Single" : "Double",
-                        disabled: !leafOptions.includes(n),
-                        disabledReason: config.highPerformance
+              <div style={{ display: "flex", gap: 22, flexWrap: "wrap" }}>
+                <Field label="Leaves" width={150}>
+                  <Chips
+                    name="Leaves" value={config.leaves} onChange={v => set("leaves", v)}
+                    options={[1, 2].map(n => ({
+                      value: n, label: n === 1 ? "Single" : "Double",
+                      disabled: minutes == null || !leafOptions.includes(n),
+                      disabledReason: minutes == null
+                        ? "Answer the fire rating first"
+                        : config.highPerformance
                           ? "Not made as High Performance at this rating"
                           : "Not made at this fire rating",
-                      }))}
-                    />
-                  </Field>
-                  {config.leaves && (
-                    <Field label="Performance">
-                      <Chips
-                        name="Performance" value={config.highPerformance}
-                        onChange={v => set("highPerformance", v)}
-                        options={[
-                          { value: false, label: "Standard" },
-                          {
-                            value: true, label: "High Performance",
-                            title: "65 mm leaf, high-density mineral wool core, corrosion resistance to C5 Marine",
-                            disabled: !highPerformanceAvailable({ minutes, leaves: config.leaves }),
-                            disabledReason: "Not made above 60 minutes",
-                          },
-                        ]}
-                      />
-                    </Field>
-                  )}
-                </div>
-              )}
+                    }))}
+                  />
+                </Field>
+                <Field label="Performance">
+                  <Chips
+                    name="Performance" value={config.highPerformance}
+                    onChange={v => set("highPerformance", v)}
+                    options={[
+                      { value: false, label: "Standard" },
+                      {
+                        value: true, label: "High Performance",
+                        title: "65 mm leaf, high-density mineral wool core, corrosion resistance to C5 Marine",
+                        disabled: !config.leaves || !highPerformanceAvailable({ minutes, leaves: config.leaves }),
+                        disabledReason: config.leaves ? "Not made above 60 minutes" : waiting,
+                      },
+                    ]}
+                  />
+                </Field>
+              </div>
             </div>
           </section>
 
-          {resolution.type && (
-            <section style={{ marginBottom: 30 }}>
-              <SectionTitle
-                hint={limits
-                  ? `Approved from ${limits.minWidth} × ${limits.minHeight} mm to ${limits.maxWidth} × ${limits.maxHeight} mm.`
-                  : "Choose where it goes and a frame to see the approved range."}
-              >
-                Opening
-              </SectionTitle>
+          <section style={{ marginBottom: 30 }}>
+            <SectionTitle
+              hint={limits
+                ? `Approved from ${limits.minWidth} × ${limits.minHeight} mm to ${limits.maxWidth} × ${limits.maxHeight} mm.`
+                : "The approved sizes follow from the doorset, where it goes and the frame."}
+            >
+              Opening
+            </SectionTitle>
               <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                 <div style={{ display: "flex", gap: 22, flexWrap: "wrap" }}>
                   <Field label="Where it goes" width={220}>
                     <Chips
                       name="Exposure" value={config.exposure} onChange={v => set("exposure", v)}
                       options={[
-                        { value: "INT", label: "Internal", disabled: !exposures.some(e => e.id === "INT") },
+                        {
+                          value: "INT", label: "Internal",
+                          disabled: !exposures.some(e => e.id === "INT"),
+                          disabledReason: waiting,
+                        },
                         {
                           value: "EXT", label: "External",
                           disabled: !exposures.some(e => e.id === "EXT"),
-                          disabledReason: "This doorset is approved for internal use only",
+                          disabledReason: resolution.type
+                            ? "This doorset is approved for internal use only"
+                            : waiting,
                         },
                       ]}
                     />
@@ -277,10 +287,16 @@ export default function SteelQuickSpec({ onChangeProduct, modeSwitch, saveButton
                 </div>
 
                 <Field label="Frame">
-                  <Chips
-                    name="Frame" value={config.frameId} onChange={v => set("frameId", v)}
-                    options={frames.map(f => ({ value: f.id, label: f.label }))}
-                  />
+                  {frames.length ? (
+                    <Chips
+                      name="Frame" value={config.frameId} onChange={v => set("frameId", v)}
+                      options={frames.map(f => ({ value: f.id, label: f.label }))}
+                    />
+                  ) : (
+                    <p style={{ margin: "3px 0 0", fontSize: 12.5, color: UI.muted }}>
+                      The frames on offer follow from the doorset.
+                    </p>
+                  )}
                 </Field>
 
                 <div style={{ display: "flex", gap: 14, alignItems: "flex-start", flexWrap: "wrap" }}>
@@ -298,17 +314,16 @@ export default function SteelQuickSpec({ onChangeProduct, modeSwitch, saveButton
                   </p>
                 )}
               </div>
-            </section>
-          )}
+          </section>
 
-          {hardware.length > 0 && (
-            <section style={{ marginBottom: 30 }}>
-              <SectionTitle hint="Nothing is fitted unless you ask for it, apart from the lock, cylinder and hinges.">
-                Hardware
-              </SectionTitle>
+          <section style={{ marginBottom: 30 }}>
+            <SectionTitle hint="Nothing is fitted unless you ask for it, apart from the lock, cylinder and hinges.">
+              Hardware
+            </SectionTitle>
+
               <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
                 {HARDWARE_SECTIONS.map(section => {
-                  const groups = section.ids.map(id => hardwareById[id]).filter(Boolean);
+                  const groups = section.ids.map(id => byId[id]).filter(Boolean);
                   if (!groups.length) return null;
                   return (
                     <div key={section.title}>
@@ -353,8 +368,7 @@ export default function SteelQuickSpec({ onChangeProduct, modeSwitch, saveButton
                   </div>
                 </div>
               </div>
-            </section>
-          )}
+          </section>
 
           <section>
             <SectionTitle>Project</SectionTitle>

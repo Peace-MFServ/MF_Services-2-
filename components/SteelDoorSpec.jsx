@@ -370,7 +370,7 @@ function HardwareField({ group, value, text, onChange, onChangeText, error }) {
           cursor: blocked ? "not-allowed" : "pointer",
         }}
       >
-        {blocked && <option value="">Choose a lock first</option>}
+        {blocked && <option value="">{group.blocked ?? "Not available yet"}</option>}
         {group.options.map(o => <option key={o} value={o}>{o}</option>)}
       </select>
       {hardwareNeedsText(value) && (
