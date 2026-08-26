@@ -1,11 +1,13 @@
 'use client'
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useRef } from "react";
 import SteelDoorPreview from "./SteelDoorPreview";
+import { useSteelSpecState, mmDigits } from "./steelSpecState";
 import { UI, FONT, fieldStyle, focusField, blurField } from "../lib/theme";
 import {
-  STEEL, fireRatings, leafCountsFor, highPerformanceAvailable,
-  resolveSteelDoor, validateSteelDoor, describeSteelDoor,
+  fireRatings, leafCountsFor, highPerformanceAvailable,
+  describeSteelDoor, steelSpecRows, standardsFor,
 } from "../lib/steelDoor";
+import { SPEC_TYPES, REQUIRE_ENQUIRY_DETAILS } from "../lib/hardwareSpec";
 
 // ─────────────────────────────────────────────────────────────────
 // Steel doorsets
@@ -17,24 +19,9 @@ import {
 // ─────────────────────────────────────────────────────────────────
 
 const STEPS = ["Doorset", "Opening", "Project", "Review"];
-const STORAGE_KEY = "mf-steel-spec-v1";
 
-const DOORSET_FIELDS = new Set(["minutes", "leaves", "highPerformance"]);
 const OPENING_FIELDS = new Set(["exposure", "frameId", "width", "height"]);
-
-const mmDigits = v => v.replace(/\D/g, "").slice(0, 4);
-
-const initialConfig = () => ({
-  fireRated: null,        // null until asked, then true/false
-  minutes: null,
-  leaves: null,
-  highPerformance: false,
-  exposure: "",
-  frameId: "",
-  width: "",
-  height: "",
-  handing: "left",
-});
+const PROJECT_FIELDS = new Set(["businessName", "email", "phone"]);
 
 // ─── Primitives ───────────────────────────────────────────────────
 
@@ -329,92 +316,194 @@ function OpeningStep({ config, set, errorFor, resolution }) {
   );
 }
 
+function TextField({ id, label, required, value, onChange, onBlurTouch, error, type = "text" }) {
+  const border = error ? UI.warn : UI.ruleStrong;
+  return (
+    <div style={{ marginBottom: 18 }}>
+      <label htmlFor={id} style={{
+        display: "block", fontSize: 11.5, fontWeight: 600, letterSpacing: "0.07em",
+        textTransform: "uppercase", color: UI.muted, fontFamily: FONT, marginBottom: 8,
+      }}>
+        {label}{required && <span style={{ color: UI.warn }}> *</span>}
+      </label>
+      <input
+        id={id} type={type} value={value || ""}
+        onChange={e => onChange(e.target.value)}
+        style={{ ...fieldStyle, borderColor: border }}
+        onFocus={focusField}
+        onBlur={e => { onBlurTouch?.(); e.target.style.borderColor = border; e.target.style.boxShadow = "none"; }}
+      />
+      <FieldError>{error}</FieldError>
+    </div>
+  );
+}
+
+/** Who the specification is for and which project it belongs to —
+ *  its own step, the same as on the riser doors and the cable plan. */
+function ProjectStep({ projectData, setProjectData, specType, setSpecType, markTouched, errorFor }) {
+  return (
+    <div style={{ padding: "20px 22px" }}>
+      <Section title="Specification type" note={SPEC_TYPES.find(sp => sp.id === specType)?.summary}>
+        <Chips
+          name="Specification type"
+          value={specType}
+          onChange={setSpecType}
+          options={SPEC_TYPES.map(sp => ({ value: sp.id, label: sp.label }))}
+        />
+      </Section>
+
+      <Section
+        title="Your details"
+        note={REQUIRE_ENQUIRY_DETAILS
+          ? "So we can send the specification on and answer any questions."
+          : "Optional for now. So we can answer any questions."}
+      >
+        <TextField
+          id="steel-businessName" label="Business name" required={REQUIRE_ENQUIRY_DETAILS}
+          value={projectData.businessName}
+          onChange={v => setProjectData(pd => ({ ...pd, businessName: v }))}
+          onBlurTouch={() => markTouched("businessName")}
+          error={errorFor("businessName")}
+        />
+        <TextField
+          id="steel-contactName" label="Contact name"
+          value={projectData.contactName}
+          onChange={v => setProjectData(pd => ({ ...pd, contactName: v }))}
+        />
+        <TextField
+          id="steel-email" label="Email" type="email" required={REQUIRE_ENQUIRY_DETAILS}
+          value={projectData.email}
+          onChange={v => setProjectData(pd => ({ ...pd, email: v }))}
+          onBlurTouch={() => markTouched("email")}
+          error={errorFor("email")}
+        />
+        <TextField
+          id="steel-phone" label="Phone" type="tel" required={REQUIRE_ENQUIRY_DETAILS}
+          value={projectData.phone}
+          onChange={v => setProjectData(pd => ({ ...pd, phone: v }))}
+          onBlurTouch={() => markTouched("phone")}
+          error={errorFor("phone")}
+        />
+      </Section>
+
+      <Section title="Project">
+        <TextField
+          id="steel-projectName" label="Project name"
+          value={projectData.projectName}
+          onChange={v => setProjectData(pd => ({ ...pd, projectName: v }))}
+        />
+        <TextField
+          id="steel-architecturalFirm" label="Architectural firm"
+          value={projectData.architecturalFirm}
+          onChange={v => setProjectData(pd => ({ ...pd, architecturalFirm: v }))}
+        />
+      </Section>
+    </div>
+  );
+}
+
+function ReviewHeading({ children }) {
+  return (
+    <div style={{
+      fontSize: 11.5, fontWeight: 600, letterSpacing: "0.07em", textTransform: "uppercase",
+      color: UI.muted, fontFamily: FONT, paddingBottom: 9, marginBottom: 12,
+      borderBottom: `1px solid ${UI.ruleStrong}`,
+    }}>
+      {children}
+    </div>
+  );
+}
+
+function ReviewRow({ label, value }) {
+  return (
+    <div style={{
+      display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 14,
+      padding: "9px 0", borderBottom: `1px solid ${UI.rule}`,
+    }}>
+      <span style={{ fontSize: 13.5, color: UI.body, fontFamily: FONT }}>{label}</span>
+      <span style={{ fontSize: 13.5, fontWeight: 600, color: UI.ink, fontFamily: FONT, textAlign: "right" }}>
+        {value}
+      </span>
+    </div>
+  );
+}
+
+function ReviewStep({ config, resolution, specType, validation, onGenerate, generating, notice }) {
+  const rows = steelSpecRows(config, resolution);
+  const standards = standardsFor(resolution.type, resolution.exposure);
+
+  return (
+    <div style={{ padding: "20px 22px" }}>
+      <div style={{ marginBottom: 26 }}>
+        <ReviewHeading>Doorset</ReviewHeading>
+        <ReviewRow label="Type" value="Steel Doors" />
+        <ReviewRow label="Document" value={SPEC_TYPES.find(sp => sp.id === specType)?.label ?? specType} />
+      </div>
+
+      <div style={{ marginBottom: 26 }}>
+        <ReviewHeading>Specification</ReviewHeading>
+        {rows.map(r => <ReviewRow key={r.label} label={r.label} value={r.value} />)}
+      </div>
+
+      {standards.length > 0 && (
+        <div style={{ marginBottom: 26 }}>
+          <ReviewHeading>Standards</ReviewHeading>
+          {standards.map(st => (
+            <div key={st.code} style={{ padding: "8px 0", borderBottom: `1px solid ${UI.rule}` }}>
+              <div style={{ fontSize: 13.5, fontWeight: 600, color: UI.ink, fontFamily: FONT }}>{st.code}</div>
+              <div style={{ fontSize: 12.5, color: UI.body, fontFamily: FONT, marginTop: 2, lineHeight: 1.45 }}>
+                {st.description}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <button
+        type="button" onClick={onGenerate} disabled={generating || !validation.isValid}
+        style={{
+          width: "100%", padding: "14px 20px",
+          border: `1px solid ${validation.isValid ? UI.accent : UI.ruleStrong}`,
+          fontSize: 14, fontWeight: 600, fontFamily: FONT,
+          background: validation.isValid ? UI.accent : UI.sunken,
+          color: validation.isValid ? "#FFFFFF" : UI.muted,
+          cursor: generating ? "progress" : validation.isValid ? "pointer" : "not-allowed",
+        }}
+      >
+        {generating ? "Generating" : validation.isValid ? "Download specification (PDF)" : `${validation.errors.length} to fix`}
+      </button>
+
+      {notice && (
+        <p style={{
+          margin: "12px 0 0", fontSize: 13, lineHeight: 1.5, textAlign: "center",
+          fontFamily: FONT, color: notice.error ? UI.warn : UI.body,
+        }}>
+          {notice.text}
+        </p>
+      )}
+    </div>
+  );
+}
+
 // ─── Main ─────────────────────────────────────────────────────────
 
-export default function SteelDoorSpec({ onChangeProduct, modeSwitch }) {
-  const [currentStep, setCurrentStep] = useState(0);
-  const [furthest, setFurthest] = useState(0);
-  const [config, setConfig] = useState(initialConfig);
-  const [touched, setTouched] = useState(() => new Set());
-  const [hydrated, setHydrated] = useState(false);
+export default function SteelDoorSpec({ onChangeProduct, modeSwitch, saveButton }) {
+  const {
+    config, set, specType, setSpecType, projectData, setProjectData,
+    currentStep, setCurrentStep, furthest, setFurthest,
+    markTouched, errorFor, resolution, validation,
+    generating, notice, startOver, generate,
+  } = useSteelSpecState();
   const railRef = useRef(null);
 
-  useEffect(() => {
-    try {
-      const raw = window.sessionStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        const saved = JSON.parse(raw);
-        if (saved.config) setConfig(c => ({ ...c, ...saved.config }));
-        if (typeof saved.currentStep === "number") setCurrentStep(saved.currentStep);
-        if (typeof saved.furthest === "number") setFurthest(saved.furthest);
-      }
-    } catch { /* corrupt or unavailable storage is not worth breaking the tool over */ }
-    setHydrated(true);
-  }, []);
-
-  useEffect(() => {
-    if (!hydrated) return;
-    try {
-      window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ config, currentStep, furthest }));
-    } catch { /* best-effort */ }
-  }, [hydrated, config, currentStep, furthest]);
-
-  const set = useCallback((key, value) => {
-    setTouched(t => (t.has(key) ? t : new Set(t).add(key)));
-    setConfig(c => ({ ...c, [key]: value }));
-  }, []);
-
-  const resolution = resolveSteelDoor(config);
-  const validation = validateSteelDoor(config);
-
-  // A change further up can invalidate what was chosen below it — drop
-  // anything the new answers no longer offer, rather than carrying a
-  // frame or exposure that does not exist for this doorset.
-  const frameIds = resolution.frames.map(f => f.id).join(",");
-  const exposureIds = resolution.exposures.map(e => e.id).join(",");
-  useEffect(() => {
-    if (config.frameId && frameIds && !frameIds.split(",").includes(config.frameId)) {
-      setConfig(c => ({ ...c, frameId: "" }));
-    }
-    if (config.exposure && exposureIds && !exposureIds.split(",").includes(config.exposure)) {
-      setConfig(c => ({ ...c, exposure: "" }));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [frameIds, exposureIds]);
-
-  // Where only one answer exists, give it rather than asking. An
-  // internal-only doorset should say "Internal", not wait to be told.
-  useEffect(() => {
-    if (!config.exposure && resolution.exposures.length === 1) {
-      setConfig(c => ({ ...c, exposure: resolution.exposures[0].id }));
-    }
-    if (!config.frameId && resolution.frames.length === 1) {
-      setConfig(c => ({ ...c, frameId: resolution.frames[0].id }));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [exposureIds, frameIds, config.exposure, config.frameId]);
-
-  // High Performance above 60 minutes does not exist; step back down
-  // rather than leaving an impossible doorset selected.
-  useEffect(() => {
-    if (config.highPerformance && config.minutes != null && config.leaves
-        && !highPerformanceAvailable({ minutes: config.minutes, leaves: config.leaves })) {
-      setConfig(c => ({ ...c, highPerformance: false }));
-    }
-  }, [config.minutes, config.leaves, config.highPerformance]);
-
-  const errorFor = useCallback(field => {
-    if (!touched.has(field)) return null;
-    return validation.errors.find(e => e.field === field)?.message ?? null;
-  }, [touched, validation]);
-
   const stepErrors = fields => validation.errors.filter(e => fields.has(e.field));
-  const doorsetErrors = stepErrors(DOORSET_FIELDS);
   const openingErrors = stepErrors(OPENING_FIELDS);
+  const projectErrors = stepErrors(PROJECT_FIELDS);
 
   const stepBlocked =
     currentStep === 0 ? !resolution.type
     : currentStep === 1 ? openingErrors.length > 0
+    : currentStep === 2 ? projectErrors.length > 0
     : false;
 
   const goNext = () => {
@@ -428,17 +517,11 @@ export default function SteelDoorSpec({ onChangeProduct, modeSwitch }) {
     setCurrentStep(s => Math.max(s - 1, 0));
     if (railRef.current) railRef.current.scrollTop = 0;
   };
-  const startOver = () => {
-    setConfig(initialConfig());
-    setTouched(new Set());
-    setCurrentStep(0);
-    setFurthest(0);
-    try { window.sessionStorage.removeItem(STORAGE_KEY); } catch { /* best-effort */ }
-  };
 
   const nextLabel =
     currentStep === 0 ? (resolution.type ? "Next" : "Choose a doorset")
     : currentStep === 1 && stepBlocked ? `${openingErrors.length} to fix`
+    : currentStep === 2 && stepBlocked ? `${projectErrors.length} to fix`
     : "Next";
 
   return (
@@ -456,7 +539,10 @@ export default function SteelDoorSpec({ onChangeProduct, modeSwitch }) {
             <h1 style={{ margin: 0, fontSize: 19, fontWeight: 600, letterSpacing: "-0.01em", color: UI.ink }}>
               Steel Doors
             </h1>
-            {modeSwitch}
+            <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
+              {modeSwitch}
+              {saveButton}
+            </div>
           </div>
           <p style={{ margin: "8px 0 0", fontSize: 13, color: UI.body, lineHeight: 1.5 }}>
             {resolution.type ? describeSteelDoor(resolution.type) : "Fire rated or not, single or double."}
@@ -472,13 +558,19 @@ export default function SteelDoorSpec({ onChangeProduct, modeSwitch }) {
           {currentStep === 1 && (
             <OpeningStep config={config} set={set} errorFor={errorFor} resolution={resolution} />
           )}
-          {currentStep >= 2 && (
-            <div style={{ padding: "20px 22px" }}>
-              <p style={{ margin: 0, fontSize: 13.5, lineHeight: 1.6, color: UI.body }}>
-                Project details and the specification sheet come next — that is the
-                stage I am building now.
-              </p>
-            </div>
+          {currentStep === 2 && (
+            <ProjectStep
+              projectData={projectData} setProjectData={setProjectData}
+              specType={specType} setSpecType={setSpecType}
+              markTouched={markTouched} errorFor={errorFor}
+            />
+          )}
+          {currentStep === 3 && (
+            <ReviewStep
+              config={config} resolution={resolution} specType={specType}
+              validation={validation} onGenerate={generate}
+              generating={generating} notice={notice}
+            />
           )}
         </div>
 

@@ -4,6 +4,7 @@ import SpecGenerator from "./SpecGenerator";
 import CablePlanConfigurator from "./CablePlanConfigurator";
 import QuickSpec from "./QuickSpec";
 import SteelDoorSpec from "./SteelDoorSpec";
+import SteelQuickSpec from "./SteelQuickSpec";
 import { useAuth } from "./AuthProvider";
 import { SaveProjectButton } from "./SavedProjects";
 import { writeWorkingState } from "../lib/projects";
@@ -232,7 +233,7 @@ export default function SpecificationTool() {
   }, []);
 
   const openProjectRecord = useCallback(record => {
-    writeWorkingState(record.kind, record.payload);
+    writeWorkingState(record.kind, record.selectionId, record.payload);
     setOpenProject({ id: record.id, name: record.name });
     choose({ kind: record.kind, id: record.selectionId });
   }, [choose]);
@@ -255,25 +256,31 @@ export default function SpecificationTool() {
     return <CablePlanConfigurator startSystemId={selection.id} onChangeSystem={clear} />;
   }
 
+  const saveButton = selection.kind === "door" ? (
+    <SaveProjectButton
+      kind={selection.kind}
+      selectionId={selection.id}
+      openProject={openProject}
+      onSaved={saved => setOpenProject(saved)}
+    />
+  ) : null;
+
   const modeSwitch = (
     <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
       <ModeSwitch mode={effectiveMode} onChange={chooseMode} locked={ready && !signedIn} />
-      {selection.kind === "door" && (
-        <SaveProjectButton
-          kind={selection.kind}
-          selectionId={selection.id}
-          openProject={openProject}
-          onSaved={saved => setOpenProject(saved)}
-        />
-      )}
+      {saveButton}
     </div>
   );
 
   // Steel doorsets run their own flow — what the doorset IS decides
   // which frames, exposures and sizes exist, so the questions differ
-  // from the riser doors and the quick layout does not apply yet.
+  // from the riser doors. Both layouts are theirs alone, and both sit
+  // on one shared piece of state.
   if (selection.id === "steel-doors") {
-    return <SteelDoorSpec onChangeProduct={clear} />;
+    const steelSwitch = <ModeSwitch mode={effectiveMode} onChange={chooseMode} locked={ready && !signedIn} />;
+    return effectiveMode === "quick"
+      ? <SteelQuickSpec onChangeProduct={clear} modeSwitch={steelSwitch} saveButton={saveButton} />
+      : <SteelDoorSpec onChangeProduct={clear} modeSwitch={steelSwitch} saveButton={saveButton} />;
   }
 
   if (effectiveMode === "quick") {

@@ -1,74 +1,98 @@
 {
-  "_internal": "INTERNAL \u2014 never rendered customer-side. Sizes, frames, deductions and certificate references are the manufacturer's own, taken from the DFM ETA/CE configurator of October 2025. The type codes are internal too: the customer answers fire rating, leaf count and performance, and the code is derived.",
+  "_internal": "INTERNAL — never rendered customer-side. Sizes, frames, deductions and certificate references are the manufacturer's own, taken from the DFM ETA/CE configurator of October 2025. The type codes are internal too: the customer answers fire rating, leaf count and performance, and the code is derived.",
   "range": "DS",
   "standard": "EN 13501-2",
   "construction": {
+    "base": "Steel doorset comprising a steel leaf and a steel frame, supplied and installed. The frame family is selected to suit the surrounding construction and determines how much of the structural opening is left clear.",
+    "fireRated": "Fire rated doorset, classified for both integrity and insulation for the stated period in accordance with EN 13501-2.",
     "highPerformance": "High Performance: 65 mm leaf with a high-density mineral wool core, and upgraded mechanical and corrosion resistance classes to C5 Marine."
   },
+  "standards": [
+    {
+      "code": "EN 13501-2",
+      "description": "Fire classification of construction products and building elements. Classification using data from fire resistance tests.",
+      "appliesTo": "fire-rated"
+    },
+    {
+      "code": "EN 1634-1",
+      "description": "Fire resistance and smoke control tests for door and shutter assemblies. Fire resistance test for door and shutter assemblies.",
+      "appliesTo": "fire-rated"
+    },
+    {
+      "code": "EN 16034",
+      "description": "Pedestrian doorsets, industrial, commercial and garage doors. Product standard, performance characteristics — fire resisting and smoke control characteristics.",
+      "appliesTo": "fire-rated"
+    },
+    {
+      "code": "EN 14351-1",
+      "description": "Windows and pedestrian doorsets. Product standard, performance characteristics — external pedestrian doorsets.",
+      "appliesTo": "external"
+    }
+  ],
   "frames": [
     {
       "id": "corner",
-      "label": "corner",
+      "label": "Corner",
       "class": "c",
       "limitKey": "corne"
     },
     {
       "id": "corner-thermal",
-      "label": "corner thermal",
+      "label": "Corner thermal",
       "class": "c",
       "limitKey": "corne"
     },
     {
       "id": "block",
-      "label": "block",
+      "label": "Block",
       "class": "b",
       "limitKey": "block"
     },
     {
       "id": "block-thermal",
-      "label": "block thermal",
+      "label": "Block thermal",
       "class": "b",
       "limitKey": "block"
     },
     {
       "id": "block-with-plaster-board",
-      "label": "block with plaster board",
+      "label": "Block with plaster board",
       "class": "b",
       "limitKey": "block"
     },
     {
       "id": "block-thermal-with-plaster-board",
-      "label": "block thermal with plaster board",
+      "label": "Block thermal with plaster board",
       "class": "b",
       "limitKey": "block"
     },
     {
       "id": "block-with-mineral-wool",
-      "label": "block with mineral wool",
+      "label": "Block with mineral wool",
       "class": "b",
       "limitKey": "block"
     },
     {
       "id": "block-small",
-      "label": "block small",
+      "label": "Block small",
       "class": "b",
       "limitKey": "block"
     },
     {
       "id": "block-small-filled-with-plaster-board",
-      "label": "block small filled with plaster board",
+      "label": "Block small filled with plaster board",
       "class": "b",
       "limitKey": "block"
     },
     {
       "id": "embracing",
-      "label": "embracing",
+      "label": "Embracing",
       "class": "e",
       "limitKey": "embra"
     },
     {
       "id": "embracing-thermal",
-      "label": "embracing thermal",
+      "label": "Embracing thermal",
       "class": "e",
       "limitKey": "embra"
     }

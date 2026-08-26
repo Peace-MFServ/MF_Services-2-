@@ -41,7 +41,7 @@ export function SaveProjectButton({ kind, selectionId, openProject, onSaved, sty
   }, []);
 
   const doSave = useCallback(async overwrite => {
-    const payload = readWorkingState(kind);
+    const payload = readWorkingState(kind, selectionId);
     if (!payload) { flash({ text: "Nothing to save yet.", error: true }); return; }
     setBusy(true);
     try {
