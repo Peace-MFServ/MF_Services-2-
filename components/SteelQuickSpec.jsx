@@ -92,14 +92,14 @@ export default function SteelQuickSpec({ onChangeProduct, modeSwitch, saveButton
           <section>
             <SectionTitle>Project</SectionTitle>
             <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-              <div style={{ display: "flex", gap: 22, flexWrap: "wrap" }}>
+              <div style={{ display: "flex", gap: 22, flexWrap: "wrap", alignItems: "flex-end" }}>
                 <Field label="Specification type" width={230}>
                   <Chips
                     name="Specification type" value={specType} onChange={setSpecType}
                     options={SPEC_TYPES.map(sp => ({ value: sp.id, label: sp.label, title: sp.summary }))}
                   />
                 </Field>
-                <Field label="Number of doorsets" width={130}>
+                <Field label="Number of doorsets" width={190}>
                   <Input id="sq-quantity" value={config.quantity} onChange={v => set("quantity", v.replace(/\D/g, "").slice(0, 3))} />
                 </Field>
               </div>

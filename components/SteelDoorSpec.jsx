@@ -440,18 +440,26 @@ function ProjectStep({ projectData, setProjectData, specType, setSpecType, markT
   return (
     <div style={{ padding: "20px 22px" }}>
       <Section title="Specification type" note={SPEC_TYPES.find(sp => sp.id === specType)?.summary}>
-        <div style={{ display: "flex", gap: 18, alignItems: "flex-start", flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: 18, alignItems: "flex-end", flexWrap: "wrap" }}>
           <Chips
             name="Specification type"
             value={specType}
             onChange={setSpecType}
             options={SPEC_TYPES.map(sp => ({ value: sp.id, label: sp.label }))}
           />
-          <div style={{ flex: "0 0 160px" }}>
-            <TextField
-              id="steel-quantity" label="Number of doorsets"
-              value={config.quantity}
-              onChange={v => setQuantity(v.replace(/\D/g, "").slice(0, 3))}
+          <div style={{ flex: "0 0 190px" }}>
+            <label htmlFor="steel-quantity" style={{
+              display: "block", fontSize: 11.5, fontWeight: 600, letterSpacing: "0.07em",
+              textTransform: "uppercase", color: UI.muted, fontFamily: FONT,
+              marginBottom: 8, whiteSpace: "nowrap",
+            }}>
+              Number of doorsets
+            </label>
+            <input
+              id="steel-quantity" type="text" inputMode="numeric" value={config.quantity}
+              onChange={e => setQuantity(e.target.value.replace(/\D/g, "").slice(0, 3))}
+              style={{ ...fieldStyle, padding: "8px 12px" }}
+              onFocus={focusField} onBlur={blurField}
             />
           </div>
         </div>

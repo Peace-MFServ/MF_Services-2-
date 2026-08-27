@@ -817,18 +817,20 @@ function ProjectStep({ projectData, setProjectData, specType, setSpecType, markT
   return (
     <div style={{ padding: "20px 22px" }}>
       <RailSection title="Specification type">
-        <div style={{ display: "flex", gap: 18, alignItems: "flex-start", flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: 18, alignItems: "flex-end", flexWrap: "wrap" }}>
           <Segmented
             name="Specification type"
             options={SPEC_TYPES.map(sp => ({ value: sp.id, label: sp.label }))}
             value={specType}
             onChange={setSpecType}
           />
-          <div style={{ flex: "0 0 160px" }}>
-            <TextField
-              id="pd-quantity" label="Number of doorsets"
-              value={config.quantity}
-              onChange={v => setQuantity(v.replace(/\D/g, "").slice(0, 3))}
+          <div style={{ flex: "0 0 190px" }}>
+            <Label htmlFor="pd-quantity">Number of doorsets</Label>
+            <input
+              id="pd-quantity" type="text" inputMode="numeric" value={config.quantity}
+              onChange={e => setQuantity(e.target.value.replace(/\D/g, "").slice(0, 3))}
+              style={{ ...fieldStyle, padding: "8px 12px" }}
+              onFocus={focusField} onBlur={blurField}
             />
           </div>
         </div>
