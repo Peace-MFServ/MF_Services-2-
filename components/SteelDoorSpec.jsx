@@ -424,22 +424,11 @@ function HardwareStep({ config, set, hardware, errorFor }) {
 
       <div style={{ marginBottom: 8 }}>
         <Label>Finish</Label>
-        <div style={{ display: "flex", gap: 14 }}>
-          <div style={{ flex: 1 }}>
-            <TextField
-              id="steel-ral" label="Colour (RAL)"
-              value={config.ral}
-              onChange={v => set("ral", v)}
-            />
-          </div>
-          <div style={{ flex: "0 0 130px" }}>
-            <TextField
-              id="steel-quantity" label="Quantity"
-              value={config.quantity}
-              onChange={v => set("quantity", v.replace(/\D/g, "").slice(0, 3))}
-            />
-          </div>
-        </div>
+        <TextField
+          id="steel-ral" label="Colour (RAL)"
+          value={config.ral}
+          onChange={v => set("ral", v)}
+        />
       </div>
     </div>
   );
@@ -447,16 +436,25 @@ function HardwareStep({ config, set, hardware, errorFor }) {
 
 /** Who the specification is for and which project it belongs to —
  *  its own step, the same as on the riser doors and the cable plan. */
-function ProjectStep({ projectData, setProjectData, specType, setSpecType, markTouched, errorFor }) {
+function ProjectStep({ projectData, setProjectData, specType, setSpecType, markTouched, errorFor, config, setQuantity }) {
   return (
     <div style={{ padding: "20px 22px" }}>
       <Section title="Specification type" note={SPEC_TYPES.find(sp => sp.id === specType)?.summary}>
-        <Chips
-          name="Specification type"
-          value={specType}
-          onChange={setSpecType}
-          options={SPEC_TYPES.map(sp => ({ value: sp.id, label: sp.label }))}
-        />
+        <div style={{ display: "flex", gap: 18, alignItems: "flex-start", flexWrap: "wrap" }}>
+          <Chips
+            name="Specification type"
+            value={specType}
+            onChange={setSpecType}
+            options={SPEC_TYPES.map(sp => ({ value: sp.id, label: sp.label }))}
+          />
+          <div style={{ flex: "0 0 160px" }}>
+            <TextField
+              id="steel-quantity" label="Number of doorsets"
+              value={config.quantity}
+              onChange={v => setQuantity(v.replace(/\D/g, "").slice(0, 3))}
+            />
+          </div>
+        </div>
       </Section>
 
       <Section
@@ -683,6 +681,7 @@ export default function SteelDoorSpec({ onChangeProduct, modeSwitch, saveButton 
               projectData={projectData} setProjectData={setProjectData}
               specType={specType} setSpecType={setSpecType}
               markTouched={markTouched} errorFor={errorFor}
+              config={config} setQuantity={v => set("quantity", v)}
             />
           )}
           {currentStep === 4 && (

@@ -636,13 +636,6 @@ function WallStep({ product, config, setConfig, leaves, markTouched, errorFor })
             onTextChange={v => { markTouched("finish"); setConfig(c => ({ ...c, finishText: v })); }}
           />
           <FieldError>{errorFor("finish")}</FieldError>
-          <div style={{ marginTop: 16, maxWidth: 150 }}>
-            <TextField
-              id="pd-quantity" label="Quantity"
-              value={config.quantity}
-              onChange={v => setConfig(c => ({ ...c, quantity: v.replace(/\D/g, "").slice(0, 3) }))}
-            />
-          </div>
         </RailSection>
       )}
     </div>
@@ -820,17 +813,26 @@ function LockStep({ config, setConfig, leaves }) {
 
 /** Who the specification is for and which project it belongs to —
  *  its own step, the same as on the cable plan. */
-function ProjectStep({ projectData, setProjectData, specType, setSpecType, markTouched, errorFor }) {
+function ProjectStep({ projectData, setProjectData, specType, setSpecType, markTouched, errorFor, config, setQuantity }) {
   return (
     <div style={{ padding: "20px 22px" }}>
       <RailSection title="Specification type">
-        <Segmented
-          name="Specification type"
-          options={SPEC_TYPES.map(sp => ({ value: sp.id, label: sp.label }))}
-          value={specType}
-          onChange={setSpecType}
-        />
-        <p style={{ margin: "10px 0 0", fontSize: 12.5, lineHeight: 1.5, color: UI.body, fontFamily: FONT }}>
+        <div style={{ display: "flex", gap: 18, alignItems: "flex-start", flexWrap: "wrap" }}>
+          <Segmented
+            name="Specification type"
+            options={SPEC_TYPES.map(sp => ({ value: sp.id, label: sp.label }))}
+            value={specType}
+            onChange={setSpecType}
+          />
+          <div style={{ flex: "0 0 160px" }}>
+            <TextField
+              id="pd-quantity" label="Number of doorsets"
+              value={config.quantity}
+              onChange={v => setQuantity(v.replace(/\D/g, "").slice(0, 3))}
+            />
+          </div>
+        </div>
+        <p style={{ margin: "2px 0 0", fontSize: 12.5, lineHeight: 1.5, color: UI.body, fontFamily: FONT }}>
           {SPEC_TYPES.find(sp => sp.id === specType)?.summary}
         </p>
       </RailSection>
@@ -1228,6 +1230,7 @@ export default function SpecGenerator({ startProductId, onChangeProduct, modeSwi
           )}
           {currentStep === 4 && (
             <ProjectStep
+              config={config} setQuantity={v => setConfig(c => ({ ...c, quantity: v }))}
               projectData={projectData} setProjectData={setProjectData}
               specType={specType} setSpecType={setSpecType}
               markTouched={markTouched} errorFor={errorFor}

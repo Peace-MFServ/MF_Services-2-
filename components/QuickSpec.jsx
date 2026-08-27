@@ -317,25 +317,20 @@ export default function QuickSpec({ productTypeId = "riser-doors", onChangeProdu
                   options={CHRISTO.frames.map(f => ({ value: f.id, label: f.label, title: f.summary }))}
                 />
               </Field>
-              <div style={{ display: "flex", gap: 22, flexWrap: "wrap" }}>
-                <Field label="Finish">
-                  <div>
-                    <Chips name="Finish" value={config.finish} onChange={v => set("finish", v)} options={chipsFor("finish")} />
-                    {finishChoice?.requiresText && (
-                      <div style={{ marginTop: 8, maxWidth: 260 }}>
-                        <Input
-                          id="qs-finishText" value={config.finishText}
-                          onChange={v => set("finishText", v)}
-                          placeholder={finishChoice.textPlaceholder || finishChoice.textLabel}
-                        />
-                      </div>
-                    )}
-                  </div>
-                </Field>
-                <Field label="Quantity" width={90}>
-                  <Input id="qs-quantity" value={config.quantity} onChange={v => set("quantity", v.replace(/\D/g, "").slice(0, 3))} />
-                </Field>
-              </div>
+              <Field label="Finish">
+                <div>
+                  <Chips name="Finish" value={config.finish} onChange={v => set("finish", v)} options={chipsFor("finish")} />
+                  {finishChoice?.requiresText && (
+                    <div style={{ marginTop: 8, maxWidth: 260 }}>
+                      <Input
+                        id="qs-finishText" value={config.finishText}
+                        onChange={v => set("finishText", v)}
+                        placeholder={finishChoice.textPlaceholder || finishChoice.textLabel}
+                      />
+                    </div>
+                  )}
+                </div>
+              </Field>
             </div>
           </section>
 
@@ -352,12 +347,17 @@ export default function QuickSpec({ productTypeId = "riser-doors", onChangeProdu
           <section>
             <SectionTitle>Project</SectionTitle>
             <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-              <Field label="Specification type">
-                <Chips
-                  name="Specification type" value={specType} onChange={setSpecType}
-                  options={SPEC_TYPES.map(sp => ({ value: sp.id, label: sp.label, title: sp.summary }))}
-                />
-              </Field>
+              <div style={{ display: "flex", gap: 22, flexWrap: "wrap" }}>
+                <Field label="Specification type" width={230}>
+                  <Chips
+                    name="Specification type" value={specType} onChange={setSpecType}
+                    options={SPEC_TYPES.map(sp => ({ value: sp.id, label: sp.label, title: sp.summary }))}
+                  />
+                </Field>
+                <Field label="Number of doorsets" width={130}>
+                  <Input id="qs-quantity" value={config.quantity} onChange={v => set("quantity", v.replace(/\D/g, "").slice(0, 3))} />
+                </Field>
+              </div>
               <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
                 <Field label="Email"><Input id="qs-email" type="email" value={projectData.email} onChange={v => setPd("email", v)} /></Field>
                 <Field label="Phone"><Input id="qs-phone" type="tel" value={projectData.phone} onChange={v => setPd("phone", v)} /></Field>

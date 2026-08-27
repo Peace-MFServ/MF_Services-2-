@@ -299,15 +299,9 @@ export default function SteelDoorsetFields({ config, set, resolution, idPrefix =
               }}>
                 Finish
               </div>
-              <div style={{ display: "flex", gap: 14, maxWidth: 330 }}>
-                <Field label="Colour (RAL)" width={200}>
+              <div style={{ maxWidth: 220 }}>
+                <Field label="Colour (RAL)">
                   <Input id={`${idPrefix}-ral`} value={config.ral} onChange={v => set("ral", v)} placeholder="7016" />
-                </Field>
-                <Field label="Quantity" width={90}>
-                  <Input
-                    id={`${idPrefix}-quantity`} value={config.quantity}
-                    onChange={v => set("quantity", v.replace(/\D/g, "").slice(0, 3))}
-                  />
                 </Field>
               </div>
             </div>
