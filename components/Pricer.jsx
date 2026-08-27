@@ -9,7 +9,7 @@ import {
 import { useDoorsetConfig, initialConfig } from "./steelSpecState";
 import { buildQuote } from "../lib/quote";
 import SteelDoorsetFields from "./SteelDoorsetFields";
-import { UI, FONT, fieldStyle, focusField, blurField } from "../lib/theme";
+import { UI, FONT, fieldStyle } from "../lib/theme";
 
 // ─────────────────────────────────────────────────────────────────
 // Pricer — MF Services staff only
@@ -72,8 +72,7 @@ function SmallInput({ id, value, onChange, width = 78, align = "right", placehol
     <input
       id={id} value={value ?? ""} placeholder={placeholder}
       onChange={e => onChange(e.target.value)}
-      style={{ ...fieldStyle, width, padding: "6px 8px", fontSize: 12.5, textAlign: align }}
-      onFocus={focusField} onBlur={blurField}
+      style={{ ...fieldStyle, width, padding: "6px 8px", fontSize: 12.5, textAlign: align }} className="mf-field"
     />
   );
 }
@@ -255,8 +254,7 @@ function DoorsetEditor({ initial, initialName, onCancel, onDone, existing }) {
         <input
           id="pricer-line-name" value={name} placeholder="e.g. D-01, ground floor plant room"
           onChange={e => setName(e.target.value)}
-          style={{ ...fieldStyle, padding: "8px 10px", fontSize: 13 }}
-          onFocus={focusField} onBlur={blurField}
+          style={{ ...fieldStyle, padding: "8px 10px", fontSize: 13 }} className="mf-field"
         />
       </div>
 
@@ -482,9 +480,9 @@ export default function Pricer() {
     <div style={{ padding: "28px 0 60px", fontFamily: FONT, color: UI.body }}>
 
       <div style={{ marginBottom: 26 }}>
-        <h1 style={{ margin: 0, fontSize: 24, fontWeight: 600, letterSpacing: "-0.02em", color: UI.ink }}>
+        <h2 style={{ margin: 0, fontSize: 24, fontWeight: 600, letterSpacing: "-0.02em", color: UI.ink }}>
           Pricer
-        </h1>
+        </h2>
         <p style={{ margin: "8px 0 0", fontSize: 14, lineHeight: 1.55, color: UI.body, maxWidth: 640 }}>
           Build a schedule of steel doorsets and price it. Figures are ex-works
           in euro, from the manufacturer&rsquo;s October 2025 list — the same
@@ -502,8 +500,7 @@ export default function Pricer() {
         <input
           id="pricer-project" value={project} placeholder="e.g. Docklands Block C"
           onChange={e => setProject(e.target.value)}
-          style={{ ...fieldStyle, padding: "8px 10px", fontSize: 13 }}
-          onFocus={focusField} onBlur={blurField}
+          style={{ ...fieldStyle, padding: "8px 10px", fontSize: 13 }} className="mf-field"
         />
       </div>
 

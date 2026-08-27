@@ -58,9 +58,9 @@ function Toolbox() {
       {/* ── GLOBAL HEADER ── */}
       <header style={{ background: '#00387B', borderBottom: '3px solid #ED6E02' }}>
         <div style={{ margin: '0 auto', padding: '0 24px', display: 'flex', alignItems: 'center', height: 60, gap: 14 }}>
-          <img src="/linkedin.jpg" alt="MF Services" style={{ height: 34, width: 'auto', borderRadius: 3, flexShrink: 0 }} />
+          <img src="/linkedin.jpg" alt="MF Services" width={925} height={184} style={{ height: 34, width: 'auto', borderRadius: 3, flexShrink: 0 }} />
           <div>
-            <div style={{ color: '#fff', fontWeight: 700, fontSize: 14, letterSpacing: '-0.01em', lineHeight: 1.2 }}>MF Services</div>
+            <h1 style={{ color: '#fff', fontWeight: 700, fontSize: 14, letterSpacing: '-0.01em', lineHeight: 1.2 }}>MF Services</h1>
             <div style={{ color: 'rgba(255,255,255,0.74)', fontSize: 11.5, letterSpacing: '0.03em' }}>Door Systems Toolbox</div>
           </div>
           <div style={{ marginLeft: 'auto' }}><AccountBar /></div>

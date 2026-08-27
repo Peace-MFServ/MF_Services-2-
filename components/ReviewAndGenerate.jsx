@@ -13,7 +13,7 @@ function Notice({ notices, dismiss }) {
       display: "flex", flexDirection: "column", gap: 8, maxWidth: 400,
     }}>
       {notices.map(n => (
-        <div key={n.id} role="status" style={{
+        <div key={n.id} role={n.type === "error" ? "alert" : "status"} style={{
           display: "flex", alignItems: "flex-start", gap: 12,
           background: UI.surface, border: `1px solid ${UI.ruleStrong}`,
           borderLeft: `3px solid ${n.type === "error" ? UI.warn : UI.accent}`,

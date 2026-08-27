@@ -151,9 +151,9 @@ function Group({ title, note, children }) {
 function Chooser({ onChoose }) {
   return (
     <div style={{ padding: "36px 32px 48px", fontFamily: FONT }}>
-      <h1 style={{ margin: 0, fontSize: 28, fontWeight: 600, letterSpacing: "-0.02em", color: UI.ink, lineHeight: 1.2 }}>
+      <h2 style={{ margin: 0, fontSize: 28, fontWeight: 600, letterSpacing: "-0.02em", color: UI.ink, lineHeight: 1.2 }}>
         What are you specifying?
-      </h1>
+      </h2>
       <p style={{ margin: "9px 0 34px", fontSize: 15, lineHeight: 1.55, color: UI.body, maxWidth: 620 }}>
         Configure a doorset or the cabling for a door system, and take
         the specification away as a PDF.

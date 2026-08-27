@@ -43,11 +43,8 @@ const fieldStyle = {
   width: "100%", boxSizing: "border-box",
   border: `1px solid ${UI.ruleStrong}`, background: UI.surface,
   padding: "10px 12px", fontSize: 13.5, lineHeight: 1.5,
-  fontFamily: FONT, color: UI.ink, outline: "none",
+  fontFamily: FONT, color: UI.ink,
 };
-
-const focusField = e => { e.target.style.borderColor = UI.accent; e.target.style.boxShadow = `inset 0 0 0 1px ${UI.accent}`; };
-const blurField  = e => { e.target.style.borderColor = UI.ruleStrong; e.target.style.boxShadow = "none"; };
 
 // ─── Primitives ───────────────────────────────────────────────────
 
@@ -340,8 +337,8 @@ function ComponentEntry({ comp, depth, system, componentStates, inclusion, onSta
                     value={state.otherValue || ""}
                     onChange={e => onStateChange(comp.id, { otherValue: e.target.value })}
                     style={{ ...fieldStyle, marginTop: 10, borderColor: state.otherValue?.trim() ? UI.ruleStrong : UI.warn }}
-                    onFocus={focusField}
-                    onBlur={e => { e.target.style.borderColor = e.target.value.trim() ? UI.ruleStrong : UI.warn; e.target.style.boxShadow = "none"; }}
+                    className="mf-field"
+                    onBlur={e => { e.target.style.borderColor = e.target.value.trim() ? UI.ruleStrong : UI.warn; }}
                   />
                 )}
               </div>
@@ -367,8 +364,7 @@ function ComponentEntry({ comp, depth, system, componentStates, inclusion, onSta
                 aria-label={`Site note for ${comp.label}`}
                 value={state.userRemarks || ""}
                 onChange={e => onStateChange(comp.id, { userRemarks: e.target.value })}
-                style={{ ...fieldStyle, resize: "vertical" }}
-                onFocus={focusField} onBlur={blurField}
+                style={{ ...fieldStyle, resize: "vertical" }} className="mf-field"
               />
             </div>
           </div>
@@ -423,14 +419,12 @@ function ProjectDetails({ projectData, setProjectData }) {
             <textarea id={`pd-${key}`} rows={3}
               value={projectData[key]}
               onChange={e => setProjectData(p => ({ ...p, [key]: e.target.value }))}
-              style={{ ...fieldStyle, resize: "vertical" }}
-              onFocus={focusField} onBlur={blurField} />
+              style={{ ...fieldStyle, resize: "vertical" }} className="mf-field" />
           ) : (
             <input id={`pd-${key}`} type="text"
               value={projectData[key]}
               onChange={e => setProjectData(p => ({ ...p, [key]: e.target.value }))}
-              style={fieldStyle}
-              onFocus={focusField} onBlur={blurField} />
+              style={fieldStyle} className="mf-field" />
           )}
         </div>
       ))}
@@ -578,9 +572,9 @@ export default function CablePlanConfigurator({ startSystemId, onChangeSystem, s
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, minWidth: 0 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
               <BackArrow onClick={goBack} />
-              <h1 style={{ margin: 0, fontSize: 19, fontWeight: 600, letterSpacing: "-0.01em", color: UI.ink, lineHeight: 1.3 }}>
+              <h2 style={{ margin: 0, fontSize: 19, fontWeight: 600, letterSpacing: "-0.01em", color: UI.ink, lineHeight: 1.3 }}>
                 {system.name}
-              </h1>
+              </h2>
             </div>
             {saveButton}
           </div>

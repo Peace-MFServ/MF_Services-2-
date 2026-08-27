@@ -5,7 +5,7 @@ import {
   readWorkingState, listProjects, saveProject, updateProject,
   deleteProject, describeProject,
 } from "../lib/projects";
-import { UI, FONT, fieldStyle, focusField, blurField } from "../lib/theme";
+import { UI, FONT, fieldStyle } from "../lib/theme";
 
 // Saving and reopening work. The tools themselves stay unaware of any
 // of this — see lib/projects.js for why.
@@ -100,8 +100,7 @@ export function SaveProjectButton({ kind, selectionId, openProject, onSaved, sty
             placeholder="e.g. Kildare Street, level 3"
             onChange={e => setName(e.target.value)}
             onKeyDown={e => { if (e.key === "Enter") doSave(false); if (e.key === "Escape") setPanel(null); }}
-            style={{ ...fieldStyle, padding: "8px 10px", fontSize: 13 }}
-            onFocus={focusField} onBlur={blurField}
+            style={{ ...fieldStyle, padding: "8px 10px", fontSize: 13 }} className="mf-field"
           />
           <button
             type="button" onClick={() => doSave(false)} disabled={busy}

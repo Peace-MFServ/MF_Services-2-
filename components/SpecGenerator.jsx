@@ -4,7 +4,7 @@ import RiserDoorPreview from "./RiserDoorPreview";
 import { PRODUCT_ART } from "./ProductIllustrations";
 import { generateHardwareSpecPDF } from "../lib/generateHardwareSpecPDF";
 import BackArrow from "./BackArrow";
-import { UI, FONT, fieldStyle, focusField, blurField } from "../lib/theme";
+import { UI, FONT, fieldStyle } from "../lib/theme";
 import {
   PRODUCT_TYPES, SPEC_TYPES, CHRISTO, getProduct,
   buildInitialConfig, resolveProduct, validateSpec, specRows, REQUIRE_ENQUIRY_DETAILS,
@@ -65,8 +65,8 @@ function TextField({ id, label, required, value, onChange, onBlurTouch, error, t
     id, value: value || "",
     onChange: e => onChange(e.target.value),
     style: { ...fieldStyle, borderColor: border, ...(multiline ? { resize: "vertical" } : {}) },
-    onFocus: focusField,
-    onBlur: e => { onBlurTouch?.(); e.target.style.borderColor = border; e.target.style.boxShadow = "none"; },
+    className: "mf-field",
+    onBlur: () => onBlurTouch?.(),
   };
   return (
     <div style={{ marginBottom: 18 }}>
@@ -112,6 +112,7 @@ function Segmented({ options, value, onChange, name }) {
             }}
           >
             {opt.label}
+            {disabled && opt.disabledReason ? <span className="vh"> — {opt.disabledReason}</span> : null}
           </button>
         );
       })}
@@ -151,8 +152,7 @@ function RadioList({ choices, value, onChange, name, textValue, onTextChange }) 
                 placeholder={choice.textPlaceholder || ""}
                 value={textValue || ""}
                 onChange={e => onTextChange(e.target.value)}
-                style={{ ...fieldStyle, marginTop: 8, marginLeft: 25, width: "calc(100% - 25px)" }}
-                onFocus={focusField} onBlur={blurField}
+                style={{ ...fieldStyle, marginTop: 8, marginLeft: 25, width: "calc(100% - 25px)" }} className="mf-field"
               />
             )}
           </div>
@@ -278,9 +278,9 @@ function ProductCard({ product, selected, onSelect }) {
 function ProductStep({ productTypeId, onChoose }) {
   return (
     <div style={{ padding: "36px 32px 44px" }}>
-      <h1 style={{ margin: 0, fontSize: 28, fontWeight: 600, letterSpacing: "-0.02em", color: UI.ink, lineHeight: 1.2 }}>
+      <h2 style={{ margin: 0, fontSize: 28, fontWeight: 600, letterSpacing: "-0.02em", color: UI.ink, lineHeight: 1.2 }}>
         Choose a doorset
-      </h1>
+      </h2>
       <p style={{ margin: "9px 0 30px", fontSize: 15, lineHeight: 1.55, color: UI.body, maxWidth: 620 }}>
         Select a product to specify.
       </p>
@@ -392,8 +392,8 @@ function SpecifyStep({ product, config, setConfig, errorFor, markTouched, resolu
             value={config.width}
             onChange={e => set("width", mmDigits(e.target.value))}
             style={{ ...fieldStyle, borderColor: errorFor("width") ? UI.warn : UI.ruleStrong }}
-            onFocus={focusField}
-            onBlur={e => { markTouched("width"); e.target.style.borderColor = errorFor("width") ? UI.warn : UI.ruleStrong; e.target.style.boxShadow = "none"; }}
+            className="mf-field"
+            onBlur={() => markTouched("width")}
           />
           <FieldError>{errorFor("width")}</FieldError>
         </div>
@@ -404,8 +404,8 @@ function SpecifyStep({ product, config, setConfig, errorFor, markTouched, resolu
             value={config.height}
             onChange={e => set("height", mmDigits(e.target.value))}
             style={{ ...fieldStyle, borderColor: errorFor("height") ? UI.warn : UI.ruleStrong }}
-            onFocus={focusField}
-            onBlur={e => { markTouched("height"); e.target.style.borderColor = errorFor("height") ? UI.warn : UI.ruleStrong; e.target.style.boxShadow = "none"; }}
+            className="mf-field"
+            onBlur={() => markTouched("height")}
           />
           <FieldError>{errorFor("height")}</FieldError>
         </div>
@@ -829,8 +829,7 @@ function ProjectStep({ projectData, setProjectData, specType, setSpecType, markT
             <input
               id="pd-quantity" type="text" inputMode="numeric" value={config.quantity}
               onChange={e => setQuantity(e.target.value.replace(/\D/g, "").slice(0, 3))}
-              style={{ ...fieldStyle, width: 80, height: 35, padding: "0 12px", textAlign: "center" }}
-              onFocus={focusField} onBlur={blurField}
+              style={{ ...fieldStyle, width: 80, height: 35, padding: "0 12px", textAlign: "center" }} className="mf-field"
             />
           </div>
         </div>
@@ -1196,9 +1195,9 @@ export default function SpecGenerator({ startProductId, onChangeProduct, modeSwi
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, minWidth: 0 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
               <BackArrow onClick={goBack} />
-              <h1 style={{ margin: 0, fontSize: 19, fontWeight: 600, letterSpacing: "-0.01em", color: UI.ink, lineHeight: 1.3 }}>
+              <h2 style={{ margin: 0, fontSize: 19, fontWeight: 600, letterSpacing: "-0.01em", color: UI.ink, lineHeight: 1.3 }}>
                 {product?.label ?? "Doorset"}
-              </h1>
+              </h2>
             </div>
             {modeSwitch}
           </div>

@@ -3,7 +3,7 @@ import { useState, useCallback } from "react";
 import { useAuth } from "./AuthProvider";
 import { useProjects } from "./ProjectsProvider";
 import { authErrorMessage } from "../lib/firebase";
-import { UI, FONT, fieldStyle, focusField, blurField } from "../lib/theme";
+import { UI, FONT, fieldStyle } from "../lib/theme";
 
 // Sign in, sign up and password reset — one panel, three modes, so
 // nobody is sent off to a separate page and back.
@@ -27,8 +27,7 @@ function Field({ id, label, type = "text", value, onChange, autoComplete, requir
       <input
         id={id} type={type} value={value} autoComplete={autoComplete} required={required}
         onChange={e => onChange(e.target.value)}
-        style={{ ...fieldStyle, padding: "9px 11px", fontSize: 13.5 }}
-        onFocus={focusField} onBlur={blurField}
+        style={{ ...fieldStyle, padding: "9px 11px", fontSize: 13.5 }} className="mf-field"
       />
     </div>
   );

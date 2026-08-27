@@ -1,5 +1,5 @@
 'use client'
-import { UI, FONT, fieldStyle, focusField, blurField } from "../lib/theme";
+import { UI, FONT, fieldStyle } from "../lib/theme";
 import { useSteelSpecState } from "./steelSpecState";
 import { describeSteelDoor, steelSpecRows } from "../lib/steelDoor";
 import { SPEC_TYPES } from "../lib/hardwareSpec";
@@ -65,9 +65,9 @@ export default function SteelQuickSpec({ onChangeProduct, modeSwitch, saveButton
         }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
             <BackArrow onClick={onChangeProduct} label="Change product" />
-            <h1 style={{ margin: 0, fontSize: 19, fontWeight: 600, letterSpacing: "-0.01em", color: UI.ink }}>
+            <h2 style={{ margin: 0, fontSize: 19, fontWeight: 600, letterSpacing: "-0.01em", color: UI.ink }}>
               Steel Doors
-            </h1>
+            </h2>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
             {modeSwitch}
@@ -103,8 +103,7 @@ export default function SteelQuickSpec({ onChangeProduct, modeSwitch, saveButton
                   <input
                     id="sq-quantity" type="text" inputMode="numeric" value={config.quantity}
                     onChange={e => set("quantity", e.target.value.replace(/\D/g, "").slice(0, 3))}
-                    style={{ ...fieldStyle, width: 76, height: 31, padding: "0 10px", fontSize: 13, textAlign: "center" }}
-                    onFocus={focusField} onBlur={blurField}
+                    style={{ ...fieldStyle, width: 76, height: 31, padding: "0 10px", fontSize: 13, textAlign: "center" }} className="mf-field"
                   />
                 </Field>
               </div>

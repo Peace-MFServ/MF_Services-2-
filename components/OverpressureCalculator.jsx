@@ -286,6 +286,7 @@ function ReferenceDiagram() {
       borderRadius: 8,
     }}>
       <img
+        width={1659} height={737}
         src="/overpressure-help.png"
         alt="Diagram showing distance from handle to sash edge, overpressure direction, and friction torque sources"
         style={{

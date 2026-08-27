@@ -1,5 +1,5 @@
 'use client'
-import { UI, FONT, fieldStyle, focusField, blurField } from "../lib/theme";
+import { UI, FONT, fieldStyle } from "../lib/theme";
 import { mmDigits } from "./steelSpecState";
 import {
   fireRatings, leafCountsFor, highPerformanceAvailable,
@@ -71,6 +71,7 @@ export function Chips({ options, value, onChange, name }) {
             }}
           >
             {opt.label}
+            {opt.disabled && opt.disabledReason ? <span className="vh"> — {opt.disabledReason}</span> : null}
           </button>
         );
       })}
@@ -83,8 +84,7 @@ export function Input({ id, value, onChange, placeholder, type = "text" }) {
     <input
       id={id} type={type} value={value || ""} placeholder={placeholder}
       onChange={e => onChange(e.target.value)}
-      style={{ ...fieldStyle, padding: "8px 10px", fontSize: 13 }}
-      onFocus={focusField} onBlur={blurField}
+      style={{ ...fieldStyle, padding: "8px 10px", fontSize: 13 }} className="mf-field"
     />
   );
 }
@@ -102,7 +102,7 @@ const HARDWARE_SECTIONS = [
 export function Select({ id, group, value, onChange }) {
   const blocked = group.options.length === 0;
   return (
-    <select
+    <select className="mf-field"
       id={id} value={blocked ? "" : value || ""} disabled={blocked}
       onChange={e => onChange(e.target.value)}
       style={{

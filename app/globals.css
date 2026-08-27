@@ -1,323 +1,62 @@
 /* ============================================================
-   MF SERVICES — DESIGN SYSTEM
-   Industrial · Architectural · High-End Light Theme
-   ============================================================ */
+   MF SERVICES — global stylesheet
+   ============================================================
+   The design system lives in lib/theme.js (UI tokens + FONT) and
+   is applied inline, component by component. This file carries only
+   what genuinely has to be CSS: the base reset, the primary
+   navigation, and the accessibility rules that need pseudo-classes
+   and media queries — :focus-visible and prefers-reduced-motion.
+   Do not grow a parallel class system here. */
 
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap');
-
-:root {
-
-  /* ── BRAND COLOURS ─────────────────────────────────────── */
-  --mf-navy:          #00387B;   /* Header, deep accents       */
-  --mf-blue:          #1470B1;   /* Primary actions            */
-  --mf-blue-light:    #E8F2FA;   /* Blue tints, hover bg       */
-  --mf-orange:        #ED6E02;   /* Active states, highlights  */
-  --mf-orange-light:  #FEF3E8;   /* Orange tint                */
-  --mf-green:         #B1C638;   /* Success, completed states  */
-  --mf-green-dark:    #8A9B2A;   /* Success text               */
-  --mf-green-light:   #F4F7E0;   /* Success bg tint            */
-  --mf-red:           #D63B3B;   /* Errors, mandatory          */
-  --mf-red-light:     #FDF0F0;   /* Error bg tint              */
-
-  /* ── NEUTRALS ──────────────────────────────────────────── */
-  --mf-canvas:        #F8F9FA;   /* Page background            */
-  --mf-surface:       #FFFFFF;   /* Card / panel surface       */
-  --mf-surface-2:     #F2F4F7;   /* Nested surface             */
-  --mf-border:        #E2E8F0;   /* Section dividers           */
-  --mf-border-strong: #C8D3E0;   /* Stronger borders           */
-
-  /* ── TEXT ──────────────────────────────────────────────── */
-  --mf-text-primary:  #0F1C2E;   /* Headings                   */
-  --mf-text-body:     #374151;   /* Body text                  */
-  --mf-text-muted:    #6B7280;   /* Labels, placeholders       */
-  --mf-text-faint:    #9CA3AF;   /* Hints                      */
-  --mf-text-inverse:  #FFFFFF;   /* On dark backgrounds        */
-
-  /* ── TYPOGRAPHY ─────────────────────────────────────────── */
-  --font-display:     'DM Sans', sans-serif;
-  --font-body:        'DM Sans', sans-serif;
-  --font-mono:        'DM Mono', monospace;
-
-  /* ── SPACING ────────────────────────────────────────────── */
-  --space-1:  4px;
-  --space-2:  8px;
-  --space-3:  12px;
-  --space-4:  16px;
-  --space-5:  20px;
-  --space-6:  24px;
-  --space-8:  32px;
-  --space-10: 40px;
-  --space-12: 48px;
-
-  /* ── RADII ──────────────────────────────────────────────── */
-  --radius-sm:  6px;
-  --radius-md:  10px;
-  --radius-lg:  14px;
-  --radius-xl:  20px;
-
-  /* ── SHADOWS (Soft Elevation) ───────────────────────────── */
-  --shadow-xs:  0 1px 2px rgba(0,56,123,0.04);
-  --shadow-sm:  0 2px 8px rgba(0,56,123,0.06), 0 1px 2px rgba(0,56,123,0.04);
-  --shadow-md:  0 4px 16px rgba(0,56,123,0.08), 0 2px 4px rgba(0,56,123,0.04);
-  --shadow-lg:  0 8px 32px rgba(0,56,123,0.10), 0 2px 8px rgba(0,56,123,0.06);
-  --shadow-focus: 0 0 0 3px rgba(20,112,177,0.25);
-
-  /* ── TRANSITIONS ─────────────────────────────────────────── */
-  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --transition-fast: 150ms var(--ease-out);
-  --transition-base: 250ms var(--ease-out);
-}
-
-/* ── BASE RESET ──────────────────────────────────────────── */
+/* ── Base ────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 html { font-size: 16px; -webkit-font-smoothing: antialiased; }
 
 body {
-  font-family: var(--font-body);
-  background: var(--mf-canvas);
-  color: var(--mf-text-body);
+  font-family: Inter, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  background: #F8F9FA;
+  color: #374151;
   line-height: 1.6;
 }
 
-/* ── UTILITY CLASSES ─────────────────────────────────────── */
+/* ── Focus, keyboard only ────────────────────────────────────
+   Fields carry .mf-field; the ring is an outline so it never
+   fights the inline border colours that mark an error state, and
+   :focus-visible keeps it away from mouse clicks. */
+.mf-field:focus-visible {
+  outline: 2px solid #00387B;
+  outline-offset: -1px;
+}
+.mf-field:focus:not(:focus-visible) { outline: none; }
 
-/* Cards */
-.mf-card {
-  background: var(--mf-surface);
-  border: 1px solid var(--mf-border);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sm);
+/* ── Reduced motion ──────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
 }
 
-.mf-card-elevated {
-  background: var(--mf-surface);
-  border: 1px solid var(--mf-border);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
-}
-
-/* Buttons */
-.mf-btn-primary {
-  background: var(--mf-blue);
-  color: var(--mf-text-inverse);
-  border: none;
-  border-radius: var(--radius-md);
-  padding: 14px 28px;
-  font-family: var(--font-display);
-  font-size: 15px;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-.mf-btn-primary:hover { background: #1060A0; box-shadow: var(--shadow-md); transform: translateY(-1px); }
-.mf-btn-primary:focus-visible { outline: none; box-shadow: var(--shadow-focus); }
-.mf-btn-primary:disabled { background: var(--mf-border-strong); color: var(--mf-text-muted); cursor: not-allowed; transform: none; box-shadow: none; }
-
-.mf-btn-secondary {
-  background: var(--mf-surface);
-  color: var(--mf-text-body);
-  border: 1px solid var(--mf-border);
-  border-radius: var(--radius-md);
-  padding: 14px 28px;
-  font-family: var(--font-display);
-  font-size: 15px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-.mf-btn-secondary:hover { border-color: var(--mf-border-strong); box-shadow: var(--shadow-xs); }
-
-/* Badges */
-.mf-badge-required {
-  background: var(--mf-red-light);
-  color: var(--mf-red);
-  border: 1px solid #FACACA;
-  border-radius: 4px;
-  padding: 2px 8px;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-.mf-badge-optional {
-  background: var(--mf-surface-2);
-  color: var(--mf-text-muted);
-  border: 1px solid var(--mf-border);
-  border-radius: 4px;
-  padding: 2px 8px;
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-.mf-badge-fire {
-  background: #FEF3E8;
-  color: var(--mf-orange);
-  border: 1px solid #FCD9B0;
-  border-radius: 4px;
-  padding: 2px 8px;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-/* Form elements */
-.mf-input {
-  width: 100%;
-  background: var(--mf-surface);
-  border: 1.5px solid var(--mf-border);
-  border-radius: var(--radius-md);
-  padding: 11px 14px;
-  font-family: var(--font-body);
-  font-size: 14px;
-  color: var(--mf-text-primary);
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
-  outline: none;
-}
-.mf-input:focus { border-color: var(--mf-blue); box-shadow: var(--shadow-focus); }
-.mf-input::placeholder { color: var(--mf-text-faint); }
-
-.mf-textarea {
-  width: 100%;
-  background: var(--mf-surface);
-  border: 1.5px solid var(--mf-border);
-  border-radius: var(--radius-md);
-  padding: 11px 14px;
-  font-family: var(--font-body);
-  font-size: 14px;
-  color: var(--mf-text-primary);
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
-  outline: none;
-  resize: vertical;
-  min-height: 72px;
-}
-.mf-textarea:focus { border-color: var(--mf-blue); box-shadow: var(--shadow-focus); }
-.mf-textarea::placeholder { color: var(--mf-text-faint); }
-
-/* Responsive app styles */
-.mf-page-shell { width: 100%; }
-.mf-page-container { padding: 24px 16px; }
-.mf-content-shell { padding: 40px 16px; }
-.mf-app-header .mf-header-title { max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.mf-app-header .mf-header-subtitle { color: rgba(255,255,255,0.75); }
-.mf-step-label { font-size: 12px; display: inline-block; overflow: hidden; text-overflow: ellipsis; max-width: 110px; white-space: nowrap; }
-.mf-step-indicator { overflow-x: auto; }
-.mf-step-indicator::-webkit-scrollbar { height: 6px; }
-.mf-step-indicator::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.16); border-radius: 999px; }
-.mf-step-indicator::-webkit-scrollbar-track { background: transparent; }
-.mf-step-item { display: flex; align-items: center; }
-.mf-step-item:not(.mf-step-current) .mf-step-label { display: none; }
-.mf-step-connector { display: none; }
-
-@media (min-width: 640px) {
-  .mf-page-container { padding: 24px 32px; }
-  .mf-content-shell { padding: 40px 32px; }
-  .mf-step-indicator { overflow-x: hidden; }
-  .mf-step-item:not(.mf-step-current) .mf-step-label { display: inline; }
-  .mf-step-connector { display: block; }
-  .mf-app-header .mf-header-subtitle { display: block; }
-}
-
-@media (max-width: 639px) {
-  .mf-app-header { padding: 0 16px !important; }
-  .mf-app-header .mf-header-inner { padding: 0; flex-wrap: wrap; gap: 10px; align-items: center; }
-  .mf-app-header .mf-header-row { flex-wrap: nowrap; align-items: center; gap: 10px; min-width: 0; }
-  .mf-app-header .mf-header-title { display: none; font-size: 13px; white-space: nowrap; }
-  .mf-app-header .mf-header-subtitle { display: none; }
-  .mf-step-indicator { overflow-x: hidden; }
-  .mf-step-item { min-width: 0; flex: 1 1 0; }
-  .mf-step-item .mf-step-label { display: inline-block; font-size: 10px; max-width: 80px; }
-  .mf-step-connector { display: block; margin: 0 6px; }
-}
-
-/* Section label */
-.mf-section-label {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.10em;
-  text-transform: uppercase;
-  color: var(--mf-blue);
-  margin-bottom: 12px;
-}
-
-/* Mono tag (cable spec) */
-.mf-cable-tag {
-  font-family: var(--font-mono);
-  font-size: 12px;
-  color: var(--mf-blue);
-  background: var(--mf-blue-light);
-  border: 1px solid #C5DDF0;
-  border-radius: var(--radius-sm);
-  padding: 3px 8px;
-  display: inline-block;
-}
-
-/* Toggle switch */
-.mf-toggle {
-  width: 44px;
-  height: 24px;
-  border-radius: 12px;
-  position: relative;
-  transition: background var(--transition-fast);
-  cursor: pointer;
-  border: none;
-  flex-shrink: 0;
-}
-.mf-toggle-knob {
-  width: 18px;
-  height: 18px;
-  background: white;
-  border-radius: 50%;
+/* ── Screen-reader-only text ─────────────────────────────── */
+.vh {
   position: absolute;
-  top: 3px;
-  transition: transform var(--transition-fast);
-  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
-}
-
-/* Validation panels */
-.mf-validation-pass {
-  background: var(--mf-green-light);
-  border: 1.5px solid #D4E077;
-  border-radius: var(--radius-lg);
-  padding: 16px 20px;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.mf-validation-fail {
-  background: var(--mf-red-light);
-  border: 1.5px solid #F5BFBF;
-  border-radius: var(--radius-lg);
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
   overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
 }
-
-/* Toast */
-.mf-toast {
-  border-radius: var(--radius-md);
-  padding: 14px 16px;
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  box-shadow: var(--shadow-lg);
-  background: var(--mf-surface);
-  border: 1.5px solid var(--mf-border);
-}
-.mf-toast-success { border-color: #D4E077; background: var(--mf-green-light); }
-.mf-toast-error   { border-color: #F5BFBF; background: var(--mf-red-light); }
-.mf-toast-warning { border-color: #FCD9B0; background: var(--mf-orange-light); }
 
 /* ─── Primary navigation ──────────────────────────────────────────
    The section tabs are the main way around the toolbox and the first
    thing a client needs to understand, so they are solid blocks rather
    than text with a rule under it — the active one filled in navy. */
 .mf-nav {
-  background: var(--mf-surface);
+  background: #FFFFFF;
   border-bottom: 1px solid #C4CCD4;
   position: sticky;
   top: 0;
@@ -340,7 +79,7 @@ body {
   align-items: center;
   justify-content: center;
   border: 1px solid #C4CCD4;
-  background: var(--mf-surface);
+  background: #FFFFFF;
   font-family: inherit;
   font-size: 16px;
   font-weight: 600;

@@ -3,7 +3,7 @@ import { useRef } from "react";
 import SteelDoorPreview from "./SteelDoorPreview";
 import BackArrow from "./BackArrow";
 import { useSteelSpecState, mmDigits } from "./steelSpecState";
-import { UI, FONT, fieldStyle, focusField, blurField } from "../lib/theme";
+import { UI, FONT, fieldStyle } from "../lib/theme";
 import {
   fireRatings, leafCountsFor, highPerformanceAvailable,
   describeSteelDoor, steelSpecRows, standardsFor, hardwareNeedsText,
@@ -67,6 +67,7 @@ function Chips({ options, value, onChange, name }) {
             }}
           >
             {opt.label}
+            {opt.disabled && opt.disabledReason ? <span className="vh"> — {opt.disabledReason}</span> : null}
           </button>
         );
       })}
@@ -279,8 +280,7 @@ function OpeningStep({ config, set, errorFor, resolution }) {
             <input
               id="steel-width" type="text" inputMode="numeric" value={config.width}
               onChange={e => set("width", mmDigits(e.target.value))}
-              style={{ ...fieldStyle, borderColor: errorFor("width") ? UI.warn : UI.ruleStrong }}
-              onFocus={focusField} onBlur={blurField}
+              style={{ ...fieldStyle, borderColor: errorFor("width") ? UI.warn : UI.ruleStrong }} className="mf-field"
             />
           </div>
           <div style={{ flex: "0 0 140px" }}>
@@ -288,8 +288,7 @@ function OpeningStep({ config, set, errorFor, resolution }) {
             <input
               id="steel-height" type="text" inputMode="numeric" value={config.height}
               onChange={e => set("height", mmDigits(e.target.value))}
-              style={{ ...fieldStyle, borderColor: errorFor("height") ? UI.warn : UI.ruleStrong }}
-              onFocus={focusField} onBlur={blurField}
+              style={{ ...fieldStyle, borderColor: errorFor("height") ? UI.warn : UI.ruleStrong }} className="mf-field"
             />
           </div>
         </div>
@@ -340,8 +339,8 @@ function TextField({ id, label, required, value, onChange, onBlurTouch, error, t
         id={id} type={type} value={value || ""}
         onChange={e => onChange(e.target.value)}
         style={{ ...fieldStyle, borderColor: border }}
-        onFocus={focusField}
-        onBlur={e => { onBlurTouch?.(); e.target.style.borderColor = border; e.target.style.boxShadow = "none"; }}
+        className="mf-field"
+        onBlur={() => onBlurTouch?.()}
       />
       <FieldError>{error}</FieldError>
     </div>
@@ -360,7 +359,7 @@ function HardwareField({ group, value, text, onChange, onChangeText, error }) {
       }}>
         {group.label}
       </label>
-      <select
+      <select className="mf-field"
         id={`hw-${group.id}`} value={blocked ? "" : value || ""} disabled={blocked}
         onChange={e => onChange(e.target.value)}
         style={{
@@ -379,8 +378,7 @@ function HardwareField({ group, value, text, onChange, onChangeText, error }) {
           id={`hw-${group.id}-text`} value={text || ""}
           placeholder={`Describe the ${group.label.toLowerCase()} required`}
           onChange={e => onChangeText(e.target.value)}
-          style={{ ...fieldStyle, marginTop: 8, padding: "9px 10px", fontSize: 13 }}
-          onFocus={focusField} onBlur={blurField}
+          style={{ ...fieldStyle, marginTop: 8, padding: "9px 10px", fontSize: 13 }} className="mf-field"
         />
       )}
       {group.note && (
@@ -458,8 +456,7 @@ function ProjectStep({ projectData, setProjectData, specType, setSpecType, markT
             <input
               id="steel-quantity" type="text" inputMode="numeric" value={config.quantity}
               onChange={e => setQuantity(e.target.value.replace(/\D/g, "").slice(0, 3))}
-              style={{ ...fieldStyle, width: 80, height: 35, padding: "0 12px", textAlign: "center" }}
-              onFocus={focusField} onBlur={blurField}
+              style={{ ...fieldStyle, width: 80, height: 35, padding: "0 12px", textAlign: "center" }} className="mf-field"
             />
           </div>
         </div>
@@ -658,9 +655,9 @@ export default function SteelDoorSpec({ onChangeProduct, modeSwitch, saveButton 
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, minWidth: 0 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
               <BackArrow onClick={goBack} />
-              <h1 style={{ margin: 0, fontSize: 19, fontWeight: 600, letterSpacing: "-0.01em", color: UI.ink }}>
+              <h2 style={{ margin: 0, fontSize: 19, fontWeight: 600, letterSpacing: "-0.01em", color: UI.ink }}>
                 Steel Doors
-              </h1>
+              </h2>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
               {modeSwitch}

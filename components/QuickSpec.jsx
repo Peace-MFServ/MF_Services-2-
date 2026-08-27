@@ -2,7 +2,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { generateHardwareSpecPDF } from "../lib/generateHardwareSpecPDF";
 import BackArrow from "./BackArrow";
-import { UI, FONT, fieldStyle, focusField, blurField } from "../lib/theme";
+import { UI, FONT, fieldStyle } from "../lib/theme";
 import {
   SPEC_TYPES, CHRISTO, getProduct,
   buildInitialConfig, resolveProduct, validateSpec, specRows,
@@ -78,6 +78,7 @@ function Chips({ options, value, onChange, name }) {
             }}
           >
             {opt.label}
+            {disabled && opt.disabledReason ? <span className="vh"> — {opt.disabledReason}</span> : null}
           </button>
         );
       })}
@@ -106,8 +107,7 @@ function Input({ id, value, onChange, placeholder, type = "text" }) {
     <input
       id={id} type={type} value={value || ""} placeholder={placeholder}
       onChange={e => onChange(e.target.value)}
-      style={{ ...fieldStyle, padding: "8px 10px", fontSize: 13 }}
-      onFocus={focusField} onBlur={blurField}
+      style={{ ...fieldStyle, padding: "8px 10px", fontSize: 13 }} className="mf-field"
     />
   );
 }
@@ -223,9 +223,9 @@ export default function QuickSpec({ productTypeId = "riser-doors", onChangeProdu
         }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
             <BackArrow onClick={onChangeProduct} label="Change product" />
-            <h1 style={{ margin: 0, fontSize: 19, fontWeight: 600, letterSpacing: "-0.01em", color: UI.ink }}>
+            <h2 style={{ margin: 0, fontSize: 19, fontWeight: 600, letterSpacing: "-0.01em", color: UI.ink }}>
               {product.label}
-            </h1>
+            </h2>
           </div>
           {modeSwitch}
         </div>
@@ -358,8 +358,7 @@ export default function QuickSpec({ productTypeId = "riser-doors", onChangeProdu
                   <input
                     id="qs-quantity" type="text" inputMode="numeric" value={config.quantity}
                     onChange={e => set("quantity", e.target.value.replace(/\D/g, "").slice(0, 3))}
-                    style={{ ...fieldStyle, width: 76, height: 31, padding: "0 10px", fontSize: 13, textAlign: "center" }}
-                    onFocus={focusField} onBlur={blurField}
+                    style={{ ...fieldStyle, width: 76, height: 31, padding: "0 10px", fontSize: 13, textAlign: "center" }} className="mf-field"
                   />
                 </Field>
               </div>
