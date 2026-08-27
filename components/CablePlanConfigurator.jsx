@@ -440,7 +440,11 @@ function ProjectDetails({ projectData, setProjectData }) {
 
 // ─── Main ─────────────────────────────────────────────────────────
 
-export default function CablePlanConfigurator({ startSystemId, onChangeSystem }) {
+// Everything the customer has put into the plan, kept for this browser
+// session and read by Save when a plan is kept as a project.
+const STORAGE_KEY = "mf-cable-plan-v1";
+
+export default function CablePlanConfigurator({ startSystemId, onChangeSystem, saveButton }) {
   // Mounted inside the Specification Tool the system is already
   // chosen, so step 0 belongs to the shared chooser rather than here.
   const embedded = !!startSystemId && !!SYSTEMS[startSystemId];
@@ -454,6 +458,45 @@ export default function CablePlanConfigurator({ startSystemId, onChangeSystem })
     positionNumberInSpec: "", functionDescription: "", miscellaneous: "",
   });
   const [activeId, setActiveId] = useState(null);
+  const [hydrated, setHydrated] = useState(false);
+
+  // Restore before the first save runs, or the save writes an empty
+  // plan over the stored one. A saved plan for a different system than
+  // the one chosen in the gallery is left alone — the choice wins.
+  useEffect(() => {
+    try {
+      const raw = window.sessionStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const saved = JSON.parse(raw);
+        const sameSystem = saved.selectedSystemId === firstSystemId;
+        if (SYSTEMS[saved.selectedSystemId] && (sameSystem || !embedded)) {
+          setSelectedSystemId(saved.selectedSystemId);
+          if (saved.componentStates) {
+            // Merge over a fresh state so a data update that adds a
+            // position never leaves it undefined.
+            setComponentStates({
+              ...buildInitialState(SYSTEMS[saved.selectedSystemId]),
+              ...saved.componentStates,
+            });
+          }
+          if (saved.projectData) setProjectData(pd => ({ ...pd, ...saved.projectData }));
+          if (typeof saved.currentStep === "number") setCurrentStep(saved.currentStep);
+          if (typeof saved.furthest === "number") setFurthest(saved.furthest);
+        }
+      }
+    } catch { /* corrupt or unavailable storage is not worth breaking the tool over */ }
+    setHydrated(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    try {
+      window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify({
+        selectedSystemId, componentStates, projectData, currentStep, furthest,
+      }));
+    } catch { /* best-effort */ }
+  }, [hydrated, selectedSystemId, componentStates, projectData, currentStep, furthest]);
 
   const system = SYSTEMS[selectedSystemId];
   const validation = validateConfiguration(system, componentStates);
@@ -527,16 +570,19 @@ export default function CablePlanConfigurator({ startSystemId, onChangeSystem })
 
       {/* ── Configuration rail ── */}
       <aside style={{
-        width: 424, flexShrink: 0, display: "flex", flexDirection: "column",
+        width: 496, flexShrink: 0, display: "flex", flexDirection: "column",
         borderRight: `1px solid ${UI.ruleStrong}`, minHeight: 0,
       }}>
 
         <header style={{ padding: "18px 22px 16px", borderBottom: `1px solid ${UI.rule}`, flexShrink: 0 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
-            <BackArrow onClick={goBack} />
-            <h1 style={{ margin: 0, fontSize: 19, fontWeight: 600, letterSpacing: "-0.01em", color: UI.ink, lineHeight: 1.3 }}>
-              {system.name}
-            </h1>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, minWidth: 0 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
+              <BackArrow onClick={goBack} />
+              <h1 style={{ margin: 0, fontSize: 19, fontWeight: 600, letterSpacing: "-0.01em", color: UI.ink, lineHeight: 1.3 }}>
+                {system.name}
+              </h1>
+            </div>
+            {saveButton}
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 6, flexWrap: "wrap" }}>
             <span style={{ fontSize: 13, color: UI.body }}>{system.leafType}</span>

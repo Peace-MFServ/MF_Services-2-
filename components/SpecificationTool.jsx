@@ -250,20 +250,20 @@ export default function SpecificationTool() {
 
   if (!selection) return <Chooser onChoose={choose} />;
 
-  // The cable plan is a checklist already — the quick layout is for
-  // doorsets, where the guided flow is the slow part.
-  if (selection.kind === "cable") {
-    return <CablePlanConfigurator startSystemId={selection.id} onChangeSystem={clear} />;
-  }
-
-  const saveButton = selection.kind === "door" ? (
+  const saveButton = (
     <SaveProjectButton
       kind={selection.kind}
       selectionId={selection.id}
       openProject={openProject}
       onSaved={saved => setOpenProject(saved)}
     />
-  ) : null;
+  );
+
+  // The cable plan is a checklist already — the quick layout is for
+  // doorsets, where the guided flow is the slow part.
+  if (selection.kind === "cable") {
+    return <CablePlanConfigurator startSystemId={selection.id} onChangeSystem={clear} saveButton={saveButton} />;
+  }
 
   const modeSwitch = (
     <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
