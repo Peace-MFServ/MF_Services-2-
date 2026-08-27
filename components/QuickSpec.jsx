@@ -359,12 +359,12 @@ export default function QuickSpec({ productTypeId = "riser-doors", onChangeProdu
                 />
               </Field>
               <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
-                <Field label="Project name"><Input id="qs-project" value={projectData.projectName} onChange={v => setPd("projectName", v)} /></Field>
-                <Field label="Architectural firm"><Input id="qs-firm" value={projectData.architecturalFirm} onChange={v => setPd("architecturalFirm", v)} /></Field>
-              </div>
-              <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
                 <Field label="Email"><Input id="qs-email" type="email" value={projectData.email} onChange={v => setPd("email", v)} /></Field>
                 <Field label="Phone"><Input id="qs-phone" type="tel" value={projectData.phone} onChange={v => setPd("phone", v)} /></Field>
+              </div>
+              <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
+                <Field label="Project name"><Input id="qs-project" value={projectData.projectName} onChange={v => setPd("projectName", v)} /></Field>
+                <Field label="Architectural firm"><Input id="qs-firm" value={projectData.architecturalFirm} onChange={v => setPd("architecturalFirm", v)} /></Field>
               </div>
             </div>
           </section>

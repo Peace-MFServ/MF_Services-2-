@@ -99,12 +99,12 @@ export default function SteelQuickSpec({ onChangeProduct, modeSwitch, saveButton
                 />
               </Field>
               <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
-                <Field label="Project name"><Input id="sq-project" value={projectData.projectName} onChange={v => setPd("projectName", v)} /></Field>
-                <Field label="Architectural firm"><Input id="sq-firm" value={projectData.architecturalFirm} onChange={v => setPd("architecturalFirm", v)} /></Field>
-              </div>
-              <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
                 <Field label="Email"><Input id="sq-email" type="email" value={projectData.email} onChange={v => setPd("email", v)} /></Field>
                 <Field label="Phone"><Input id="sq-phone" type="tel" value={projectData.phone} onChange={v => setPd("phone", v)} /></Field>
+              </div>
+              <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
+                <Field label="Project name"><Input id="sq-project" value={projectData.projectName} onChange={v => setPd("projectName", v)} /></Field>
+                <Field label="Architectural firm"><Input id="sq-firm" value={projectData.architecturalFirm} onChange={v => setPd("architecturalFirm", v)} /></Field>
               </div>
             </div>
           </section>
