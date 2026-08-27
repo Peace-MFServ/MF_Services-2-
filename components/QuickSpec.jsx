@@ -355,7 +355,12 @@ export default function QuickSpec({ productTypeId = "riser-doors", onChangeProdu
                   />
                 </Field>
                 <Field label="Number of doorsets" width={190}>
-                  <Input id="qs-quantity" value={config.quantity} onChange={v => set("quantity", v.replace(/\D/g, "").slice(0, 3))} />
+                  <input
+                    id="qs-quantity" type="text" inputMode="numeric" value={config.quantity}
+                    onChange={e => set("quantity", e.target.value.replace(/\D/g, "").slice(0, 3))}
+                    style={{ ...fieldStyle, width: 76, height: 31, padding: "0 10px", fontSize: 13, textAlign: "center" }}
+                    onFocus={focusField} onBlur={blurField}
+                  />
                 </Field>
               </div>
               <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>

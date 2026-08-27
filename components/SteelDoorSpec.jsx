@@ -458,7 +458,7 @@ function ProjectStep({ projectData, setProjectData, specType, setSpecType, markT
             <input
               id="steel-quantity" type="text" inputMode="numeric" value={config.quantity}
               onChange={e => setQuantity(e.target.value.replace(/\D/g, "").slice(0, 3))}
-              style={{ ...fieldStyle, padding: "8px 12px" }}
+              style={{ ...fieldStyle, width: 80, height: 35, padding: "0 12px", textAlign: "center" }}
               onFocus={focusField} onBlur={blurField}
             />
           </div>

@@ -1,5 +1,5 @@
 'use client'
-import { UI, FONT } from "../lib/theme";
+import { UI, FONT, fieldStyle, focusField, blurField } from "../lib/theme";
 import { useSteelSpecState } from "./steelSpecState";
 import { describeSteelDoor, steelSpecRows } from "../lib/steelDoor";
 import { SPEC_TYPES } from "../lib/hardwareSpec";
@@ -100,7 +100,12 @@ export default function SteelQuickSpec({ onChangeProduct, modeSwitch, saveButton
                   />
                 </Field>
                 <Field label="Number of doorsets" width={190}>
-                  <Input id="sq-quantity" value={config.quantity} onChange={v => set("quantity", v.replace(/\D/g, "").slice(0, 3))} />
+                  <input
+                    id="sq-quantity" type="text" inputMode="numeric" value={config.quantity}
+                    onChange={e => set("quantity", e.target.value.replace(/\D/g, "").slice(0, 3))}
+                    style={{ ...fieldStyle, width: 76, height: 31, padding: "0 10px", fontSize: 13, textAlign: "center" }}
+                    onFocus={focusField} onBlur={blurField}
+                  />
                 </Field>
               </div>
               <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
