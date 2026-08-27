@@ -118,7 +118,7 @@ export default function QuickSpec({ productTypeId = "riser-doors", onChangeProdu
   const [config, setConfig] = useState(() => buildInitialConfig(product));
   const [specType, setSpecType] = useState("branded");
   const [projectData, setProjectData] = useState({
-    businessName: "", contactName: "", email: "", phone: "",
+    email: "", phone: "",
     projectName: "", architecturalFirm: "",
   });
   const [generating, setGenerating] = useState(false);
@@ -158,7 +158,7 @@ export default function QuickSpec({ productTypeId = "riser-doors", onChangeProdu
     setConfig(buildInitialConfig(product));
     setSpecType("branded");
     setProjectData({
-      businessName: "", contactName: "", email: "", phone: "",
+      email: "", phone: "",
       projectName: "", architecturalFirm: "",
     });
     setNotice(null);
@@ -317,20 +317,25 @@ export default function QuickSpec({ productTypeId = "riser-doors", onChangeProdu
                   options={CHRISTO.frames.map(f => ({ value: f.id, label: f.label, title: f.summary }))}
                 />
               </Field>
-              <Field label="Finish">
-                <div>
-                  <Chips name="Finish" value={config.finish} onChange={v => set("finish", v)} options={chipsFor("finish")} />
-                  {finishChoice?.requiresText && (
-                    <div style={{ marginTop: 8, maxWidth: 260 }}>
-                      <Input
-                        id="qs-finishText" value={config.finishText}
-                        onChange={v => set("finishText", v)}
-                        placeholder={finishChoice.textPlaceholder || finishChoice.textLabel}
-                      />
-                    </div>
-                  )}
-                </div>
-              </Field>
+              <div style={{ display: "flex", gap: 22, flexWrap: "wrap" }}>
+                <Field label="Finish">
+                  <div>
+                    <Chips name="Finish" value={config.finish} onChange={v => set("finish", v)} options={chipsFor("finish")} />
+                    {finishChoice?.requiresText && (
+                      <div style={{ marginTop: 8, maxWidth: 260 }}>
+                        <Input
+                          id="qs-finishText" value={config.finishText}
+                          onChange={v => set("finishText", v)}
+                          placeholder={finishChoice.textPlaceholder || finishChoice.textLabel}
+                        />
+                      </div>
+                    )}
+                  </div>
+                </Field>
+                <Field label="Quantity" width={90}>
+                  <Input id="qs-quantity" value={config.quantity} onChange={v => set("quantity", v.replace(/\D/g, "").slice(0, 3))} />
+                </Field>
+              </div>
             </div>
           </section>
 
@@ -354,15 +359,10 @@ export default function QuickSpec({ productTypeId = "riser-doors", onChangeProdu
                 />
               </Field>
               <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
-                <Field label="Quantity" width={90}>
-                  <Input id="qs-quantity" value={config.quantity} onChange={v => set("quantity", v.replace(/\D/g, "").slice(0, 3))} />
-                </Field>
                 <Field label="Project name"><Input id="qs-project" value={projectData.projectName} onChange={v => setPd("projectName", v)} /></Field>
                 <Field label="Architectural firm"><Input id="qs-firm" value={projectData.architecturalFirm} onChange={v => setPd("architecturalFirm", v)} /></Field>
               </div>
               <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
-                <Field label="Business"><Input id="qs-business" value={projectData.businessName} onChange={v => setPd("businessName", v)} /></Field>
-                <Field label="Contact"><Input id="qs-contact" value={projectData.contactName} onChange={v => setPd("contactName", v)} /></Field>
                 <Field label="Email"><Input id="qs-email" type="email" value={projectData.email} onChange={v => setPd("email", v)} /></Field>
                 <Field label="Phone"><Input id="qs-phone" type="tel" value={projectData.phone} onChange={v => setPd("phone", v)} /></Field>
               </div>

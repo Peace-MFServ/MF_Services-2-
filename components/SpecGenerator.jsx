@@ -636,6 +636,13 @@ function WallStep({ product, config, setConfig, leaves, markTouched, errorFor })
             onTextChange={v => { markTouched("finish"); setConfig(c => ({ ...c, finishText: v })); }}
           />
           <FieldError>{errorFor("finish")}</FieldError>
+          <div style={{ marginTop: 16, maxWidth: 150 }}>
+            <TextField
+              id="pd-quantity" label="Quantity"
+              value={config.quantity}
+              onChange={v => setConfig(c => ({ ...c, quantity: v.replace(/\D/g, "").slice(0, 3) }))}
+            />
+          </div>
         </RailSection>
       )}
     </div>
@@ -813,7 +820,7 @@ function LockStep({ config, setConfig, leaves }) {
 
 /** Who the specification is for and which project it belongs to —
  *  its own step, the same as on the cable plan. */
-function ProjectStep({ projectData, setProjectData, specType, setSpecType, markTouched, errorFor, config, setQuantity }) {
+function ProjectStep({ projectData, setProjectData, specType, setSpecType, markTouched, errorFor }) {
   return (
     <div style={{ padding: "20px 22px" }}>
       <RailSection title="Specification type">
@@ -829,50 +836,45 @@ function ProjectStep({ projectData, setProjectData, specType, setSpecType, markT
       </RailSection>
 
       <RailSection title="Your details" note={REQUIRE_ENQUIRY_DETAILS ? "So we can send the specification on and answer any questions." : "Optional for now. So we can answer any questions."}>
-        <TextField
-          id="pd-businessName" label="Business name" required={REQUIRE_ENQUIRY_DETAILS}
-          value={projectData.businessName}
-          onChange={v => setProjectData(pd => ({ ...pd, businessName: v }))}
-          onBlurTouch={() => markTouched("businessName")}
-          error={errorFor("businessName")}
-        />
-        <TextField
-          id="pd-contactName" label="Contact name"
-          value={projectData.contactName}
-          onChange={v => setProjectData(pd => ({ ...pd, contactName: v }))}
-        />
-        <TextField
-          id="pd-email" label="Email" required={REQUIRE_ENQUIRY_DETAILS} type="email"
-          value={projectData.email}
-          onChange={v => setProjectData(pd => ({ ...pd, email: v }))}
-          onBlurTouch={() => markTouched("email")}
-          error={errorFor("email")}
-        />
-        <TextField
-          id="pd-phone" label="Phone" required={REQUIRE_ENQUIRY_DETAILS} type="tel"
-          value={projectData.phone}
-          onChange={v => setProjectData(pd => ({ ...pd, phone: v }))}
-          onBlurTouch={() => markTouched("phone")}
-          error={errorFor("phone")}
-        />
+        <div style={{ display: "flex", gap: 14 }}>
+          <div style={{ flex: 1 }}>
+            <TextField
+              id="pd-email" label="Email" required={REQUIRE_ENQUIRY_DETAILS} type="email"
+              value={projectData.email}
+              onChange={v => setProjectData(pd => ({ ...pd, email: v }))}
+              onBlurTouch={() => markTouched("email")}
+              error={errorFor("email")}
+            />
+          </div>
+          <div style={{ flex: 1 }}>
+            <TextField
+              id="pd-phone" label="Phone" required={REQUIRE_ENQUIRY_DETAILS} type="tel"
+              value={projectData.phone}
+              onChange={v => setProjectData(pd => ({ ...pd, phone: v }))}
+              onBlurTouch={() => markTouched("phone")}
+              error={errorFor("phone")}
+            />
+          </div>
+        </div>
       </RailSection>
 
       <RailSection title="Project">
-        <TextField
-          id="pd-quantity" label="Quantity of this doorset"
-          value={config.quantity}
-          onChange={v => setQuantity(v.replace(/\D/g, "").slice(0, 3))}
-        />
-        <TextField
-          id="pd-projectName" label="Project name"
-          value={projectData.projectName}
-          onChange={v => setProjectData(pd => ({ ...pd, projectName: v }))}
-        />
-        <TextField
-          id="pd-architecturalFirm" label="Architectural firm"
-          value={projectData.architecturalFirm}
-          onChange={v => setProjectData(pd => ({ ...pd, architecturalFirm: v }))}
-        />
+        <div style={{ display: "flex", gap: 14 }}>
+          <div style={{ flex: 1 }}>
+            <TextField
+              id="pd-projectName" label="Project name"
+              value={projectData.projectName}
+              onChange={v => setProjectData(pd => ({ ...pd, projectName: v }))}
+            />
+          </div>
+          <div style={{ flex: 1 }}>
+            <TextField
+              id="pd-architecturalFirm" label="Architectural firm"
+              value={projectData.architecturalFirm}
+              onChange={v => setProjectData(pd => ({ ...pd, architecturalFirm: v }))}
+            />
+          </div>
+        </div>
       </RailSection>
     </div>
   );
@@ -966,7 +968,7 @@ export default function SpecGenerator({ startProductId, onChangeProduct, modeSwi
   const [productTypeId, setProductTypeId] = useState(startProductId ?? "riser-doors");
   const [specType, setSpecType] = useState("branded");
   const [projectData, setProjectData] = useState({
-    businessName: "", contactName: "", email: "", phone: "",
+    email: "", phone: "",
     projectName: "", architecturalFirm: "",
   });
 
@@ -1021,7 +1023,7 @@ export default function SpecGenerator({ startProductId, onChangeProduct, modeSwi
     setProductTypeId("riser-doors");
     setConfig(buildInitialConfig(getProduct("riser-doors")));
     setSpecType("branded");
-    setProjectData({ businessName: "", contactName: "", email: "", phone: "", projectName: "", architecturalFirm: "" });
+    setProjectData({ email: "", phone: "", projectName: "", architecturalFirm: "" });
     setCurrentStep(0);
     setFurthest(0);
     setNotice(null);
@@ -1226,8 +1228,6 @@ export default function SpecGenerator({ startProductId, onChangeProduct, modeSwi
           )}
           {currentStep === 4 && (
             <ProjectStep
-              config={config}
-              setQuantity={v => setConfig(c => ({ ...c, quantity: v }))}
               projectData={projectData} setProjectData={setProjectData}
               specType={specType} setSpecType={setSpecType}
               markTouched={markTouched} errorFor={errorFor}

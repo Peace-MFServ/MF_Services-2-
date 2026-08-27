@@ -34,7 +34,7 @@ export const initialConfig = () => ({
 });
 
 export const emptyProject = () => ({
-  businessName: "", contactName: "", email: "", phone: "",
+  email: "", phone: "",
   projectName: "", architecturalFirm: "",
 });
 
@@ -205,9 +205,6 @@ function withContactChecks(validation, projectData) {
   const errors = [...validation.errors];
   const pd = projectData ?? {};
 
-  if (REQUIRE_ENQUIRY_DETAILS && !pd.businessName?.trim()) {
-    errors.push({ field: "businessName", message: "Enter your business name." });
-  }
   if (REQUIRE_ENQUIRY_DETAILS && !pd.email?.trim()) {
     errors.push({ field: "email", message: "Enter an email address." });
   } else if (pd.email?.trim() && !isEmail(pd.email)) {

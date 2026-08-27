@@ -22,7 +22,7 @@ import { SPEC_TYPES, REQUIRE_ENQUIRY_DETAILS } from "../lib/hardwareSpec";
 const STEPS = ["Doorset", "Opening", "Hardware", "Project", "Review"];
 
 const OPENING_FIELDS = new Set(["exposure", "frameId", "width", "height"]);
-const PROJECT_FIELDS = new Set(["businessName", "email", "phone"]);
+const PROJECT_FIELDS = new Set(["email", "phone"]);
 
 // The ironmongery reads better in trades than in one long list. Any
 // group the doorset does not ask simply does not appear.
@@ -424,11 +424,22 @@ function HardwareStep({ config, set, hardware, errorFor }) {
 
       <div style={{ marginBottom: 8 }}>
         <Label>Finish</Label>
-        <TextField
-          id="steel-ral" label="Colour (RAL)"
-          value={config.ral}
-          onChange={v => set("ral", v)}
-        />
+        <div style={{ display: "flex", gap: 14 }}>
+          <div style={{ flex: 1 }}>
+            <TextField
+              id="steel-ral" label="Colour (RAL)"
+              value={config.ral}
+              onChange={v => set("ral", v)}
+            />
+          </div>
+          <div style={{ flex: "0 0 130px" }}>
+            <TextField
+              id="steel-quantity" label="Quantity"
+              value={config.quantity}
+              onChange={v => set("quantity", v.replace(/\D/g, "").slice(0, 3))}
+            />
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -436,7 +447,7 @@ function HardwareStep({ config, set, hardware, errorFor }) {
 
 /** Who the specification is for and which project it belongs to —
  *  its own step, the same as on the riser doors and the cable plan. */
-function ProjectStep({ projectData, setProjectData, specType, setSpecType, markTouched, errorFor, config, setQuantity }) {
+function ProjectStep({ projectData, setProjectData, specType, setSpecType, markTouched, errorFor }) {
   return (
     <div style={{ padding: "20px 22px" }}>
       <Section title="Specification type" note={SPEC_TYPES.find(sp => sp.id === specType)?.summary}>
@@ -454,50 +465,45 @@ function ProjectStep({ projectData, setProjectData, specType, setSpecType, markT
           ? "So we can send the specification on and answer any questions."
           : "Optional for now. So we can answer any questions."}
       >
-        <TextField
-          id="steel-businessName" label="Business name" required={REQUIRE_ENQUIRY_DETAILS}
-          value={projectData.businessName}
-          onChange={v => setProjectData(pd => ({ ...pd, businessName: v }))}
-          onBlurTouch={() => markTouched("businessName")}
-          error={errorFor("businessName")}
-        />
-        <TextField
-          id="steel-contactName" label="Contact name"
-          value={projectData.contactName}
-          onChange={v => setProjectData(pd => ({ ...pd, contactName: v }))}
-        />
-        <TextField
-          id="steel-email" label="Email" type="email" required={REQUIRE_ENQUIRY_DETAILS}
-          value={projectData.email}
-          onChange={v => setProjectData(pd => ({ ...pd, email: v }))}
-          onBlurTouch={() => markTouched("email")}
-          error={errorFor("email")}
-        />
-        <TextField
-          id="steel-phone" label="Phone" type="tel" required={REQUIRE_ENQUIRY_DETAILS}
-          value={projectData.phone}
-          onChange={v => setProjectData(pd => ({ ...pd, phone: v }))}
-          onBlurTouch={() => markTouched("phone")}
-          error={errorFor("phone")}
-        />
+        <div style={{ display: "flex", gap: 14 }}>
+          <div style={{ flex: 1 }}>
+            <TextField
+              id="steel-email" label="Email" type="email" required={REQUIRE_ENQUIRY_DETAILS}
+              value={projectData.email}
+              onChange={v => setProjectData(pd => ({ ...pd, email: v }))}
+              onBlurTouch={() => markTouched("email")}
+              error={errorFor("email")}
+            />
+          </div>
+          <div style={{ flex: 1 }}>
+            <TextField
+              id="steel-phone" label="Phone" type="tel" required={REQUIRE_ENQUIRY_DETAILS}
+              value={projectData.phone}
+              onChange={v => setProjectData(pd => ({ ...pd, phone: v }))}
+              onBlurTouch={() => markTouched("phone")}
+              error={errorFor("phone")}
+            />
+          </div>
+        </div>
       </Section>
 
       <Section title="Project">
-        <TextField
-          id="steel-quantity" label="Quantity of this doorset"
-          value={config.quantity}
-          onChange={v => setQuantity(v.replace(/\D/g, "").slice(0, 3))}
-        />
-        <TextField
-          id="steel-projectName" label="Project name"
-          value={projectData.projectName}
-          onChange={v => setProjectData(pd => ({ ...pd, projectName: v }))}
-        />
-        <TextField
-          id="steel-architecturalFirm" label="Architectural firm"
-          value={projectData.architecturalFirm}
-          onChange={v => setProjectData(pd => ({ ...pd, architecturalFirm: v }))}
-        />
+        <div style={{ display: "flex", gap: 14 }}>
+          <div style={{ flex: 1 }}>
+            <TextField
+              id="steel-projectName" label="Project name"
+              value={projectData.projectName}
+              onChange={v => setProjectData(pd => ({ ...pd, projectName: v }))}
+            />
+          </div>
+          <div style={{ flex: 1 }}>
+            <TextField
+              id="steel-architecturalFirm" label="Architectural firm"
+              value={projectData.architecturalFirm}
+              onChange={v => setProjectData(pd => ({ ...pd, architecturalFirm: v }))}
+            />
+          </div>
+        </div>
       </Section>
     </div>
   );
@@ -677,7 +683,6 @@ export default function SteelDoorSpec({ onChangeProduct, modeSwitch, saveButton 
               projectData={projectData} setProjectData={setProjectData}
               specType={specType} setSpecType={setSpecType}
               markTouched={markTouched} errorFor={errorFor}
-              config={config} setQuantity={v => set("quantity", v)}
             />
           )}
           {currentStep === 4 && (
