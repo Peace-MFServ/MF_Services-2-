@@ -17,7 +17,7 @@ import { useState } from "react";
 
 export const PRODUCT_PHOTOS = {
   "riser-doors":      { src: "/products/riser.jpg",       position: "center 55%" },
-  "steel-doors":      { src: "/products/steel.jpg",       position: "center 32%" },
+  "steel-doors":      { src: "/products/steel.jpg",       position: "center 14%" },
   "swing-automation": { src: "/products/swing.jpg",       position: "center top" },
   "sliding-options":  { src: "/products/sliding.jpg",     position: "center" },
 };
