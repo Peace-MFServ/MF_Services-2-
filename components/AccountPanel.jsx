@@ -1,5 +1,5 @@
 'use client'
-import { useState, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "./AuthProvider";
 import { useProjects } from "./ProjectsProvider";
 import { authErrorMessage } from "../lib/firebase";
@@ -151,6 +151,59 @@ export function AccountPanel({ onDone, initialMode = MODES.SIGN_IN }) {
   );
 }
 
+/** Sign out, with one beat of hesitation — a stray click on a header
+ *  button should not dump anyone out of their session. */
+export function SignOutButton({ chip, signOut }) {
+  const [confirm, setConfirm] = useState(false);
+
+  useEffect(() => {
+    if (!confirm) return;
+    const onKey = e => { if (e.key === "Escape") setConfirm(false); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [confirm]);
+
+  return (
+    <div style={{ position: "relative" }}>
+      <button type="button" style={chip} onClick={() => setConfirm(c => !c)}>Sign out</button>
+      {confirm && (
+        <div style={{
+          position: "absolute", top: "calc(100% + 10px)", right: 0, zIndex: 60,
+          background: "#FFFFFF", border: `1px solid ${UI.ruleStrong}`,
+          padding: 14, width: 228, boxShadow: "0 6px 20px rgba(16,25,34,0.13)",
+          fontFamily: FONT,
+        }}>
+          <p style={{ margin: "0 0 12px", fontSize: 13, lineHeight: 1.5, color: UI.body }}>
+            Sign out of your account?
+          </p>
+          <div style={{ display: "flex", gap: 8 }}>
+            <button
+              type="button" onClick={() => { setConfirm(false); signOut(); }}
+              style={{
+                flex: 1, padding: "8px 12px", border: `1px solid ${UI.accent}`,
+                background: UI.accent, color: "#FFFFFF",
+                fontSize: 12.5, fontWeight: 600, fontFamily: FONT, cursor: "pointer",
+              }}
+            >
+              Sign out
+            </button>
+            <button
+              type="button" onClick={() => setConfirm(false)} autoFocus
+              style={{
+                flex: 1, padding: "8px 12px", border: `1px solid ${UI.ruleStrong}`,
+                background: "#FFFFFF", color: UI.body,
+                fontSize: 12.5, fontFamily: FONT, cursor: "pointer",
+              }}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 /** The account control in the page header. */
 export function AccountBar() {
   const { ready, signedIn, user, role, signOut, promptSignIn } = useAuth();
@@ -177,7 +230,7 @@ export function AccountBar() {
             </div>
           </div>
           <button type="button" style={chip} onClick={openPanel}>Your projects</button>
-          <button type="button" style={chip} onClick={() => signOut()}>Sign out</button>
+          <SignOutButton chip={chip} signOut={signOut} />
         </>
       ) : (
         <button type="button" style={chip} onClick={promptSignIn}>Sign in</button>
