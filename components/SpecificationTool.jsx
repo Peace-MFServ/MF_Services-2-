@@ -10,6 +10,7 @@ import { SaveProjectButton } from "./SavedProjects";
 import { writeWorkingState } from "../lib/projects";
 import { useProjects } from "./ProjectsProvider";
 import { PRODUCT_ART, CABLE_ART, CableSingleArt } from "./ProductIllustrations";
+import ProductPhoto, { PRODUCT_PHOTOS, CABLE_PHOTOS } from "./ProductPhoto";
 import { PRODUCT_TYPES } from "../lib/hardwareSpec";
 import { UI, FONT } from "../lib/theme";
 import ets73Single from "../data/cable-systems/ets73-single-leaf.json";
@@ -165,7 +166,7 @@ function Chooser({ onChoose }) {
           return (
             <Card
               key={pt.id}
-              art={Art ? <Art /> : null}
+              art={<ProductPhoto photo={PRODUCT_PHOTOS[pt.id]} fallback={Art ? <Art /> : null} />}
               label={pt.label}
               summary={pt.summary}
               comingSoon={!pt.available}
@@ -179,7 +180,10 @@ function Chooser({ onChoose }) {
         {CABLE_SYSTEMS.map(sys => (
           <Card
             key={sys.id}
-            art={(() => { const Art = CABLE_ART[sys.id]; return Art ? <Art /> : null; })()}
+            art={<ProductPhoto
+              photo={CABLE_PHOTOS[sys.id]}
+              fallback={(() => { const Art = CABLE_ART[sys.id]; return Art ? <Art /> : null; })()}
+            />}
             label={sys.label}
             summary={sys.summary}
             onSelect={() => onChoose({ kind: "cable", id: sys.id })}
@@ -188,7 +192,7 @@ function Chooser({ onChoose }) {
         {CABLE_COMING_SOON.map(sys => (
           <Card
             key={sys.id}
-            art={<CableSingleArt />}
+            art={<ProductPhoto photo={CABLE_PHOTOS[sys.id]} fallback={<CableSingleArt />} />}
             label={sys.label}
             summary={sys.summary}
             comingSoon
