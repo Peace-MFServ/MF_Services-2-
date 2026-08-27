@@ -816,7 +816,7 @@ function LockStep({ config, setConfig, leaves }) {
 function ProjectStep({ projectData, setProjectData, specType, setSpecType, markTouched, errorFor, config, setQuantity }) {
   return (
     <div style={{ padding: "20px 22px" }}>
-      <RailSection title="Specification type">
+      <RailSection title="Specification type & quantity">
         <div style={{ display: "flex", gap: 18, alignItems: "flex-end", flexWrap: "wrap" }}>
           <Segmented
             name="Specification type"
@@ -825,7 +825,7 @@ function ProjectStep({ projectData, setProjectData, specType, setSpecType, markT
             onChange={setSpecType}
           />
           <div style={{ flex: "0 0 190px" }}>
-            <Label htmlFor="pd-quantity">Number of doorsets</Label>
+            <Label htmlFor="pd-quantity">Quantity of doorsets</Label>
             <input
               id="pd-quantity" type="text" inputMode="numeric" value={config.quantity}
               onChange={e => setQuantity(e.target.value.replace(/\D/g, "").slice(0, 3))}

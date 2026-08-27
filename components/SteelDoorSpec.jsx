@@ -439,7 +439,7 @@ function HardwareStep({ config, set, hardware, errorFor }) {
 function ProjectStep({ projectData, setProjectData, specType, setSpecType, markTouched, errorFor, config, setQuantity }) {
   return (
     <div style={{ padding: "20px 22px" }}>
-      <Section title="Specification type" note={SPEC_TYPES.find(sp => sp.id === specType)?.summary}>
+      <Section title="Specification type & quantity" note={SPEC_TYPES.find(sp => sp.id === specType)?.summary}>
         <div style={{ display: "flex", gap: 18, alignItems: "flex-end", flexWrap: "wrap" }}>
           <Chips
             name="Specification type"
@@ -453,7 +453,7 @@ function ProjectStep({ projectData, setProjectData, specType, setSpecType, markT
               textTransform: "uppercase", color: UI.muted, fontFamily: FONT,
               marginBottom: 8, whiteSpace: "nowrap",
             }}>
-              Number of doorsets
+              Quantity of doorsets
             </label>
             <input
               id="steel-quantity" type="text" inputMode="numeric" value={config.quantity}

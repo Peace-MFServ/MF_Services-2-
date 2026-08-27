@@ -348,13 +348,13 @@ export default function QuickSpec({ productTypeId = "riser-doors", onChangeProdu
             <SectionTitle>Project</SectionTitle>
             <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
               <div style={{ display: "flex", gap: 22, flexWrap: "wrap", alignItems: "flex-end" }}>
-                <Field label="Specification type" width={230}>
+                <Field label="Specification type & quantity" width={250}>
                   <Chips
                     name="Specification type" value={specType} onChange={setSpecType}
                     options={SPEC_TYPES.map(sp => ({ value: sp.id, label: sp.label, title: sp.summary }))}
                   />
                 </Field>
-                <Field label="Number of doorsets" width={190}>
+                <Field label="Quantity of doorsets" width={190}>
                   <input
                     id="qs-quantity" type="text" inputMode="numeric" value={config.quantity}
                     onChange={e => set("quantity", e.target.value.replace(/\D/g, "").slice(0, 3))}
