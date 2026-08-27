@@ -9,7 +9,8 @@ its line drawing.
 | riser.jpg | Riser Doors |
 | steel.jpg | Steel Doors |
 | swing.jpg | Swing Automation |
-| cable-swing.jpg | Both ETS 73 cable plan cards |
+| cable-swing.jpg | ETS 73 single leaf cable card |
+| cable-double.jpg | ETS 73 double leaf cable card |
 | sliding.jpg | Sliding Options + sliding operator cable card — not yet supplied |
 | hold-open.jpg | Hold-open system cable card — not yet supplied |
 | hospital.jpg | in the folder, reserved for a hospital doors tile |

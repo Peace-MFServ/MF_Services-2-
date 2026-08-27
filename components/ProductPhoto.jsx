@@ -24,7 +24,7 @@ export const PRODUCT_PHOTOS = {
 
 export const CABLE_PHOTOS = {
   "ets73-single":     { src: "/products/cable-swing.jpg", position: "center 30%" },
-  "ets73-double":     { src: "/products/cable-swing.jpg", position: "center 30%" },
+  "ets73-double":     { src: "/products/cable-double.jpg", position: "center" },
   "hold-open":        { src: "/products/hold-open.jpg",   position: "center" },
   "sliding-operator": { src: "/products/sliding.jpg",     position: "center" },
 };
