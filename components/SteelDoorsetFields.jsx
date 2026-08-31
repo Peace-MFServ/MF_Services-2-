@@ -1,5 +1,6 @@
 'use client'
 import { UI, FONT, fieldStyle, cardStyle } from "../lib/theme";
+import { QS, CardTitle, ICONS } from "./quickSpecUI";
 import { mmDigits } from "./steelSpecState";
 import {
   fireRatings, leafCountsFor, highPerformanceAvailable,
@@ -49,7 +50,44 @@ export function Field({ label, children, width }) {
   );
 }
 
-export function Chips({ options, value, onChange, name }) {
+export function Chips({ options, value, onChange, name, segmented = false }) {
+  // Segmented renders the options as one joined control — the quick
+  // screens use it for short either/or questions. The default keeps
+  // the free-standing chips the pricer and longer option sets use.
+  if (segmented) {
+    return (
+      <div role="radiogroup" aria-label={name} style={{
+        display: "inline-flex", flexWrap: "wrap", maxWidth: "100%",
+        border: `1px solid #CBD5E1`, borderRadius: 6, overflow: "hidden",
+        background: UI.surface,
+      }}>
+        {options.map((opt, i) => {
+          const on = value === opt.value;
+          const disabled = !!opt.disabled;
+          return (
+            <button
+              key={String(opt.value)} type="button" role="radio" aria-checked={on}
+              disabled={disabled}
+              title={disabled ? opt.disabledReason : opt.title}
+              onClick={disabled ? undefined : () => onChange(opt.value)}
+              style={{
+                height: 38, padding: "0 14px", fontSize: 13, fontWeight: on ? 600 : 500,
+                fontFamily: FONT, border: "none", borderRadius: 0,
+                borderLeft: i > 0 ? `1px solid ${on ? UI.accent : "#D8E0EA"}` : "none",
+                background: on ? UI.accent : disabled ? UI.sunken : "transparent",
+                color: on ? "#FFFFFF" : disabled ? UI.muted : QS.ink,
+                cursor: disabled ? "not-allowed" : "pointer",
+                opacity: disabled ? 0.55 : 1, whiteSpace: "nowrap",
+              }}
+            >
+              {opt.label}
+              {opt.disabled && opt.disabledReason ? <span className="vh"> — {opt.disabledReason}</span> : null}
+            </button>
+          );
+        })}
+      </div>
+    );
+  }
   return (
     <div role="radiogroup" aria-label={name} style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
       {options.map(opt => {
@@ -79,12 +117,12 @@ export function Chips({ options, value, onChange, name }) {
   );
 }
 
-export function Input({ id, value, onChange, placeholder, type = "text" }) {
+export function Input({ id, value, onChange, placeholder, type = "text", tall = false }) {
   return (
     <input
       id={id} type={type} value={value || ""} placeholder={placeholder}
       onChange={e => onChange(e.target.value)}
-      style={{ ...fieldStyle, padding: "8px 10px", fontSize: 13 }} className="mf-field"
+      style={{ ...fieldStyle, padding: tall ? "10px 12px" : "8px 10px", fontSize: 13 }} className="mf-field"
     />
   );
 }
@@ -99,14 +137,14 @@ const HARDWARE_SECTIONS = [
   { title: "Sealing and thresholds", ids: ["dropSeal", "threshold", "dripCap"] },
 ];
 
-export function Select({ id, group, value, onChange }) {
+export function Select({ id, group, value, onChange, tall = false }) {
   const blocked = group.options.length === 0;
   return (
     <select className="mf-field"
       id={id} value={blocked ? "" : value || ""} disabled={blocked}
       onChange={e => onChange(e.target.value)}
       style={{
-        ...fieldStyle, padding: "8px 10px", fontSize: 13,
+        ...fieldStyle, padding: tall ? "10px 12px" : "8px 10px", fontSize: 13,
         background: blocked ? UI.sunken : UI.surface,
         color: blocked ? UI.muted : UI.ink,
         cursor: blocked ? "not-allowed" : "pointer",
@@ -166,9 +204,7 @@ function FrameGlyph({ id }) {
 // only; the pricer keeps its chips.
 function FrameCards({ frames, value, onChange }) {
   return (
-    <div role="radiogroup" aria-label="Frame" style={{
-      display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(178px, 1fr))", gap: 8,
-    }}>
+    <div role="radiogroup" aria-label="Frame" className="qs-frames">
       {frames.map(f => {
         const on = value === f.id;
         return (
@@ -176,23 +212,35 @@ function FrameCards({ frames, value, onChange }) {
             key={f.id} type="button" role="radio" aria-checked={on}
             onClick={() => onChange(f.id)}
             style={{
-              minHeight: 52, padding: "9px 12px", fontSize: 13, fontFamily: FONT,
+              position: "relative", minHeight: 58, padding: "9px 12px",
+              fontSize: 13, fontFamily: FONT,
               fontWeight: on ? 600 : 500, textAlign: "left", lineHeight: 1.35,
               display: "flex", alignItems: "center", gap: 10,
-              border: `1px solid ${on ? UI.accent : UI.ruleStrong}`,
-              background: on ? UI.accent : UI.surface,
-              color: on ? "#FFFFFF" : UI.ink, cursor: "pointer",
+              border: `1px solid ${on ? UI.accent : "#D8E0EA"}`,
+              boxShadow: on ? `inset 0 0 0 1px ${UI.accent}` : "none",
+              background: on ? QS.selected : UI.surface,
+              color: QS.ink, cursor: "pointer",
             }}
           >
             <span aria-hidden="true" style={{
               width: 32, height: 32, borderRadius: 6, flexShrink: 0,
               display: "grid", placeItems: "center",
-              background: on ? "rgba(255,255,255,0.18)" : "#EDF2F8",
-              color: on ? "#FFFFFF" : UI.accent,
+              background: on ? QS.tintOn : QS.tint, color: UI.accent,
             }}>
               <FrameGlyph id={f.id} />
             </span>
             {f.label}
+            {on && (
+              <span aria-hidden="true" style={{
+                position: "absolute", top: -7, right: -7,
+                width: 19, height: 19, borderRadius: "50%",
+                background: UI.accent, color: "#FFFFFF",
+                display: "grid", placeItems: "center",
+                border: "2px solid #FFFFFF",
+              }}>
+                {ICONS.check}
+              </span>
+            )}
           </button>
         );
       })}
@@ -210,85 +258,109 @@ export default function SteelDoorsetFields({ config, set, resolution, idPrefix =
   );
   const waiting = "Choose the doorset first";
 
-  // In cards layout every question pair sits on the same two-column
-  // grid, so answers line up from section to section instead of
-  // wrapping at whatever width the chips happen to have.
-  const sectionStyle = cards ? { ...cardStyle, marginBottom: 18 } : { marginBottom: 30 };
+  // In cards layout the questions sit on a shared three-column grid,
+  // so answers line up from section to section instead of wrapping at
+  // whatever width the chips happen to have. Short either/or questions
+  // render as one joined segmented control.
+  const sectionStyle = cards ? { ...cardStyle, marginBottom: 16 } : { marginBottom: 30 };
   const pairRow = cards
-    ? { display: "grid", gridTemplateColumns: "minmax(170px, 230px) 1fr", gap: "16px 26px", alignItems: "start" }
+    ? undefined
     : { display: "flex", gap: 22, flexWrap: "wrap" };
+  const Head = ({ icon, hint, children }) => cards
+    ? <CardTitle icon={icon} hint={hint}>{children}</CardTitle>
+    : <SectionTitle hint={hint}>{children}</SectionTitle>;
+
+  const fireRatedField = (
+    <Field label="Fire rated" width={cards ? undefined : 150}>
+      <Chips segmented={cards}
+        name="Fire rated" value={config.fireRated}
+        onChange={v => { set("fireRated", v); set("minutes", v ? null : 0); }}
+        options={[{ value: false, label: "No" }, { value: true, label: "Yes" }]}
+      />
+    </Field>
+  );
+  const howLongField = rated && (
+    <Field label="How long">
+      <Chips segmented={cards}
+        name="Fire rating" value={minutes} onChange={v => set("minutes", v)}
+        options={fireRatings().filter(m => m > 0).map(m => ({ value: m, label: `${m} min` }))}
+      />
+    </Field>
+  );
+  const leavesField = (
+    <Field label="Leaves" width={cards ? undefined : 150}>
+      <Chips segmented={cards}
+        name="Leaves" value={config.leaves} onChange={v => set("leaves", v)}
+        options={[1, 2].map(n => ({
+          value: n, label: n === 1 ? "Single" : "Double",
+          disabled: minutes == null || !leafOptions.includes(n),
+          disabledReason: minutes == null
+            ? "Answer the fire rating first"
+            : config.highPerformance
+              ? "Not made as High Performance at this rating"
+              : "Not made at this fire rating",
+        }))}
+      />
+    </Field>
+  );
+  const performanceField = (
+    <Field label="Performance">
+      <Chips segmented={cards}
+        name="Performance" value={config.highPerformance}
+        onChange={v => set("highPerformance", v)}
+        options={[
+          { value: false, label: "Standard" },
+          {
+            value: true, label: "High Performance",
+            title: "65 mm leaf, high-density mineral wool core, corrosion resistance to C5 Marine",
+            disabled: !config.leaves || !highPerformanceAvailable({ minutes, leaves: config.leaves }),
+            disabledReason: config.leaves ? "Not made above 60 minutes" : waiting,
+          },
+        ]}
+      />
+    </Field>
+  );
 
   return (
     <>
       <section style={sectionStyle}>
-        <SectionTitle hint="A fire rated doorset is classified for both integrity and insulation.">
+        <Head icon={ICONS.door} hint="A fire rated doorset is classified for both integrity and insulation.">
           Doorset
-        </SectionTitle>
-        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-          <div style={pairRow}>
-            <Field label="Fire rated" width={150}>
-              <Chips
-                name="Fire rated" value={config.fireRated}
-                onChange={v => { set("fireRated", v); set("minutes", v ? null : 0); }}
-                options={[{ value: false, label: "No" }, { value: true, label: "Yes" }]}
-              />
-            </Field>
-            {rated && (
-              <Field label="How long">
-                <Chips
-                  name="Fire rating" value={minutes} onChange={v => set("minutes", v)}
-                  options={fireRatings().filter(m => m > 0).map(m => ({ value: m, label: `${m} min` }))}
-                />
-              </Field>
-            )}
+        </Head>
+        {cards ? (
+          <div className="qs-3col">
+            {fireRatedField}
+            {howLongField}
+            {leavesField}
+            {performanceField}
           </div>
-
-          <div style={pairRow}>
-            <Field label="Leaves" width={150}>
-              <Chips
-                name="Leaves" value={config.leaves} onChange={v => set("leaves", v)}
-                options={[1, 2].map(n => ({
-                  value: n, label: n === 1 ? "Single" : "Double",
-                  disabled: minutes == null || !leafOptions.includes(n),
-                  disabledReason: minutes == null
-                    ? "Answer the fire rating first"
-                    : config.highPerformance
-                      ? "Not made as High Performance at this rating"
-                      : "Not made at this fire rating",
-                }))}
-              />
-            </Field>
-            <Field label="Performance">
-              <Chips
-                name="Performance" value={config.highPerformance}
-                onChange={v => set("highPerformance", v)}
-                options={[
-                  { value: false, label: "Standard" },
-                  {
-                    value: true, label: "High Performance",
-                    title: "65 mm leaf, high-density mineral wool core, corrosion resistance to C5 Marine",
-                    disabled: !config.leaves || !highPerformanceAvailable({ minutes, leaves: config.leaves }),
-                    disabledReason: config.leaves ? "Not made above 60 minutes" : waiting,
-                  },
-                ]}
-              />
-            </Field>
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            <div style={pairRow}>
+              {fireRatedField}
+              {howLongField}
+            </div>
+            <div style={pairRow}>
+              {leavesField}
+              {performanceField}
+            </div>
           </div>
-        </div>
+        )}
       </section>
 
       <section style={sectionStyle}>
-        <SectionTitle
+        <Head
+          icon={ICONS.opening}
           hint={limits
             ? `Approved from ${limits.minWidth} × ${limits.minHeight} mm to ${limits.maxWidth} × ${limits.maxHeight} mm.`
             : "The approved sizes follow from the doorset, where it goes and the frame."}
         >
           Opening
-        </SectionTitle>
+        </Head>
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-            <div style={pairRow}>
-              <Field label="Where it goes" width={220}>
-                <Chips
+            <div style={pairRow} className={cards ? "qs-3col" : undefined}>
+              <Field label="Where it goes" width={cards ? undefined : 220}>
+                <Chips segmented={cards}
                   name="Exposure" value={config.exposure} onChange={v => set("exposure", v)}
                   options={[
                     {
@@ -307,11 +379,28 @@ export default function SteelDoorsetFields({ config, set, resolution, idPrefix =
                 />
               </Field>
               <Field label="Handing">
-                <Chips
+                <Chips segmented={cards}
                   name="Handing" value={config.handing} onChange={v => set("handing", v)}
                   options={[{ value: "left", label: "Left hand" }, { value: "right", label: "Right hand" }]}
                 />
               </Field>
+              {cards && (
+                <Field label="Opening size (mm)">
+                  <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+                    <input
+                      id={`${idPrefix}-width`} aria-label="Width (mm)" placeholder="1000"
+                      value={config.width || ""} onChange={e => set("width", mmDigits(e.target.value))}
+                      style={{ ...fieldStyle, flex: "1 1 0", minWidth: 82, padding: "10px 12px", fontSize: 13 }} className="mf-field"
+                    />
+                    <span aria-hidden="true" style={{ color: QS.muted, fontSize: 13 }}>×</span>
+                    <input
+                      id={`${idPrefix}-height`} aria-label="Height (mm)" placeholder="2100"
+                      value={config.height || ""} onChange={e => set("height", mmDigits(e.target.value))}
+                      style={{ ...fieldStyle, flex: "1 1 0", minWidth: 82, padding: "10px 12px", fontSize: 13 }} className="mf-field"
+                    />
+                  </div>
+                </Field>
+              )}
             </div>
 
             <Field label="Frame">
@@ -331,24 +420,7 @@ export default function SteelDoorsetFields({ config, set, resolution, idPrefix =
               )}
             </Field>
 
-            {cards ? (
-              <Field label="Opening size (mm)">
-                <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-                  <input
-                    id={`${idPrefix}-width`} aria-label="Width (mm)" placeholder="1000"
-                    value={config.width || ""} onChange={e => set("width", mmDigits(e.target.value))}
-                    style={{ ...fieldStyle, width: 120, padding: "8px 10px", fontSize: 13 }} className="mf-field"
-                  />
-                  <span aria-hidden="true" style={{ color: UI.muted, fontSize: 13 }}>×</span>
-                  <input
-                    id={`${idPrefix}-height`} aria-label="Height (mm)" placeholder="2100"
-                    value={config.height || ""} onChange={e => set("height", mmDigits(e.target.value))}
-                    style={{ ...fieldStyle, width: 120, padding: "8px 10px", fontSize: 13 }} className="mf-field"
-                  />
-                  <span style={{ color: UI.muted, fontSize: 12.5 }}>width × height</span>
-                </div>
-              </Field>
-            ) : (
+            {!cards && (
               <div style={{ display: "flex", gap: 14, alignItems: "flex-start", flexWrap: "wrap" }}>
                 <Field label="Width (mm)" width={130}>
                   <Input id={`${idPrefix}-width`} value={config.width} onChange={v => set("width", mmDigits(v))} placeholder="1000" />
@@ -368,9 +440,9 @@ export default function SteelDoorsetFields({ config, set, resolution, idPrefix =
       </section>
 
       <section style={sectionStyle}>
-        <SectionTitle hint="Nothing is fitted unless you ask for it, apart from the lock, cylinder and hinges.">
+        <Head icon={ICONS.hardware} hint="Nothing is fitted unless you ask for it, apart from the lock, cylinder and hinges.">
           Hardware
-        </SectionTitle>
+        </Head>
 
           <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
             {HARDWARE_SECTIONS.map(section => {
@@ -391,13 +463,14 @@ export default function SteelDoorsetFields({ config, set, resolution, idPrefix =
                     {groups.map(g => (
                       <div key={g.id} style={cards ? { minWidth: 0 } : { flex: "1 1 220px", minWidth: 200, maxWidth: 320 }}>
                         <Field label={g.label}>
-                          <Select id={`${idPrefix}-${g.id}`} group={g} value={config[g.id]} onChange={v => set(g.id, v)} />
+                          <Select id={`${idPrefix}-${g.id}`} group={g} value={config[g.id]} onChange={v => set(g.id, v)} tall={cards} />
                           {hardwareNeedsText(config[g.id]) && (
                             <div style={{ marginTop: 8 }}>
                               <Input
                                 id={`${idPrefix}-${g.id}-text`} value={config[`${g.id}Text`]}
                                 onChange={v => set(`${g.id}Text`, v)}
                                 placeholder={`Describe the ${g.label.toLowerCase()} required`}
+                                tall={cards}
                               />
                             </div>
                           )}
@@ -417,7 +490,7 @@ export default function SteelDoorsetFields({ config, set, resolution, idPrefix =
               </div>
               <div style={{ maxWidth: 220 }}>
                 <Field label="Colour (RAL)">
-                  <Input id={`${idPrefix}-ral`} value={config.ral} onChange={v => set("ral", v)} placeholder="7016" />
+                  <Input id={`${idPrefix}-ral`} value={config.ral} onChange={v => set("ral", v)} placeholder="7016" tall={cards} />
                 </Field>
               </div>
             </div>
