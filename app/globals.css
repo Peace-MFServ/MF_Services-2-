@@ -30,6 +30,16 @@ body {
 }
 .mf-field:focus:not(:focus-visible) { outline: none; }
 
+/* ── Rounded variant ─────────────────────────────────────────
+   The quick specification screens use the softer, card-based
+   look: everything interactive inside a .mf-rounded wrapper gets
+   its corners rounded. Needs CSS because the chips, selects and
+   inputs are shared components that stay square elsewhere. */
+.mf-rounded .mf-field,
+.mf-rounded button {
+  border-radius: 6px;
+}
+
 /* ── Reduced motion ──────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

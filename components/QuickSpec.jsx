@@ -237,7 +237,7 @@ export default function QuickSpec({ productTypeId = "riser-doors", onChangeProdu
 
       {/* The questions and the sheet sit centred on a sunken canvas —
           a wall-to-wall form on a wide monitor reads worse, not better. */}
-      <div style={{ flex: 1, minHeight: 0, display: "flex", justifyContent: "center", overflow: "hidden", background: UI.sunken }}>
+      <div className="mf-rounded" style={{ flex: 1, minHeight: 0, display: "flex", justifyContent: "center", overflow: "hidden", background: UI.sunken }}>
 
         {/* ── The whole specification, one screen ── */}
         <div style={{ flex: "0 1 852px", minWidth: 0, overflowY: "auto", padding: "22px 26px 40px" }}>
@@ -394,7 +394,7 @@ export default function QuickSpec({ productTypeId = "riser-doors", onChangeProdu
         }}>
           <div style={{
             ...cardStyle, padding: 0, flex: 1, minHeight: 0,
-            display: "flex", flexDirection: "column",
+            display: "flex", flexDirection: "column", overflow: "hidden",
           }}>
           <div style={{ flex: 1, minHeight: 0, overflowY: "auto", padding: "20px 22px" }}>
             <SectionTitle>Specification</SectionTitle>

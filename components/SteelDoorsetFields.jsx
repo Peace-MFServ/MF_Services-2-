@@ -118,13 +118,56 @@ export function Select({ id, group, value, onChange }) {
   );
 }
 
+// A little section profile for each frame family, so the options read
+// at a glance: an L for corner, a box for block (smaller when small,
+// hatched when filled with plaster board, waved for mineral wool), a C
+// for embracing. Thermal variants carry a double slash — the thermal
+// break. Everything draws in currentColor so it inverts on selection.
+function FrameGlyph({ id }) {
+  const line = { fill: "none", stroke: "currentColor", strokeWidth: 1.6, strokeLinecap: "round", strokeLinejoin: "round" };
+  const thin = { ...line, strokeWidth: 1.2 };
+  const small = id.startsWith("block-small");
+  const plaster = id.includes("plaster");
+  const wool = id.includes("mineral-wool");
+  const thermal = id.includes("thermal");
+
+  let shape;
+  if (id.startsWith("corner")) {
+    shape = <path {...line} d="M8 4 V20 H20" />;
+  } else if (id.startsWith("embracing")) {
+    shape = <path {...line} d="M17 4 H7 V20 H17" />;
+  } else {
+    const r = small
+      ? { x: 7.5, y: 7.5, width: 9, height: 9 }
+      : { x: 5.5, y: 5.5, width: 13, height: 13 };
+    shape = (
+      <>
+        <rect {...line} {...r} />
+        {plaster && (
+          small
+            ? <path {...thin} d="M8.5 15 L15 8.5 M8.5 11 L11 8.5" />
+            : <path {...thin} d="M6.5 17 L17 6.5 M6.5 11.5 L11.5 6.5 M12 17.5 L17.5 12" />
+        )}
+        {wool && <path {...thin} d="M7.5 12 q1.6 -2.4 3.2 0 t3.2 0 t3.2 0" />}
+      </>
+    );
+  }
+
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+      {shape}
+      {thermal && <path {...thin} d="M15.5 2.5 L20 7 M18 1.5 L22.5 6" />}
+    </svg>
+  );
+}
+
 // Frame choices as equal-height cards — the labels run long, and a
 // row of chips of wildly different widths reads badly. Cards layout
 // only; the pricer keeps its chips.
 function FrameCards({ frames, value, onChange }) {
   return (
     <div role="radiogroup" aria-label="Frame" style={{
-      display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(158px, 1fr))", gap: 8,
+      display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(178px, 1fr))", gap: 8,
     }}>
       {frames.map(f => {
         const on = value === f.id;
@@ -133,13 +176,22 @@ function FrameCards({ frames, value, onChange }) {
             key={f.id} type="button" role="radio" aria-checked={on}
             onClick={() => onChange(f.id)}
             style={{
-              minHeight: 48, padding: "10px 12px", fontSize: 13, fontFamily: FONT,
+              minHeight: 52, padding: "9px 12px", fontSize: 13, fontFamily: FONT,
               fontWeight: on ? 600 : 500, textAlign: "left", lineHeight: 1.35,
+              display: "flex", alignItems: "center", gap: 10,
               border: `1px solid ${on ? UI.accent : UI.ruleStrong}`,
               background: on ? UI.accent : UI.surface,
               color: on ? "#FFFFFF" : UI.ink, cursor: "pointer",
             }}
           >
+            <span aria-hidden="true" style={{
+              width: 32, height: 32, borderRadius: 6, flexShrink: 0,
+              display: "grid", placeItems: "center",
+              background: on ? "rgba(255,255,255,0.18)" : "#EDF2F8",
+              color: on ? "#FFFFFF" : UI.accent,
+            }}>
+              <FrameGlyph id={f.id} />
+            </span>
             {f.label}
           </button>
         );
