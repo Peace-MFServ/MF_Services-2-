@@ -138,14 +138,16 @@ function Card({ art, label, summary, comingSoon, onSelect }) {
           </span>
         )}
       </div>
-      <div style={{ padding: "14px 16px 16px", flex: 1 }}>
+      {/* The name plate carries the brand navy — the one splash of
+          colour on the gallery, so the photos stay the hero. */}
+      <div style={{ padding: "14px 16px 16px", flex: 1, background: live ? UI.accent : "#5B6B7E" }}>
         <div style={{
           fontSize: 16, fontWeight: 600, letterSpacing: "-0.01em",
-          color: live ? UI.ink : UI.muted, lineHeight: 1.3,
+          color: "#FFFFFF", lineHeight: 1.3,
         }}>
           {label}
         </div>
-        <p style={{ margin: "6px 0 0", fontSize: 13, lineHeight: 1.5, color: UI.body }}>
+        <p style={{ margin: "6px 0 0", fontSize: 13, lineHeight: 1.5, color: "rgba(255,255,255,0.82)" }}>
           {summary}
         </p>
       </div>
