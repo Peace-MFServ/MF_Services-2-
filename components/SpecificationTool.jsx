@@ -13,6 +13,7 @@ import { PRODUCT_ART, CABLE_ART, CableSingleArt } from "./ProductIllustrations";
 import ProductPhoto, { PRODUCT_PHOTOS, CABLE_PHOTOS } from "./ProductPhoto";
 import { PRODUCT_TYPES } from "../lib/hardwareSpec";
 import { UI, FONT } from "../lib/theme";
+import { ICONS } from "./quickSpecUI";
 import ets73Single from "../data/cable-systems/ets73-single-leaf.json";
 import ets73Double from "../data/cable-systems/ets73-double-leaf.json";
 
@@ -100,7 +101,7 @@ function ModeSwitch({ mode, onChange, locked }) {
   );
 }
 
-function Card({ art, label, summary, comingSoon, onSelect }) {
+function Card({ art, label, summary, comingSoon, onSelect, icon }) {
   const [hover, setHover] = useState(false);
   const live = !comingSoon;
   const lift = live && hover;
@@ -123,7 +124,7 @@ function Card({ art, label, summary, comingSoon, onSelect }) {
       }}
     >
       <div style={{
-        position: "relative", width: "100%", aspectRatio: "4 / 3",
+        position: "relative", width: "100%", aspectRatio: "3 / 2",
         borderBottom: `1px solid ${UI.rule}`, background: "#F4F6F8",
         opacity: live ? 1 : 0.78,
       }}>
@@ -139,18 +140,38 @@ function Card({ art, label, summary, comingSoon, onSelect }) {
           </span>
         )}
       </div>
-      {/* The name plate carries the brand navy — the one splash of
-          colour on the gallery, so the photos stay the hero. */}
-      <div style={{ padding: "14px 16px 16px", flex: 1, background: live ? UI.accent : "#5B6B7E" }}>
-        <div style={{
-          fontSize: 16, fontWeight: 600, letterSpacing: "-0.01em",
-          color: "#FFFFFF", lineHeight: 1.3,
-        }}>
-          {label}
+      {/* The name plate carries the brand navy — icon badge, name and
+          summary, and a chevron saying it opens. */}
+      <div style={{
+        display: "flex", alignItems: "center", gap: 12,
+        padding: "12px 14px", flex: 1,
+        background: live ? UI.accent : "#5B6B7E",
+      }}>
+        {icon && (
+          <span aria-hidden="true" style={{
+            width: 40, height: 40, borderRadius: "50%", flexShrink: 0,
+            display: "grid", placeItems: "center",
+            background: "#FFFFFF", color: live ? UI.accent : "#5B6B7E",
+          }}>
+            {icon}
+          </span>
+        )}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{
+            fontSize: 15.5, fontWeight: 600, letterSpacing: "-0.01em",
+            color: "#FFFFFF", lineHeight: 1.3,
+          }}>
+            {label}
+          </div>
+          <p style={{ margin: "3px 0 0", fontSize: 12.5, lineHeight: 1.45, color: "rgba(255,255,255,0.82)" }}>
+            {summary}
+          </p>
         </div>
-        <p style={{ margin: "6px 0 0", fontSize: 13, lineHeight: 1.5, color: "rgba(255,255,255,0.82)" }}>
-          {summary}
-        </p>
+        {live && (
+          <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" style={{ flexShrink: 0, color: "#FFFFFF" }}>
+            <path fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" d="M9 6l6 6-6 6" />
+          </svg>
+        )}
       </div>
     </button>
   );
@@ -158,17 +179,17 @@ function Card({ art, label, summary, comingSoon, onSelect }) {
 
 function Group({ title, note, children }) {
   return (
-    <section style={{ marginBottom: 40 }}>
+    <section style={{ marginBottom: 24 }}>
       <h2 style={{
-        margin: "0 0 4px", fontSize: 13, fontWeight: 700, letterSpacing: "0.07em",
+        margin: "0 0 3px", fontSize: 13, fontWeight: 700, letterSpacing: "0.07em",
         textTransform: "uppercase", color: UI.ink, fontFamily: FONT,
       }}>
         {title}
       </h2>
-      <p style={{ margin: "0 0 18px", fontSize: 13.5, lineHeight: 1.5, color: UI.body, maxWidth: 620 }}>
+      <p style={{ margin: "0 0 12px", fontSize: 13, lineHeight: 1.5, color: UI.body, maxWidth: 620 }}>
         {note}
       </p>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(266px, 1fr))", gap: 18 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(266px, 1fr))", gap: 16 }}>
         {children}
       </div>
     </section>
@@ -177,15 +198,7 @@ function Group({ title, note, children }) {
 
 function Chooser({ onChoose }) {
   return (
-    <div style={{ padding: "36px 32px 48px", fontFamily: FONT }}>
-      <h2 style={{ margin: 0, fontSize: 28, fontWeight: 600, letterSpacing: "-0.02em", color: UI.ink, lineHeight: 1.2 }}>
-        What are you specifying?
-      </h2>
-      <p style={{ margin: "9px 0 34px", fontSize: 15, lineHeight: 1.55, color: UI.body, maxWidth: 620 }}>
-        Configure a doorset or the cabling for a door system, and take
-        the specification away as a PDF.
-      </p>
-
+    <div style={{ padding: "20px 32px 28px", fontFamily: FONT }}>
       <Group title="Doorsets" note="Fire-rated doorsets, specified against their approved sizes.">
         {PRODUCT_TYPES.map(pt => {
           const Art = PRODUCT_ART[pt.id];
@@ -195,6 +208,7 @@ function Chooser({ onChoose }) {
               art={<ProductPhoto photo={PRODUCT_PHOTOS[pt.id]} fallback={Art ? <Art /> : null} />}
               label={pt.label}
               summary={pt.summary}
+              icon={ICONS.door}
               comingSoon={!pt.available}
               onSelect={() => onChoose({ kind: "door", id: pt.id })}
             />
@@ -212,6 +226,7 @@ function Chooser({ onChoose }) {
             />}
             label={sys.label}
             summary={sys.summary}
+            icon={ICONS.gear}
             onSelect={() => onChoose({ kind: "cable", id: sys.id })}
           />
         ))}
@@ -221,6 +236,7 @@ function Chooser({ onChoose }) {
             art={<ProductPhoto photo={CABLE_PHOTOS[sys.id]} fallback={<CableSingleArt />} />}
             label={sys.label}
             summary={sys.summary}
+            icon={ICONS.gear}
             comingSoon
           />
         ))}
