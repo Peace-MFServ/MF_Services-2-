@@ -442,8 +442,14 @@ export default function CablePlanConfigurator({ startSystemId, onChangeSystem, s
             });
           }
           if (saved.projectData) setProjectData(pd => ({ ...pd, ...saved.projectData }));
-          if (typeof saved.currentStep === "number") setCurrentStep(saved.currentStep);
-          if (typeof saved.furthest === "number") setFurthest(saved.furthest);
+          // Embedded, the system was already chosen in the gallery —
+          // step 0 would ask for it a second time, so clamp past it.
+          if (typeof saved.currentStep === "number") {
+            setCurrentStep(embedded ? Math.max(1, saved.currentStep) : saved.currentStep);
+          }
+          if (typeof saved.furthest === "number") {
+            setFurthest(embedded ? Math.max(1, saved.furthest) : saved.furthest);
+          }
         }
       }
     } catch { /* corrupt or unavailable storage is not worth breaking the tool over */ }
