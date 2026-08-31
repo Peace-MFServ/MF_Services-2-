@@ -151,6 +151,25 @@ export function AccountPanel({ onDone, initialMode = MODES.SIGN_IN }) {
   );
 }
 
+// Small line icons for the header chips, drawn in currentColor so
+// they read in white on the navy bar.
+const chipStroke = { fill: "none", stroke: "currentColor", strokeWidth: 1.7, strokeLinecap: "round", strokeLinejoin: "round" };
+const FOLDER_ICON = (
+  <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
+    <path {...chipStroke} d="M3.5 6.5a2 2 0 0 1 2-2h4l2 2.5h7a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2V6.5z" />
+  </svg>
+);
+const SIGN_OUT_ICON = (
+  <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
+    <path {...chipStroke} d="M13.5 8V5.5h-8v13h8V16 M9.5 12h11 M17.5 9l3 3-3 3" />
+  </svg>
+);
+const SIGN_IN_ICON = (
+  <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
+    <path {...chipStroke} d="M10.5 8V5.5h8v13h-8V16 M3.5 12h10 M10.5 9l3 3-3 3" />
+  </svg>
+);
+
 /** Sign out, with one beat of hesitation — a stray click on a header
  *  button should not dump anyone out of their session. */
 export function SignOutButton({ chip, signOut }) {
@@ -165,7 +184,10 @@ export function SignOutButton({ chip, signOut }) {
 
   return (
     <div style={{ position: "relative" }}>
-      <button type="button" style={chip} onClick={() => setConfirm(c => !c)}>Sign out</button>
+      <button type="button" style={chip} onClick={() => setConfirm(c => !c)}>
+        <span aria-hidden="true" style={{ display: "inline-flex" }}>{SIGN_OUT_ICON}</span>
+        Sign out
+      </button>
       {confirm && (
         <div style={{
           position: "absolute", top: "calc(100% + 10px)", right: 0, zIndex: 60,
@@ -210,8 +232,10 @@ export function AccountBar() {
   const { openPanel } = useProjects();
 
   const chip = {
+    display: "inline-flex", alignItems: "center", gap: 7,
     padding: "6px 12px", fontSize: 12.5, fontFamily: FONT, fontWeight: 500,
     border: "1px solid rgba(255,255,255,0.45)", background: "transparent",
+    borderRadius: 6,
     color: "#FFFFFF", cursor: "pointer", whiteSpace: "nowrap",
   };
 
@@ -229,11 +253,17 @@ export function AccountBar() {
               {role === "staff" ? "MF Services" : "Signed in"}
             </div>
           </div>
-          <button type="button" style={chip} onClick={openPanel}>Your projects</button>
+          <button type="button" style={chip} onClick={openPanel}>
+            <span aria-hidden="true" style={{ display: "inline-flex" }}>{FOLDER_ICON}</span>
+            Your projects
+          </button>
           <SignOutButton chip={chip} signOut={signOut} />
         </>
       ) : (
-        <button type="button" style={chip} onClick={promptSignIn}>Sign in</button>
+        <button type="button" style={chip} onClick={promptSignIn}>
+          <span aria-hidden="true" style={{ display: "inline-flex" }}>{SIGN_IN_ICON}</span>
+          Sign in
+        </button>
       )}
 
     </div>

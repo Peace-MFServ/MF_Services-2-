@@ -41,8 +41,17 @@ export default function Home() {
 
 function Toolbox() {
   const [activeTab, setActiveTab] = useState('specification')
+  // Bumped when the logo is clicked: remounts the specification tool
+  // so it forgets its selection and shows the front door again.
+  const [homeNonce, setHomeNonce] = useState(0)
   const { isStaff } = useAuth()
   const tabs = TABS.filter(t => !t.staffOnly || isStaff)
+
+  const goHome = () => {
+    try { window.sessionStorage.removeItem('mf-specification-tool-selection') } catch { /* best-effort */ }
+    setActiveTab('specification')
+    setHomeNonce(n => n + 1)
+  }
 
   // Losing the role mid-session should not leave you looking at a tab
   // that is no longer yours.
@@ -59,7 +68,12 @@ function Toolbox() {
           the brand keeps its navy with the orange ruled beneath. */}
       <header className="mf-nav">
         <div className="mf-nav-inner">
-          <img src="/linkedin.jpg" alt="MF Services" width={925} height={184} style={{ height: 30, width: 'auto', borderRadius: 3, flexShrink: 0 }} />
+          <button
+            type="button" onClick={goHome} aria-label="Home"
+            style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', flexShrink: 0, display: 'flex' }}
+          >
+            <img src="/linkedin.jpg" alt="MF Services" width={925} height={184} style={{ height: 30, width: 'auto', borderRadius: 3 }} />
+          </button>
           <div style={{ flexShrink: 0 }}>
             <h1 style={{ color: '#FFFFFF', fontWeight: 700, fontSize: 13.5, letterSpacing: '-0.01em', lineHeight: 1.2 }}>MF Services</h1>
             <div style={{ color: 'rgba(255,255,255,0.74)', fontSize: 10.5, letterSpacing: '0.03em' }}>Door Systems Toolbox</div>
@@ -87,7 +101,7 @@ function Toolbox() {
         margin: '0 auto',
         padding: '32px',
       }}>
-        {activeTab === 'specification' && <SpecificationTool />}
+        {activeTab === 'specification' && <SpecificationTool key={homeNonce} />}
         {activeTab === 'overpressure'  && <OverpressureCalculator />}
         {activeTab === 'pricer'        && <Pricer />}
       </div>
