@@ -36,9 +36,9 @@ export function SectionTitle({ children, hint }) {
   );
 }
 
-export function Field({ label, children, width }) {
+export function Field({ label, children, width, auto }) {
   return (
-    <div style={{ minWidth: 0, flex: width ? `0 0 ${width}px` : "1 1 0" }}>
+    <div style={{ minWidth: 0, flex: width ? `0 0 ${width}px` : auto ? "0 1 auto" : "1 1 0" }}>
       <div style={{
         fontSize: 11, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase",
         color: UI.muted, marginBottom: 6,
@@ -271,7 +271,7 @@ export default function SteelDoorsetFields({ config, set, resolution, idPrefix =
     : <SectionTitle hint={hint}>{children}</SectionTitle>;
 
   const fireRatedField = (
-    <Field label="Fire rated" width={cards ? undefined : 150}>
+    <Field label="Fire rated" width={cards ? undefined : 150} auto={cards}>
       <Chips segmented={cards}
         name="Fire rated" value={config.fireRated}
         onChange={v => { set("fireRated", v); set("minutes", v ? null : 0); }}
@@ -280,7 +280,7 @@ export default function SteelDoorsetFields({ config, set, resolution, idPrefix =
     </Field>
   );
   const howLongField = rated && (
-    <Field label="How long">
+    <Field label="How long" auto={cards}>
       <Chips segmented={cards}
         name="Fire rating" value={minutes} onChange={v => set("minutes", v)}
         options={fireRatings().filter(m => m > 0).map(m => ({ value: m, label: `${m} min` }))}
@@ -288,7 +288,7 @@ export default function SteelDoorsetFields({ config, set, resolution, idPrefix =
     </Field>
   );
   const leavesField = (
-    <Field label="Leaves" width={cards ? undefined : 150}>
+    <Field label="Leaves" width={cards ? undefined : 150} auto={cards}>
       <Chips segmented={cards}
         name="Leaves" value={config.leaves} onChange={v => set("leaves", v)}
         options={[1, 2].map(n => ({
@@ -304,7 +304,7 @@ export default function SteelDoorsetFields({ config, set, resolution, idPrefix =
     </Field>
   );
   const performanceField = (
-    <Field label="Performance">
+    <Field label="Performance" auto={cards}>
       <Chips segmented={cards}
         name="Performance" value={config.highPerformance}
         onChange={v => set("highPerformance", v)}
@@ -328,7 +328,7 @@ export default function SteelDoorsetFields({ config, set, resolution, idPrefix =
           Doorset
         </Head>
         {cards ? (
-          <div className="qs-3col">
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "16px 32px", alignItems: "flex-start" }}>
             {fireRatedField}
             {howLongField}
             {leavesField}
