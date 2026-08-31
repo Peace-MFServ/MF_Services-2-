@@ -288,7 +288,8 @@ export default function SpecificationTool() {
   }
 
   if (effectiveMode === "quick") {
-    return <QuickSpec productTypeId={selection.id} onChangeProduct={clear} modeSwitch={modeSwitch} />;
+    const plainSwitch = <ModeSwitch mode={effectiveMode} onChange={chooseMode} locked={ready && !signedIn} />;
+    return <QuickSpec productTypeId={selection.id} onChangeProduct={clear} modeSwitch={plainSwitch} saveButton={saveButton} />;
   }
   return <SpecGenerator startProductId={selection.id} onChangeProduct={clear} modeSwitch={modeSwitch} />;
 }

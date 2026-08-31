@@ -4,8 +4,7 @@ import { useSteelSpecState } from "./steelSpecState";
 import { describeSteelDoor, steelSpecRows } from "../lib/steelDoor";
 import { SPEC_TYPES } from "../lib/hardwareSpec";
 import SteelDoorsetFields, { Field, Chips, Input } from "./SteelDoorsetFields";
-import { QS, CardTitle, ICONS, groupSheetRows } from "./quickSpecUI";
-import BackArrow from "./BackArrow";
+import { QS, CardTitle, ICONS, groupSheetRows, QuickHeader } from "./quickSpecUI";
 
 // ─────────────────────────────────────────────────────────────────
 // Steel doorsets — quick specification
@@ -31,21 +30,6 @@ const SHEET_GROUPS = [
   { title: "Hardware", icon: ICONS.hardware, labels: null },
 ];
 
-function HeaderButton({ onClick, children }) {
-  return (
-    <button
-      type="button" onClick={onClick}
-      style={{
-        padding: "8px 14px", fontSize: 12.5, fontFamily: FONT, fontWeight: 500,
-        border: "1px solid #CBD5E1", background: UI.surface, color: UI.body,
-        cursor: "pointer", whiteSpace: "nowrap",
-      }}
-    >
-      {children}
-    </button>
-  );
-}
-
 export default function SteelQuickSpec({ onChangeProduct, modeSwitch, saveButton }) {
   const {
     config, set, specType, setSpecType, projectData, setProjectData,
@@ -64,24 +48,11 @@ export default function SteelQuickSpec({ onChangeProduct, modeSwitch, saveButton
     }}>
       <div className="qs-page">
 
-        {/* ── Header ── */}
-        <div style={{
-          display: "flex", alignItems: "center", justifyContent: "space-between",
-          gap: 16, flexWrap: "wrap", marginBottom: 20,
-        }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
-            <BackArrow onClick={onChangeProduct} label="Change product" />
-            <h2 style={{ margin: 0, fontSize: 26, fontWeight: 700, letterSpacing: "-0.015em", color: QS.ink }}>
-              Steel Doors
-            </h2>
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-            {modeSwitch}
-            {saveButton}
-            <HeaderButton onClick={onChangeProduct}>Change product</HeaderButton>
-            <HeaderButton onClick={startOver}>Start over</HeaderButton>
-          </div>
-        </div>
+        <QuickHeader
+          title="Steel Doors"
+          onChangeProduct={onChangeProduct} onStartOver={startOver}
+          modeSwitch={modeSwitch} saveButton={saveButton}
+        />
 
         <div className="qs-grid">
 

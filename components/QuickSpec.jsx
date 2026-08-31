@@ -1,10 +1,9 @@
 'use client'
 import { useState, useCallback, useEffect } from "react";
 import { generateHardwareSpecPDF } from "../lib/generateHardwareSpecPDF";
-import BackArrow from "./BackArrow";
 import { UI, FONT, fieldStyle, cardStyle } from "../lib/theme";
 import { Field, Chips, Input } from "./SteelDoorsetFields";
-import { QS, CardTitle, ICONS, groupSheetRows } from "./quickSpecUI";
+import { QS, CardTitle, ICONS, groupSheetRows, QuickHeader } from "./quickSpecUI";
 import {
   SPEC_TYPES, CHRISTO, getProduct,
   buildInitialConfig, resolveProduct, validateSpec, specRows,
@@ -36,23 +35,7 @@ const SHEET_GROUPS = [
   { title: "Lock & key", icon: ICONS.key, labels: null },
 ];
 
-/** Header action, styled to match the layout switch beside it. */
-function HeaderButton({ onClick, children }) {
-  return (
-    <button
-      type="button" onClick={onClick}
-      style={{
-        padding: "8px 14px", fontSize: 12.5, fontFamily: FONT, fontWeight: 500,
-        border: "1px solid #CBD5E1", background: UI.surface, color: UI.body,
-        cursor: "pointer", whiteSpace: "nowrap",
-      }}
-    >
-      {children}
-    </button>
-  );
-}
-
-export default function QuickSpec({ productTypeId = "riser-doors", onChangeProduct, modeSwitch }) {
+export default function QuickSpec({ productTypeId = "riser-doors", onChangeProduct, modeSwitch, saveButton }) {
   const product = getProduct(productTypeId);
 
   const [config, setConfig] = useState(() => buildInitialConfig(product));
@@ -153,23 +136,11 @@ export default function QuickSpec({ productTypeId = "riser-doors", onChangeProdu
     }}>
       <div className="qs-page">
 
-        {/* ── Header ── */}
-        <div style={{
-          display: "flex", alignItems: "center", justifyContent: "space-between",
-          gap: 16, flexWrap: "wrap", marginBottom: 20,
-        }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
-            <BackArrow onClick={onChangeProduct} label="Change product" />
-            <h2 style={{ margin: 0, fontSize: 26, fontWeight: 700, letterSpacing: "-0.015em", color: QS.ink }}>
-              {product.label}
-            </h2>
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-            {modeSwitch}
-            <HeaderButton onClick={onChangeProduct}>Change product</HeaderButton>
-            <HeaderButton onClick={startOver}>Start over</HeaderButton>
-          </div>
-        </div>
+        <QuickHeader
+          title={product.label}
+          onChangeProduct={onChangeProduct} onStartOver={startOver}
+          modeSwitch={modeSwitch} saveButton={saveButton}
+        />
 
         <div className="qs-grid">
 

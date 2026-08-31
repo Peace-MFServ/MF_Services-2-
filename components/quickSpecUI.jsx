@@ -1,5 +1,6 @@
 'use client'
 import { UI, FONT } from "../lib/theme";
+import BackArrow from "./BackArrow";
 
 // ─────────────────────────────────────────────────────────────────
 // Quick specification — interface language
@@ -77,7 +78,68 @@ export const ICONS = {
       <path fill="none" stroke="currentColor" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round" d="M20 6 9 17l-5-5" />
     </svg>
   ),
+  box: (
+    <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true">
+      <path {...stroke} d="M12 3 20 7.5v9L12 21 4 16.5v-9L12 3z M4 7.5 12 12l8-4.5 M12 12v9" />
+    </svg>
+  ),
+  restart: (
+    <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true">
+      <path {...stroke} d="M20 11a8 8 0 1 0-2.3 6.3 M20 4v7h-7" />
+    </svg>
+  ),
 };
+
+function HeaderButton({ onClick, icon, children }) {
+  return (
+    <button
+      type="button" onClick={onClick}
+      style={{
+        display: "inline-flex", alignItems: "center", gap: 8,
+        padding: "8px 14px", fontSize: 12.5, fontFamily: FONT, fontWeight: 500,
+        border: "1px solid #CBD5E1", background: UI.surface, color: UI.body,
+        cursor: "pointer", whiteSpace: "nowrap",
+      }}
+    >
+      <span aria-hidden="true" style={{ display: "inline-flex", color: UI.accent }}>{icon}</span>
+      {children}
+    </button>
+  );
+}
+
+/**
+ * The header both quick screens share: back arrow and product title
+ * with the actions beside them, and the guided/quick switch sitting
+ * under the title where the eye starts, not lost among the buttons.
+ */
+export function QuickHeader({ title, onChangeProduct, onStartOver, modeSwitch, saveButton }) {
+  return (
+    <div style={{ marginBottom: 20 }}>
+      <div style={{
+        display: "flex", alignItems: "center", justifyContent: "space-between",
+        gap: 16, flexWrap: "wrap",
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
+          <BackArrow onClick={onChangeProduct} label="Change product" />
+          <h2 style={{ margin: 0, fontSize: 26, fontWeight: 700, letterSpacing: "-0.015em", color: QS.ink, fontFamily: FONT }}>
+            {title}
+          </h2>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+          {saveButton}
+          <HeaderButton onClick={onChangeProduct} icon={ICONS.box}>Change product</HeaderButton>
+          <HeaderButton onClick={onStartOver} icon={ICONS.restart}>Start over</HeaderButton>
+        </div>
+      </div>
+      {modeSwitch && (
+        <div style={{ marginTop: 14 }}>
+          <div style={{ fontSize: 12.5, color: QS.muted, marginBottom: 6 }}>Configuration mode</div>
+          {modeSwitch}
+        </div>
+      )}
+    </div>
+  );
+}
 
 /** Prominent card heading: tinted icon square, 20px title, muted hint. */
 export function CardTitle({ icon, children, hint }) {
