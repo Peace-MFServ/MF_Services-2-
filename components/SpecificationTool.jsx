@@ -13,7 +13,6 @@ import { PRODUCT_ART, CABLE_ART, CableSingleArt } from "./ProductIllustrations";
 import ProductPhoto, { PRODUCT_PHOTOS, CABLE_PHOTOS } from "./ProductPhoto";
 import { PRODUCT_TYPES } from "../lib/hardwareSpec";
 import { UI, FONT } from "../lib/theme";
-import { ICONS } from "./quickSpecUI";
 import ets73Single from "../data/cable-systems/ets73-single-leaf.json";
 import ets73Double from "../data/cable-systems/ets73-double-leaf.json";
 
@@ -101,7 +100,17 @@ function ModeSwitch({ mode, onChange, locked }) {
   );
 }
 
-function Card({ art, label, summary, comingSoon, onSelect, icon }) {
+// The badge glyph — a door standing ajar in its frame, drawn to read
+// inside the round badge on every gallery card.
+const doorStroke = { fill: "none", stroke: "currentColor", strokeWidth: 1.6, strokeLinecap: "round", strokeLinejoin: "round" };
+const DOOR_GLYPH = (
+  <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
+    <path {...doorStroke} d="M3 20.5h18 M5.5 20.5V4h9v16.5 M14.5 4l4.5 2.2v14.3" />
+    <circle cx="17" cy="13.2" r="0.9" fill="currentColor" stroke="none" />
+  </svg>
+);
+
+function Card({ art, label, summary, comingSoon, onSelect }) {
   const [hover, setHover] = useState(false);
   const live = !comingSoon;
   const lift = live && hover;
@@ -115,8 +124,9 @@ function Card({ art, label, summary, comingSoon, onSelect, icon }) {
       style={{
         display: "flex", flexDirection: "column", textAlign: "left", padding: 0,
         fontFamily: FONT, background: UI.surface,
-        border: `1px solid ${lift ? UI.ruleStrong : UI.rule}`,
-        borderRadius: 6,
+        border: `1px solid ${lift ? UI.ruleStrong : "#D8E0EA"}`,
+        borderRadius: 10,
+        boxShadow: "0 2px 8px rgba(15, 23, 42, 0.04)",
         cursor: live ? "pointer" : "not-allowed",
         transition: "border-color 120ms, transform 120ms",
         transform: lift ? "translateY(-2px)" : "none",
@@ -124,8 +134,8 @@ function Card({ art, label, summary, comingSoon, onSelect, icon }) {
       }}
     >
       <div style={{
-        position: "relative", width: "100%", aspectRatio: "3 / 2",
-        borderBottom: `1px solid ${UI.rule}`, background: "#F4F6F8",
+        position: "relative", width: "100%", height: 240, flexShrink: 0,
+        background: "#F4F6F8",
         opacity: live ? 1 : 0.78,
       }}>
         {art}
@@ -133,42 +143,46 @@ function Card({ art, label, summary, comingSoon, onSelect, icon }) {
           <span style={{
             position: "absolute", top: 10, right: 10,
             background: UI.ink, color: "#FFFFFF",
-            fontSize: 10.5, fontWeight: 700, letterSpacing: "0.07em", textTransform: "uppercase",
+            fontSize: 11, fontWeight: 700, letterSpacing: "0.07em", textTransform: "uppercase",
             padding: "4px 8px",
           }}>
             Coming soon
           </span>
         )}
       </div>
-      {/* The name plate carries the brand navy — icon badge, name and
-          summary, and a chevron saying it opens. */}
+      {/* The white panel floats up over the photo, and the badge
+          floats up again over both — the mf navy lives in the icon,
+          the name and the chevron rather than a solid plate. */}
       <div style={{
-        display: "flex", alignItems: "center", gap: 12,
-        padding: "12px 14px", flex: 1,
-        background: live ? UI.accent : "#5B6B7E",
+        position: "relative", marginTop: -12, flex: 1,
+        display: "flex", alignItems: "flex-start", gap: 13,
+        padding: "14px 18px 15px",
+        background: UI.surface, borderRadius: "10px 10px 0 0",
       }}>
-        {icon && (
-          <span aria-hidden="true" style={{
-            width: 40, height: 40, borderRadius: "50%", flexShrink: 0,
-            display: "grid", placeItems: "center",
-            background: "#FFFFFF", color: live ? UI.accent : "#5B6B7E",
-          }}>
-            {icon}
-          </span>
-        )}
+        <span aria-hidden="true" style={{
+          width: 48, height: 48, borderRadius: "50%", flexShrink: 0,
+          marginTop: -28,
+          display: "grid", placeItems: "center",
+          background: "#FFFFFF", border: "1px solid #D8E0EA",
+          boxShadow: "0 2px 6px rgba(15, 23, 42, 0.08)",
+          color: live ? UI.accent : UI.muted,
+        }}>
+          {DOOR_GLYPH}
+        </span>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{
-            fontSize: 15.5, fontWeight: 600, letterSpacing: "-0.01em",
-            color: "#FFFFFF", lineHeight: 1.3,
+            fontSize: 17, fontWeight: 700, letterSpacing: "-0.01em",
+            color: live ? UI.accent : UI.muted, lineHeight: 1.25,
           }}>
             {label}
           </div>
-          <p style={{ margin: "3px 0 0", fontSize: 12.5, lineHeight: 1.45, color: "rgba(255,255,255,0.82)" }}>
+          <p style={{ margin: "4px 0 0", fontSize: 13, lineHeight: 1.45, color: UI.body }}>
             {summary}
           </p>
         </div>
         {live && (
-          <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" style={{ flexShrink: 0, color: "#FFFFFF" }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"
+            style={{ flexShrink: 0, color: UI.accent, alignSelf: "center" }}>
             <path fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" d="M9 6l6 6-6 6" />
           </svg>
         )}
@@ -179,14 +193,14 @@ function Card({ art, label, summary, comingSoon, onSelect, icon }) {
 
 function Group({ title, note, children }) {
   return (
-    <section style={{ marginBottom: 24 }}>
+    <section style={{ marginBottom: 38 }}>
       <h2 style={{
         margin: "0 0 3px", fontSize: 13, fontWeight: 700, letterSpacing: "0.07em",
         textTransform: "uppercase", color: UI.ink, fontFamily: FONT,
       }}>
         {title}
       </h2>
-      <p style={{ margin: "0 0 12px", fontSize: 13, lineHeight: 1.5, color: UI.body, maxWidth: 620 }}>
+      <p style={{ margin: "0 0 18px", fontSize: 13, lineHeight: 1.5, color: UI.body, maxWidth: 620 }}>
         {note}
       </p>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(266px, 1fr))", gap: 16 }}>
@@ -208,7 +222,6 @@ function Chooser({ onChoose }) {
               art={<ProductPhoto photo={PRODUCT_PHOTOS[pt.id]} fallback={Art ? <Art /> : null} />}
               label={pt.label}
               summary={pt.summary}
-              icon={ICONS.door}
               comingSoon={!pt.available}
               onSelect={() => onChoose({ kind: "door", id: pt.id })}
             />
@@ -226,7 +239,6 @@ function Chooser({ onChoose }) {
             />}
             label={sys.label}
             summary={sys.summary}
-            icon={ICONS.gear}
             onSelect={() => onChoose({ kind: "cable", id: sys.id })}
           />
         ))}
@@ -236,7 +248,6 @@ function Chooser({ onChoose }) {
             art={<ProductPhoto photo={CABLE_PHOTOS[sys.id]} fallback={<CableSingleArt />} />}
             label={sys.label}
             summary={sys.summary}
-            icon={ICONS.gear}
             comingSoon
           />
         ))}
