@@ -1,5 +1,5 @@
 'use client'
-import { UI, FONT, fieldStyle } from "../lib/theme";
+import { UI, FONT, fieldStyle, cardStyle } from "../lib/theme";
 import { useSteelSpecState } from "./steelSpecState";
 import { describeSteelDoor, steelSpecRows } from "../lib/steelDoor";
 import { SPEC_TYPES } from "../lib/hardwareSpec";
@@ -80,16 +80,18 @@ export default function SteelQuickSpec({ onChangeProduct, modeSwitch, saveButton
         </div>
       </header>
 
-      <div style={{ flex: 1, minHeight: 0, display: "flex", overflow: "hidden" }}>
+      {/* The questions and the sheet sit centred on a sunken canvas —
+          a wall-to-wall form on a wide monitor reads worse, not better. */}
+      <div style={{ flex: 1, minHeight: 0, display: "flex", justifyContent: "center", overflow: "hidden", background: UI.sunken }}>
 
         {/* ── The whole specification, one screen ── */}
-        <div style={{ flex: 1, minWidth: 0, overflowY: "auto", padding: "22px 26px 40px" }}>
+        <div style={{ flex: "0 1 852px", minWidth: 0, overflowY: "auto", padding: "22px 26px 40px" }}>
 
           <SteelDoorsetFields
-            config={config} set={set} resolution={resolution} idPrefix="sq"
+            config={config} set={set} resolution={resolution} idPrefix="sq" cards
           />
 
-          <section>
+          <section style={cardStyle}>
             <SectionTitle>Project</SectionTitle>
             <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
               <div style={{ display: "flex", gap: 22, flexWrap: "wrap", alignItems: "flex-end" }}>
@@ -121,9 +123,14 @@ export default function SteelQuickSpec({ onChangeProduct, modeSwitch, saveButton
 
         {/* ── Live sheet, always in view ── */}
         <aside style={{
-          width: 372, flexShrink: 0, borderLeft: `1px solid ${UI.ruleStrong}`,
-          display: "flex", flexDirection: "column", minHeight: 0, background: UI.sunken,
+          width: 372, flexShrink: 0,
+          display: "flex", flexDirection: "column", minHeight: 0,
+          padding: "22px 26px 22px 0",
         }}>
+          <div style={{
+            ...cardStyle, padding: 0, flex: 1, minHeight: 0,
+            display: "flex", flexDirection: "column",
+          }}>
           <div style={{ flex: 1, minHeight: 0, overflowY: "auto", padding: "20px 22px" }}>
             <SectionTitle>Specification</SectionTitle>
             {rows.length === 0 ? (
@@ -148,7 +155,7 @@ export default function SteelQuickSpec({ onChangeProduct, modeSwitch, saveButton
             )}
           </div>
 
-          <div style={{ borderTop: `1px solid ${UI.ruleStrong}`, padding: "16px 22px 20px", flexShrink: 0, background: UI.surface }}>
+          <div style={{ borderTop: `1px solid ${UI.rule}`, padding: "16px 22px 20px", flexShrink: 0 }}>
             {validation.errors.length > 0 && (
               <ul style={{ margin: "0 0 12px", padding: 0, listStyle: "none" }}>
                 {validation.errors.slice(0, 4).map((e, i) => (
@@ -182,6 +189,7 @@ export default function SteelQuickSpec({ onChangeProduct, modeSwitch, saveButton
                 {notice.text}
               </p>
             )}
+          </div>
           </div>
         </aside>
       </div>

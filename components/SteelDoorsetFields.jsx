@@ -1,5 +1,5 @@
 'use client'
-import { UI, FONT, fieldStyle } from "../lib/theme";
+import { UI, FONT, fieldStyle, cardStyle } from "../lib/theme";
 import { mmDigits } from "./steelSpecState";
 import {
   fireRatings, leafCountsFor, highPerformanceAvailable,
@@ -62,10 +62,10 @@ export function Chips({ options, value, onChange, name }) {
             title={disabled ? opt.disabledReason : opt.title}
             onClick={disabled ? undefined : () => onChange(opt.value)}
             style={{
-              padding: "7px 12px", fontSize: 13, fontWeight: on ? 600 : 400, fontFamily: FONT,
+              padding: "7px 12px", fontSize: 13, fontWeight: on ? 600 : 500, fontFamily: FONT,
               border: `1px solid ${on ? UI.accent : UI.ruleStrong}`,
               background: on ? UI.accent : disabled ? UI.sunken : UI.surface,
-              color: on ? "#FFFFFF" : disabled ? UI.muted : UI.body,
+              color: on ? "#FFFFFF" : disabled ? UI.muted : UI.ink,
               cursor: disabled ? "not-allowed" : "pointer",
               opacity: disabled ? 0.5 : 1, whiteSpace: "nowrap",
             }}
@@ -118,7 +118,37 @@ export function Select({ id, group, value, onChange }) {
   );
 }
 
-export default function SteelDoorsetFields({ config, set, resolution, idPrefix = "ds" }) {
+// Frame choices as equal-height cards — the labels run long, and a
+// row of chips of wildly different widths reads badly. Cards layout
+// only; the pricer keeps its chips.
+function FrameCards({ frames, value, onChange }) {
+  return (
+    <div role="radiogroup" aria-label="Frame" style={{
+      display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(158px, 1fr))", gap: 8,
+    }}>
+      {frames.map(f => {
+        const on = value === f.id;
+        return (
+          <button
+            key={f.id} type="button" role="radio" aria-checked={on}
+            onClick={() => onChange(f.id)}
+            style={{
+              minHeight: 48, padding: "10px 12px", fontSize: 13, fontFamily: FONT,
+              fontWeight: on ? 600 : 500, textAlign: "left", lineHeight: 1.35,
+              border: `1px solid ${on ? UI.accent : UI.ruleStrong}`,
+              background: on ? UI.accent : UI.surface,
+              color: on ? "#FFFFFF" : UI.ink, cursor: "pointer",
+            }}
+          >
+            {f.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+export default function SteelDoorsetFields({ config, set, resolution, idPrefix = "ds", cards = false }) {
   const rated = config.fireRated === true;
   const minutes = config.minutes;
   const leafOptions = minutes == null ? [] : leafCountsFor({ minutes, highPerformance: config.highPerformance });
@@ -128,14 +158,22 @@ export default function SteelDoorsetFields({ config, set, resolution, idPrefix =
   );
   const waiting = "Choose the doorset first";
 
+  // In cards layout every question pair sits on the same two-column
+  // grid, so answers line up from section to section instead of
+  // wrapping at whatever width the chips happen to have.
+  const sectionStyle = cards ? { ...cardStyle, marginBottom: 18 } : { marginBottom: 30 };
+  const pairRow = cards
+    ? { display: "grid", gridTemplateColumns: "minmax(170px, 230px) 1fr", gap: "16px 26px", alignItems: "start" }
+    : { display: "flex", gap: 22, flexWrap: "wrap" };
+
   return (
     <>
-      <section style={{ marginBottom: 30 }}>
+      <section style={sectionStyle}>
         <SectionTitle hint="A fire rated doorset is classified for both integrity and insulation.">
           Doorset
         </SectionTitle>
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-          <div style={{ display: "flex", gap: 22, flexWrap: "wrap" }}>
+          <div style={pairRow}>
             <Field label="Fire rated" width={150}>
               <Chips
                 name="Fire rated" value={config.fireRated}
@@ -153,7 +191,7 @@ export default function SteelDoorsetFields({ config, set, resolution, idPrefix =
             )}
           </div>
 
-          <div style={{ display: "flex", gap: 22, flexWrap: "wrap" }}>
+          <div style={pairRow}>
             <Field label="Leaves" width={150}>
               <Chips
                 name="Leaves" value={config.leaves} onChange={v => set("leaves", v)}
@@ -187,7 +225,7 @@ export default function SteelDoorsetFields({ config, set, resolution, idPrefix =
         </div>
       </section>
 
-      <section style={{ marginBottom: 30 }}>
+      <section style={sectionStyle}>
         <SectionTitle
           hint={limits
             ? `Approved from ${limits.minWidth} × ${limits.minHeight} mm to ${limits.maxWidth} × ${limits.maxHeight} mm.`
@@ -196,7 +234,7 @@ export default function SteelDoorsetFields({ config, set, resolution, idPrefix =
           Opening
         </SectionTitle>
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-            <div style={{ display: "flex", gap: 22, flexWrap: "wrap" }}>
+            <div style={pairRow}>
               <Field label="Where it goes" width={220}>
                 <Chips
                   name="Exposure" value={config.exposure} onChange={v => set("exposure", v)}
@@ -226,10 +264,14 @@ export default function SteelDoorsetFields({ config, set, resolution, idPrefix =
 
             <Field label="Frame">
               {frames.length ? (
-                <Chips
-                  name="Frame" value={config.frameId} onChange={v => set("frameId", v)}
-                  options={frames.map(f => ({ value: f.id, label: f.label }))}
-                />
+                cards ? (
+                  <FrameCards frames={frames} value={config.frameId} onChange={v => set("frameId", v)} />
+                ) : (
+                  <Chips
+                    name="Frame" value={config.frameId} onChange={v => set("frameId", v)}
+                    options={frames.map(f => ({ value: f.id, label: f.label }))}
+                  />
+                )
               ) : (
                 <p style={{ margin: "3px 0 0", fontSize: 12.5, color: UI.muted }}>
                   The frames on offer follow from the doorset.
@@ -237,14 +279,33 @@ export default function SteelDoorsetFields({ config, set, resolution, idPrefix =
               )}
             </Field>
 
-            <div style={{ display: "flex", gap: 14, alignItems: "flex-start", flexWrap: "wrap" }}>
-              <Field label="Width (mm)" width={130}>
-                <Input id={`${idPrefix}-width`} value={config.width} onChange={v => set("width", mmDigits(v))} placeholder="1000" />
+            {cards ? (
+              <Field label="Opening size (mm)">
+                <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+                  <input
+                    id={`${idPrefix}-width`} aria-label="Width (mm)" placeholder="1000"
+                    value={config.width || ""} onChange={e => set("width", mmDigits(e.target.value))}
+                    style={{ ...fieldStyle, width: 120, padding: "8px 10px", fontSize: 13 }} className="mf-field"
+                  />
+                  <span aria-hidden="true" style={{ color: UI.muted, fontSize: 13 }}>×</span>
+                  <input
+                    id={`${idPrefix}-height`} aria-label="Height (mm)" placeholder="2100"
+                    value={config.height || ""} onChange={e => set("height", mmDigits(e.target.value))}
+                    style={{ ...fieldStyle, width: 120, padding: "8px 10px", fontSize: 13 }} className="mf-field"
+                  />
+                  <span style={{ color: UI.muted, fontSize: 12.5 }}>width × height</span>
+                </div>
               </Field>
-              <Field label="Height (mm)" width={130}>
-                <Input id={`${idPrefix}-height`} value={config.height} onChange={v => set("height", mmDigits(v))} placeholder="2100" />
-              </Field>
-            </div>
+            ) : (
+              <div style={{ display: "flex", gap: 14, alignItems: "flex-start", flexWrap: "wrap" }}>
+                <Field label="Width (mm)" width={130}>
+                  <Input id={`${idPrefix}-width`} value={config.width} onChange={v => set("width", mmDigits(v))} placeholder="1000" />
+                </Field>
+                <Field label="Height (mm)" width={130}>
+                  <Input id={`${idPrefix}-height`} value={config.height} onChange={v => set("height", mmDigits(v))} placeholder="2100" />
+                </Field>
+              </div>
+            )}
 
             {clear && (
               <p style={{ margin: 0, fontSize: 12.5, color: UI.muted }}>
@@ -254,7 +315,7 @@ export default function SteelDoorsetFields({ config, set, resolution, idPrefix =
           </div>
       </section>
 
-      <section style={{ marginBottom: 30 }}>
+      <section style={sectionStyle}>
         <SectionTitle hint="Nothing is fitted unless you ask for it, apart from the lock, cylinder and hinges.">
           Hardware
         </SectionTitle>
@@ -271,9 +332,12 @@ export default function SteelDoorsetFields({ config, set, resolution, idPrefix =
                   }}>
                     {section.title}
                   </div>
-                  <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
+                  <div style={cards
+                    ? { display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: "16px 14px" }
+                    : { display: "flex", gap: 14, flexWrap: "wrap" }
+                  }>
                     {groups.map(g => (
-                      <div key={g.id} style={{ flex: "1 1 220px", minWidth: 200, maxWidth: 320 }}>
+                      <div key={g.id} style={cards ? { minWidth: 0 } : { flex: "1 1 220px", minWidth: 200, maxWidth: 320 }}>
                         <Field label={g.label}>
                           <Select id={`${idPrefix}-${g.id}`} group={g} value={config[g.id]} onChange={v => set(g.id, v)} />
                           {hardwareNeedsText(config[g.id]) && (

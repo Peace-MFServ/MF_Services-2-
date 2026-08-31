@@ -2,7 +2,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { generateHardwareSpecPDF } from "../lib/generateHardwareSpecPDF";
 import BackArrow from "./BackArrow";
-import { UI, FONT, fieldStyle } from "../lib/theme";
+import { UI, FONT, fieldStyle, cardStyle } from "../lib/theme";
 import {
   SPEC_TYPES, CHRISTO, getProduct,
   buildInitialConfig, resolveProduct, validateSpec, specRows,
@@ -68,10 +68,10 @@ function Chips({ options, value, onChange, name }) {
             title={disabled ? opt.disabledReason : opt.title}
             onClick={disabled ? undefined : () => onChange(opt.value)}
             style={{
-              padding: "7px 12px", fontSize: 13, fontWeight: on ? 600 : 400, fontFamily: FONT,
+              padding: "7px 12px", fontSize: 13, fontWeight: on ? 600 : 500, fontFamily: FONT,
               border: `1px solid ${on ? UI.accent : UI.ruleStrong}`,
               background: on ? UI.accent : disabled ? UI.sunken : UI.surface,
-              color: on ? "#FFFFFF" : disabled ? UI.muted : UI.body,
+              color: on ? "#FFFFFF" : disabled ? UI.muted : UI.ink,
               cursor: disabled ? "not-allowed" : "pointer",
               opacity: disabled ? 0.5 : 1,
               whiteSpace: "nowrap",
@@ -235,21 +235,33 @@ export default function QuickSpec({ productTypeId = "riser-doors", onChangeProdu
         </div>
       </header>
 
-      <div style={{ flex: 1, minHeight: 0, display: "flex", overflow: "hidden" }}>
+      {/* The questions and the sheet sit centred on a sunken canvas —
+          a wall-to-wall form on a wide monitor reads worse, not better. */}
+      <div style={{ flex: 1, minHeight: 0, display: "flex", justifyContent: "center", overflow: "hidden", background: UI.sunken }}>
 
         {/* ── The whole specification, one screen ── */}
-        <div style={{ flex: 1, minWidth: 0, overflowY: "auto", padding: "22px 26px 40px" }}>
+        <div style={{ flex: "0 1 852px", minWidth: 0, overflowY: "auto", padding: "22px 26px 40px" }}>
 
-          <section style={{ marginBottom: 30 }}>
+          <section style={{ ...cardStyle, marginBottom: 18 }}>
             <SectionTitle hint={`Structural opening, ${product.statedLimits.width.min}–${product.statedLimits.width.absoluteMax} × ${product.statedLimits.height.min}–${product.statedLimits.height.absoluteMax} mm.`}>
               Opening
             </SectionTitle>
-            <div style={{ display: "flex", gap: 14, alignItems: "flex-start", flexWrap: "wrap" }}>
-              <Field label="Width (mm)" width={130}>
-                <Input id="qs-width" value={config.width} onChange={v => set("width", mmDigits(v))} placeholder="1100" />
-              </Field>
-              <Field label="Height (mm)" width={130}>
-                <Input id="qs-height" value={config.height} onChange={v => set("height", mmDigits(v))} placeholder="2300" />
+            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+              <Field label="Opening size (mm)">
+                <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+                  <input
+                    id="qs-width" aria-label="Width (mm)" placeholder="1100"
+                    value={config.width || ""} onChange={e => set("width", mmDigits(e.target.value))}
+                    style={{ ...fieldStyle, width: 120, padding: "8px 10px", fontSize: 13 }} className="mf-field"
+                  />
+                  <span aria-hidden="true" style={{ color: UI.muted, fontSize: 13 }}>×</span>
+                  <input
+                    id="qs-height" aria-label="Height (mm)" placeholder="2300"
+                    value={config.height || ""} onChange={e => set("height", mmDigits(e.target.value))}
+                    style={{ ...fieldStyle, width: 120, padding: "8px 10px", fontSize: 13 }} className="mf-field"
+                  />
+                  <span style={{ color: UI.muted, fontSize: 12.5 }}>width × height</span>
+                </div>
               </Field>
               <Field label="Leaves">
                 <Chips
@@ -275,7 +287,7 @@ export default function QuickSpec({ productTypeId = "riser-doors", onChangeProdu
             )}
           </section>
 
-          <section style={{ marginBottom: 30 }}>
+          <section style={{ ...cardStyle, marginBottom: 18 }}>
             <SectionTitle>Doorset</SectionTitle>
             <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
               <Field label="Fire rating">
@@ -284,7 +296,7 @@ export default function QuickSpec({ productTypeId = "riser-doors", onChangeProdu
                   options={product.fireRatings.map(f => ({ value: f.id, label: f.label }))}
                 />
               </Field>
-              <div style={{ display: "flex", gap: 22, flexWrap: "wrap" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "minmax(170px, 230px) 1fr", gap: "16px 26px", alignItems: "start" }}>
                 <Field label="Handing">
                   <Chips name="Handing" value={config.handing} onChange={v => set("handing", v)} options={chipsFor("handing")} />
                 </Field>
@@ -298,7 +310,7 @@ export default function QuickSpec({ productTypeId = "riser-doors", onChangeProdu
             </div>
           </section>
 
-          <section style={{ marginBottom: 30 }}>
+          <section style={{ ...cardStyle, marginBottom: 18 }}>
             <SectionTitle>Being fixed into</SectionTitle>
             <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
               <Field label="Wall construction">
@@ -334,7 +346,7 @@ export default function QuickSpec({ productTypeId = "riser-doors", onChangeProdu
             </div>
           </section>
 
-          <section style={{ marginBottom: 30 }}>
+          <section style={{ ...cardStyle, marginBottom: 18 }}>
             <SectionTitle hint={(config.leaves || 1) > 1 ? CHRISTO.passiveLeafLockNote : undefined}>
               Lock &amp; key
             </SectionTitle>
@@ -344,7 +356,7 @@ export default function QuickSpec({ productTypeId = "riser-doors", onChangeProdu
             />
           </section>
 
-          <section>
+          <section style={cardStyle}>
             <SectionTitle>Project</SectionTitle>
             <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
               <div style={{ display: "flex", gap: 22, flexWrap: "wrap", alignItems: "flex-end" }}>
@@ -376,9 +388,14 @@ export default function QuickSpec({ productTypeId = "riser-doors", onChangeProdu
 
         {/* ── Live sheet, always in view ── */}
         <aside style={{
-          width: 372, flexShrink: 0, borderLeft: `1px solid ${UI.ruleStrong}`,
-          display: "flex", flexDirection: "column", minHeight: 0, background: UI.sunken,
+          width: 372, flexShrink: 0,
+          display: "flex", flexDirection: "column", minHeight: 0,
+          padding: "22px 26px 22px 0",
         }}>
+          <div style={{
+            ...cardStyle, padding: 0, flex: 1, minHeight: 0,
+            display: "flex", flexDirection: "column",
+          }}>
           <div style={{ flex: 1, minHeight: 0, overflowY: "auto", padding: "20px 22px" }}>
             <SectionTitle>Specification</SectionTitle>
             {rows.map(r => (
@@ -392,7 +409,7 @@ export default function QuickSpec({ productTypeId = "riser-doors", onChangeProdu
             ))}
           </div>
 
-          <div style={{ borderTop: `1px solid ${UI.ruleStrong}`, padding: "16px 22px 20px", flexShrink: 0, background: UI.surface }}>
+          <div style={{ borderTop: `1px solid ${UI.rule}`, padding: "16px 22px 20px", flexShrink: 0 }}>
             {validation.errors.length > 0 && (
               <ul style={{ margin: "0 0 12px", padding: 0, listStyle: "none" }}>
                 {validation.errors.slice(0, 4).map((e, i) => (
@@ -426,6 +443,7 @@ export default function QuickSpec({ productTypeId = "riser-doors", onChangeProdu
                 {notice.text}
               </p>
             )}
+          </div>
           </div>
         </aside>
       </div>
