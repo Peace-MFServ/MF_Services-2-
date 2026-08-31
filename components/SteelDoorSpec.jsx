@@ -117,44 +117,37 @@ function DoorsetStep({ config, set, errorFor, resolution }) {
   const minutes = config.minutes;
   const leafOptions = minutes == null ? [] : leafCountsFor({ minutes, highPerformance: config.highPerformance });
 
-  // Two questions share a row wherever they fit — the rail is a
-  // column, not a queue, and less scrolling means the drawing and the
-  // answers stay on screen together.
-  const pair = { display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: "0 26px" };
-
   return (
     <div style={{ padding: "20px 22px" }}>
-      <div style={pair}>
-        <Section
-          title="Fire rated"
-          note="A fire rated doorset is classified for both integrity and insulation — the E and the I of its rating."
-        >
+      <Section
+        title="Fire rated"
+        note="A fire rated doorset is classified for both integrity and insulation — the E and the I of its rating."
+      >
+        <Chips
+          name="Fire rated"
+          value={config.fireRated}
+          onChange={v => {
+            set("fireRated", v);
+            set("minutes", v ? null : 0);
+            if (!v) set("highPerformance", config.highPerformance);
+          }}
+          options={[{ value: false, label: "No" }, { value: true, label: "Yes" }]}
+        />
+      </Section>
+
+      {rated && (
+        <Section title="How long">
           <Chips
-            name="Fire rated"
-            value={config.fireRated}
-            onChange={v => {
-              set("fireRated", v);
-              set("minutes", v ? null : 0);
-              if (!v) set("highPerformance", config.highPerformance);
-            }}
-            options={[{ value: false, label: "No" }, { value: true, label: "Yes" }]}
+            name="Fire rating"
+            value={minutes}
+            onChange={v => set("minutes", v)}
+            options={fireRatings().filter(m => m > 0).map(m => ({ value: m, label: `${m} minutes` }))}
           />
         </Section>
-
-        {rated && (
-          <Section title="How long">
-            <Chips
-              name="Fire rating"
-              value={minutes}
-              onChange={v => set("minutes", v)}
-              options={fireRatings().filter(m => m > 0).map(m => ({ value: m, label: `${m} minutes` }))}
-            />
-          </Section>
-        )}
-      </div>
+      )}
 
       {minutes != null && (
-        <div style={pair}>
+        <>
           <Section title="Leaves">
             <Chips
               name="Leaves"
@@ -192,7 +185,7 @@ function DoorsetStep({ config, set, errorFor, resolution }) {
               />
             </Section>
           )}
-        </div>
+        </>
       )}
 
       {resolution?.type && (
@@ -247,41 +240,39 @@ function OpeningStep({ config, set, errorFor, resolution }) {
         <FieldError>{errorFor("frameId")}</FieldError>
       </Section>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: "0 26px" }}>
-        <Section
-          title="Structural opening"
-          note={limits
-            ? `Approved from ${limits.minWidth} × ${limits.minHeight} mm to ${limits.maxWidth} × ${limits.maxHeight} mm.`
-            : "Choose where it goes and a frame to see the approved range."}
-        >
-          <div style={{ display: "flex", gap: 14 }}>
-            <div style={{ flex: "1 1 0", minWidth: 0, maxWidth: 140 }}>
-              <Label>Width (mm)</Label>
-              <input
-                id="steel-width" type="text" inputMode="numeric" value={config.width}
-                onChange={e => set("width", mmDigits(e.target.value))}
-                style={{ ...fieldStyle, borderColor: errorFor("width") ? UI.warn : UI.ruleStrong }} className="mf-field"
-              />
-            </div>
-            <div style={{ flex: "1 1 0", minWidth: 0, maxWidth: 140 }}>
-              <Label>Height (mm)</Label>
-              <input
-                id="steel-height" type="text" inputMode="numeric" value={config.height}
-                onChange={e => set("height", mmDigits(e.target.value))}
-                style={{ ...fieldStyle, borderColor: errorFor("height") ? UI.warn : UI.ruleStrong }} className="mf-field"
-              />
-            </div>
+      <Section
+        title="Structural opening"
+        note={limits
+          ? `Approved from ${limits.minWidth} × ${limits.minHeight} mm to ${limits.maxWidth} × ${limits.maxHeight} mm.`
+          : "Choose where it goes and a frame to see the approved range."}
+      >
+        <div style={{ display: "flex", gap: 14 }}>
+          <div style={{ flex: "0 0 140px" }}>
+            <Label>Width (mm)</Label>
+            <input
+              id="steel-width" type="text" inputMode="numeric" value={config.width}
+              onChange={e => set("width", mmDigits(e.target.value))}
+              style={{ ...fieldStyle, borderColor: errorFor("width") ? UI.warn : UI.ruleStrong }} className="mf-field"
+            />
           </div>
-          <FieldError>{errorFor("width") || errorFor("height")}</FieldError>
-        </Section>
+          <div style={{ flex: "0 0 140px" }}>
+            <Label>Height (mm)</Label>
+            <input
+              id="steel-height" type="text" inputMode="numeric" value={config.height}
+              onChange={e => set("height", mmDigits(e.target.value))}
+              style={{ ...fieldStyle, borderColor: errorFor("height") ? UI.warn : UI.ruleStrong }} className="mf-field"
+            />
+          </div>
+        </div>
+        <FieldError>{errorFor("width") || errorFor("height")}</FieldError>
+      </Section>
 
-        <Section title="Handing" note="Viewed from the access side. On a pair this is the active leaf.">
-          <Chips
-            name="Handing" value={config.handing} onChange={v => set("handing", v)}
-            options={[{ value: "left", label: "Left hand" }, { value: "right", label: "Right hand" }]}
-          />
-        </Section>
-      </div>
+      <Section title="Handing" note="Viewed from the access side. On a pair this is the active leaf.">
+        <Chips
+          name="Handing" value={config.handing} onChange={v => set("handing", v)}
+          options={[{ value: "left", label: "Left hand" }, { value: "right", label: "Right hand" }]}
+        />
+      </Section>
 
       {clear && (
         <div style={{
@@ -388,17 +379,15 @@ function HardwareStep({ config, set, hardware, errorFor }) {
         return (
           <div key={section.title} style={{ marginBottom: 26 }}>
             <Label>{section.title}</Label>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: "0 20px" }}>
-              {groups.map(g => (
-                <HardwareField
-                  key={g.id} group={g}
-                  value={config[g.id]} text={config[`${g.id}Text`]}
-                  onChange={v => set(g.id, v)}
-                  onChangeText={v => set(`${g.id}Text`, v)}
-                  error={errorFor(g.id)}
-                />
-              ))}
-            </div>
+            {groups.map(g => (
+              <HardwareField
+                key={g.id} group={g}
+                value={config[g.id]} text={config[`${g.id}Text`]}
+                onChange={v => set(g.id, v)}
+                onChangeText={v => set(`${g.id}Text`, v)}
+                error={errorFor(g.id)}
+              />
+            ))}
           </div>
         );
       })}
@@ -635,7 +624,7 @@ export default function SteelDoorSpec({ onChangeProduct, modeSwitch, saveButton 
     }}>
       <aside style={{
         ...cardStyle, padding: 0,
-        width: 640, flexShrink: 0, display: "flex", flexDirection: "column",
+        width: 496, flexShrink: 0, display: "flex", flexDirection: "column",
         minHeight: 0, overflow: "hidden",
       }}>
         <header style={{ padding: "18px 22px 16px", borderBottom: `1px solid ${UI.rule}`, flexShrink: 0 }}>

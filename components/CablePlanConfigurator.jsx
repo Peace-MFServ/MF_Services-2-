@@ -533,7 +533,7 @@ export default function CablePlanConfigurator({ startSystemId, onChangeSystem, s
       {/* ── Configuration rail ── */}
       <aside style={{
         ...cardStyle, padding: 0,
-        width: 640, flexShrink: 0, display: "flex", flexDirection: "column",
+        width: 496, flexShrink: 0, display: "flex", flexDirection: "column",
         minHeight: 0, overflow: "hidden",
       }}>
 

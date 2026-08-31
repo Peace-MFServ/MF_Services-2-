@@ -409,29 +409,25 @@ function SpecifyStep({ product, config, setConfig, errorFor, markTouched, resolu
         )}
       </div>
 
-      {/* Two option lists to a row — handing beside the restrictor,
-          the acoustics in view without scrolling for them. */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: "0 26px" }}>
-        {product.options.filter(opt => opt.id !== "finish").map(opt => (
-          <div key={opt.id} style={{ marginBottom: 24, minWidth: 0 }}>
-            <Label>{opt.label}</Label>
-            {opt.note && (
-              <p style={{ margin: "-3px 0 10px", fontSize: 12.5, lineHeight: 1.5, color: UI.body, fontFamily: FONT }}>
-                {opt.note}
-              </p>
-            )}
-            <RadioList
-              name={`opt-${opt.id}`}
-              choices={opt.choices}
-              value={config[opt.id]}
-              onChange={v => set(opt.id, v)}
-              textValue={config[`${opt.id}Text`]}
-              onTextChange={v => set(`${opt.id}Text`, v)}
-            />
-            <FieldError>{errorFor(opt.id)}</FieldError>
-          </div>
-        ))}
-      </div>
+      {product.options.filter(opt => opt.id !== "finish").map(opt => (
+        <div key={opt.id} style={{ marginBottom: 24 }}>
+          <Label>{opt.label}</Label>
+          {opt.note && (
+            <p style={{ margin: "-3px 0 10px", fontSize: 12.5, lineHeight: 1.5, color: UI.body, fontFamily: FONT }}>
+              {opt.note}
+            </p>
+          )}
+          <RadioList
+            name={`opt-${opt.id}`}
+            choices={opt.choices}
+            value={config[opt.id]}
+            onChange={v => set(opt.id, v)}
+            textValue={config[`${opt.id}Text`]}
+            onTextChange={v => set(`${opt.id}Text`, v)}
+          />
+          <FieldError>{errorFor(opt.id)}</FieldError>
+        </div>
+      ))}
     </div>
   );
 }
@@ -1164,7 +1160,7 @@ export default function SpecGenerator({ startProductId, onChangeProduct, modeSwi
     }}>
       <aside style={{
         ...cardStyle, padding: 0,
-        width: 640, flexShrink: 0, display: "flex", flexDirection: "column",
+        width: 496, flexShrink: 0, display: "flex", flexDirection: "column",
         minHeight: 0, overflow: "hidden",
       }}>
         <header style={{ padding: "18px 22px 16px", borderBottom: `1px solid ${UI.rule}`, flexShrink: 0 }}>
