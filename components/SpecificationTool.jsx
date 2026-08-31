@@ -250,7 +250,7 @@ export default function SpecificationTool() {
 
   // Wait for the restore pass before painting, so a refresh does not
   // flash the chooser on its way back to where the customer was.
-  if (!restored) return <div style={{ minHeight: "calc(100vh - 136px)" }} />;
+  if (!restored) return <div style={{ minHeight: "calc(100vh - 62px)" }} />;
 
   if (!selection) return <Chooser onChoose={choose} />;
 

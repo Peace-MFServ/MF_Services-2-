@@ -41,7 +41,7 @@ function Shell({ children }) {
   return (
     <div className="mf-rounded" style={{
       background: QS.bg, borderTop: `1px solid ${UI.rule}`,
-      minHeight: "calc(100vh - 136px)", fontFamily: FONT, color: UI.body,
+      minHeight: "calc(100vh - 62px)", fontFamily: FONT, color: UI.body,
     }}>
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "24px 28px 60px" }}>
         {children}

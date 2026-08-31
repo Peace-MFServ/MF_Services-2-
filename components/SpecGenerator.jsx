@@ -1142,7 +1142,7 @@ export default function SpecGenerator({ startProductId, onChangeProduct, modeSwi
   // of the step, and they do not read at rail width.
   if (currentStep === 0) {
     return (
-      <div className="mf-rounded" style={{ ...shell, display: "flex", flexDirection: "column", minHeight: "calc(100vh - 136px)" }}>
+      <div className="mf-rounded" style={{ ...shell, display: "flex", flexDirection: "column", minHeight: "calc(100vh - 62px)" }}>
         <div style={{ background: UI.surface, borderBottom: "1px solid #E2E8F0" }}>
           <StepBar currentStep={currentStep} setCurrentStep={goToStep} furthest={furthest} />
         </div>
@@ -1155,7 +1155,7 @@ export default function SpecGenerator({ startProductId, onChangeProduct, modeSwi
 
   return (
     <div className="mf-rounded" style={{
-      ...shell, display: "flex", gap: 20, height: "calc(100vh - 136px)",
+      ...shell, display: "flex", gap: 20, height: "calc(100vh - 62px)",
       minHeight: 640, padding: "20px 24px", overflow: "hidden",
     }}>
       <aside style={{

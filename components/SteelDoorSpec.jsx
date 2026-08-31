@@ -618,7 +618,7 @@ export default function SteelDoorSpec({ onChangeProduct, modeSwitch, saveButton 
 
   return (
     <div className="mf-rounded" style={{
-      display: "flex", gap: 20, height: "calc(100vh - 136px)", minHeight: 640,
+      display: "flex", gap: 20, height: "calc(100vh - 62px)", minHeight: 640,
       borderTop: `1px solid ${UI.rule}`, background: QS.bg, padding: "20px 24px",
       fontFamily: FONT, color: UI.body, overflow: "hidden",
     }}>

@@ -108,12 +108,13 @@ body {
   border: 0;
 }
 
-/* ─── Primary navigation ──────────────────────────────────────────
-   The section tabs are the main way around the toolbox and the first
-   thing a client needs to understand, so they are solid blocks rather
-   than text with a rule under it — the active one filled in navy. */
+/* ─── Header ──────────────────────────────────────────────────────
+   One slim bar carries the identity, the section tabs and the
+   account — the tabs are solid blocks, the active one filled in
+   navy, and the brand orange survives as the bar's top edge. */
 .mf-nav {
   background: #FFFFFF;
+  border-top: 3px solid #ED6E02;
   border-bottom: 1px solid #C4CCD4;
   position: sticky;
   top: 0;
@@ -122,23 +123,24 @@ body {
 
 .mf-nav-inner {
   margin: 0 auto;
-  padding: 11px 32px;
+  padding: 0 20px;
+  height: 58px;
   display: flex;
-  gap: 8px;
+  align-items: center;
+  gap: 12px;
 }
 
 .mf-tab {
   appearance: none;
-  min-width: 196px;
-  height: 50px;
-  padding: 0 26px;
+  height: 38px;
+  padding: 0 18px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   border: 1px solid #C4CCD4;
   background: #FFFFFF;
   font-family: inherit;
-  font-size: 16px;
+  font-size: 13.5px;
   font-weight: 600;
   letter-spacing: -0.01em;
   color: #2B3641;
@@ -165,6 +167,6 @@ body {
 }
 
 @media (max-width: 720px) {
-  .mf-nav-inner { padding: 10px 16px; gap: 6px; overflow-x: auto; }
-  .mf-tab { min-width: 0; height: 44px; padding: 0 16px; font-size: 14.5px; }
+  .mf-nav-inner { padding: 0 12px; gap: 8px; }
+  .mf-tab { height: 34px; padding: 0 12px; font-size: 12.5px; }
 }

@@ -209,10 +209,12 @@ export function AccountBar() {
   const { ready, signedIn, user, role, signOut, promptSignIn } = useAuth();
   const { openPanel } = useProjects();
 
+  // The header is a light bar now, so the account chips read in ink
+  // on white rather than white on navy.
   const chip = {
     padding: "6px 12px", fontSize: 12.5, fontFamily: FONT, fontWeight: 500,
-    border: "1px solid rgba(255,255,255,0.45)", background: "transparent",
-    color: "#FFFFFF", cursor: "pointer", whiteSpace: "nowrap",
+    border: "1px solid #CBD5E1", background: UI.surface,
+    color: UI.body, cursor: "pointer", whiteSpace: "nowrap",
   };
 
   if (!ready) return <div style={{ width: 150 }} />;
@@ -222,10 +224,10 @@ export function AccountBar() {
       {signedIn ? (
         <>
           <div style={{ textAlign: "right", lineHeight: 1.25, minWidth: 0 }}>
-            <div style={{ color: "#FFFFFF", fontSize: 12.5, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis" }}>
+            <div style={{ color: UI.ink, fontSize: 12.5, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis" }}>
               {user.displayName || user.email}
             </div>
-            <div style={{ color: "rgba(255,255,255,0.72)", fontSize: 11, letterSpacing: "0.04em" }}>
+            <div style={{ color: UI.muted, fontSize: 11, letterSpacing: "0.04em" }}>
               {role === "staff" ? "MF Services" : "Signed in"}
             </div>
           </div>

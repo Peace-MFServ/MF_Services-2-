@@ -131,7 +131,7 @@ export default function QuickSpec({ productTypeId = "riser-doors", onChangeProdu
   return (
     <div className="mf-rounded" style={{
       background: QS.bg, borderTop: `1px solid ${UI.rule}`,
-      minHeight: "calc(100vh - 136px)",
+      minHeight: "calc(100vh - 62px)",
       fontFamily: FONT, color: UI.body,
     }}>
       <div className="qs-page">
