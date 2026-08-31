@@ -115,15 +115,25 @@ function HeaderButton({ onClick, icon, children }) {
 export function QuickHeader({ title, onChangeProduct, onStartOver, modeSwitch, saveButton }) {
   return (
     <div style={{ marginBottom: 20 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
+        <BackArrow onClick={onChangeProduct} label="Change product" />
+        <h2 style={{ margin: 0, fontSize: 26, fontWeight: 700, letterSpacing: "-0.015em", color: QS.ink, fontFamily: FONT }}>
+          {title}
+        </h2>
+      </div>
+      {/* The actions share a line with the layout switch, not the
+          title — everything you can press sits at the same height. */}
       <div style={{
-        display: "flex", alignItems: "center", justifyContent: "space-between",
-        gap: 16, flexWrap: "wrap",
+        display: "flex", alignItems: "flex-end", justifyContent: "space-between",
+        gap: 16, flexWrap: "wrap", marginTop: 12,
       }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
-          <BackArrow onClick={onChangeProduct} label="Change product" />
-          <h2 style={{ margin: 0, fontSize: 26, fontWeight: 700, letterSpacing: "-0.015em", color: QS.ink, fontFamily: FONT }}>
-            {title}
-          </h2>
+        <div>
+          {modeSwitch && (
+            <>
+              <div style={{ fontSize: 12.5, color: QS.muted, marginBottom: 6 }}>Configuration mode</div>
+              {modeSwitch}
+            </>
+          )}
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
           {saveButton}
@@ -131,12 +141,6 @@ export function QuickHeader({ title, onChangeProduct, onStartOver, modeSwitch, s
           <HeaderButton onClick={onStartOver} icon={ICONS.restart}>Start over</HeaderButton>
         </div>
       </div>
-      {modeSwitch && (
-        <div style={{ marginTop: 14 }}>
-          <div style={{ fontSize: 12.5, color: QS.muted, marginBottom: 6 }}>Configuration mode</div>
-          {modeSwitch}
-        </div>
-      )}
     </div>
   );
 }
