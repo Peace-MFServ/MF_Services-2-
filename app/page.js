@@ -53,16 +53,16 @@ function Toolbox() {
   return (
     <div style={{ minHeight: '100vh', background: '#F8F9FA', fontFamily: FONT }}>
 
-      {/* ── HEADER — one slim bar: identity, sections, account ──
+      {/* ── HEADER — one slim navy bar: identity, sections, account ──
           The masthead and the tab bar used to stack and cost ~136px
-          of every screen; the workspace gets that height back. The
-          orange rule survives as the bar's top edge. */}
+          of every screen; the workspace gets that height back, and
+          the brand keeps its navy with the orange ruled beneath. */}
       <header className="mf-nav">
         <div className="mf-nav-inner">
           <img src="/linkedin.jpg" alt="MF Services" width={925} height={184} style={{ height: 30, width: 'auto', borderRadius: 3, flexShrink: 0 }} />
           <div style={{ flexShrink: 0 }}>
-            <h1 style={{ color: '#101922', fontWeight: 700, fontSize: 13.5, letterSpacing: '-0.01em', lineHeight: 1.2 }}>MF Services</h1>
-            <div style={{ color: '#57646F', fontSize: 10.5, letterSpacing: '0.03em' }}>Door Systems Toolbox</div>
+            <h1 style={{ color: '#FFFFFF', fontWeight: 700, fontSize: 13.5, letterSpacing: '-0.01em', lineHeight: 1.2 }}>MF Services</h1>
+            <div style={{ color: 'rgba(255,255,255,0.74)', fontSize: 10.5, letterSpacing: '0.03em' }}>Door Systems Toolbox</div>
           </div>
           <nav aria-label="Sections" style={{ display: 'flex', gap: 6, marginLeft: 18, minWidth: 0, overflowX: 'auto' }}>
             {tabs.map(tab => (

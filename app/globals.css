@@ -109,13 +109,12 @@ body {
 }
 
 /* ─── Header ──────────────────────────────────────────────────────
-   One slim bar carries the identity, the section tabs and the
-   account — the tabs are solid blocks, the active one filled in
-   navy, and the brand orange survives as the bar's top edge. */
+   One slim navy bar carries the identity, the section tabs and the
+   account, with the brand orange ruled underneath — the active tab
+   fills white so it reads against the navy. */
 .mf-nav {
-  background: #FFFFFF;
-  border-top: 3px solid #ED6E02;
-  border-bottom: 1px solid #C4CCD4;
+  background: #00387B;
+  border-bottom: 3px solid #ED6E02;
   position: sticky;
   top: 0;
   z-index: 10;
@@ -124,7 +123,7 @@ body {
 .mf-nav-inner {
   margin: 0 auto;
   padding: 0 20px;
-  height: 58px;
+  height: 59px;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -137,33 +136,32 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid #C4CCD4;
-  background: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  background: transparent;
   font-family: inherit;
   font-size: 13.5px;
   font-weight: 600;
   letter-spacing: -0.01em;
-  color: #2B3641;
+  color: #FFFFFF;
   cursor: pointer;
   white-space: nowrap;
   transition: background-color 120ms, color 120ms, border-color 120ms;
 }
 
 .mf-tab:hover {
-  background: #F2F5F7;
-  border-color: #00387B;
-  color: #00387B;
+  background: rgba(255, 255, 255, 0.12);
+  border-color: #FFFFFF;
 }
 
 .mf-tab:focus-visible {
-  outline: 2px solid #00387B;
+  outline: 2px solid #FFFFFF;
   outline-offset: 2px;
 }
 
 .mf-tab[aria-current="page"] {
-  background: #00387B;
-  border-color: #00387B;
-  color: #FFFFFF;
+  background: #FFFFFF;
+  border-color: #FFFFFF;
+  color: #00387B;
 }
 
 @media (max-width: 720px) {
