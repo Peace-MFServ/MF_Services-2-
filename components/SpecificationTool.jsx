@@ -115,6 +115,7 @@ function Card({ art, label, summary, comingSoon, onSelect }) {
         display: "flex", flexDirection: "column", textAlign: "left", padding: 0,
         fontFamily: FONT, background: UI.surface,
         border: `1px solid ${lift ? UI.ruleStrong : UI.rule}`,
+        borderRadius: 6,
         cursor: live ? "pointer" : "not-allowed",
         transition: "border-color 120ms, transform 120ms",
         transform: lift ? "translateY(-2px)" : "none",
