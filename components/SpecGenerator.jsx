@@ -4,7 +4,8 @@ import RiserDoorPreview from "./RiserDoorPreview";
 import { PRODUCT_ART } from "./ProductIllustrations";
 import { generateHardwareSpecPDF } from "../lib/generateHardwareSpecPDF";
 import BackArrow from "./BackArrow";
-import { UI, FONT, fieldStyle } from "../lib/theme";
+import { UI, FONT, fieldStyle, cardStyle } from "../lib/theme";
+import { QS, ICONS, StepTabs } from "./quickSpecUI";
 import {
   PRODUCT_TYPES, SPEC_TYPES, CHRISTO, getProduct,
   buildInitialConfig, resolveProduct, validateSpec, specRows, REQUIRE_ENQUIRY_DETAILS,
@@ -14,6 +15,7 @@ import {
 // approval covers for that opening. Wall construction and lock get
 // their own visual steps.
 const STEPS = ["Product", "Specify", "Wall", "Lock & key", "Project", "Review"];
+const STEP_ICONS = ["box", "door", "wall", "key", "project", "sheet"];
 
 // Which validation errors belong to which step, so each step only
 // gates on its own fields. Finish lives on the Wall step with the
@@ -101,10 +103,10 @@ function Segmented({ options, value, onChange, name }) {
             title={disabled ? opt.disabledReason : undefined}
             onClick={disabled ? undefined : () => onChange(opt.value)}
             style={{
-              padding: "9px 16px", fontSize: 13.5, fontWeight: on ? 600 : 400, fontFamily: FONT,
+              padding: "9px 16px", fontSize: 13.5, fontWeight: on ? 600 : 500, fontFamily: FONT,
               border: `1px solid ${on ? UI.accent : UI.ruleStrong}`,
               background: on ? UI.accent : disabled ? UI.sunken : UI.surface,
-              color: on ? "#FFFFFF" : disabled ? UI.muted : UI.body,
+              color: on ? "#FFFFFF" : disabled ? UI.muted : UI.ink,
               cursor: disabled ? "not-allowed" : "pointer",
               opacity: disabled ? 0.55 : 1,
               marginLeft: i === 0 ? 0 : -1,
@@ -164,44 +166,10 @@ function RadioList({ choices, value, onChange, name, textValue, onTextChange }) 
 
 function StepBar({ currentStep, setCurrentStep, furthest }) {
   return (
-    <nav aria-label="Progress" style={{ display: "flex", borderBottom: `1px solid ${UI.rule}`, flexShrink: 0 }}>
-      {STEPS.map((label, i) => {
-        const done = i < currentStep;
-        const active = i === currentStep;
-        const reachable = i <= furthest;
-        return (
-          <button
-            key={label} type="button"
-            onClick={reachable ? () => setCurrentStep(i) : undefined}
-            aria-current={active ? "step" : undefined}
-            style={{
-              flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 7,
-              padding: "13px 4px", background: "none", border: "none",
-              borderBottom: `2px solid ${active ? UI.accent : "transparent"}`, marginBottom: -1,
-              cursor: reachable ? "pointer" : "default", fontFamily: FONT,
-              color: active ? UI.ink : reachable ? UI.body : UI.muted,
-              fontWeight: active ? 600 : 500, fontSize: 12.5,
-            }}
-          >
-            <span style={{
-              width: 19, height: 19, flexShrink: 0,
-              border: `1.5px solid ${active || done ? UI.accent : UI.ruleStrong}`,
-              background: done ? UI.accent : "transparent",
-              color: done ? "#FFFFFF" : active ? UI.accent : UI.muted,
-              display: "flex", alignItems: "center", justifyContent: "center",
-              fontSize: 10.5, fontWeight: 600,
-            }}>
-              {done ? (
-                <svg width="10" height="8" viewBox="0 0 10 8" aria-hidden="true">
-                  <path d="M1 4L3.6 6.6L9 1.2" fill="none" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              ) : i + 1}
-            </span>
-            {label}
-          </button>
-        );
-      })}
-    </nav>
+    <StepTabs
+      steps={STEPS.map((label, i) => ({ label, icon: ICONS[STEP_ICONS[i]] }))}
+      current={currentStep} furthest={furthest} onSelect={setCurrentStep}
+    />
   );
 }
 
@@ -932,8 +900,10 @@ function ReviewStep({ product, config, specType, validation, onGenerate, generat
 
       <button
         type="button" onClick={onGenerate} disabled={generating || !validation.isValid}
+        className="qs-download"
         style={{
-          width: "100%", padding: "14px 20px",
+          width: "100%", height: 46, padding: "0 20px",
+          display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
           border: `1px solid ${validation.isValid ? UI.accent : UI.ruleStrong}`,
           fontSize: 14, fontWeight: 600, fontFamily: FONT,
           background: validation.isValid ? UI.accent : UI.sunken,
@@ -942,6 +912,7 @@ function ReviewStep({ product, config, specType, validation, onGenerate, generat
         }}
       >
         {generating ? "Generating" : validation.isValid ? "Download specification (PDF)" : `${validation.errors.length} to fix`}
+        {!generating && validation.isValid && ICONS.download}
       </button>
 
       {notice && (
@@ -1117,7 +1088,7 @@ export default function SpecGenerator({ startProductId, onChangeProduct, modeSwi
   // Full-bleed: the workspace owns the whole viewport below the
   // header and tab bar (60px header + 3px rule + ~49px tabs).
   const shell = {
-    background: UI.surface, fontFamily: FONT, color: UI.body,
+    background: QS.bg, fontFamily: FONT, color: UI.body,
     borderTop: `1px solid ${UI.rule}`,
   };
 
@@ -1171,8 +1142,10 @@ export default function SpecGenerator({ startProductId, onChangeProduct, modeSwi
   // of the step, and they do not read at rail width.
   if (currentStep === 0) {
     return (
-      <div style={{ ...shell, display: "flex", flexDirection: "column", minHeight: "calc(100vh - 136px)" }}>
-        <StepBar currentStep={currentStep} setCurrentStep={goToStep} furthest={furthest} />
+      <div className="mf-rounded" style={{ ...shell, display: "flex", flexDirection: "column", minHeight: "calc(100vh - 136px)" }}>
+        <div style={{ background: UI.surface, borderBottom: "1px solid #E2E8F0" }}>
+          <StepBar currentStep={currentStep} setCurrentStep={goToStep} furthest={furthest} />
+        </div>
         <div style={{ flex: 1 }}>
           <ProductStep productTypeId={productTypeId} onChoose={chooseProduct} />
         </div>
@@ -1181,13 +1154,14 @@ export default function SpecGenerator({ startProductId, onChangeProduct, modeSwi
   }
 
   return (
-    <div style={{
-      ...shell, display: "flex", height: "calc(100vh - 136px)",
-      minHeight: 640, overflow: "hidden",
+    <div className="mf-rounded" style={{
+      ...shell, display: "flex", gap: 20, height: "calc(100vh - 136px)",
+      minHeight: 640, padding: "20px 24px", overflow: "hidden",
     }}>
       <aside style={{
+        ...cardStyle, padding: 0,
         width: 496, flexShrink: 0, display: "flex", flexDirection: "column",
-        borderRight: `1px solid ${UI.ruleStrong}`, minHeight: 0,
+        minHeight: 0, overflow: "hidden",
       }}>
         <header style={{ padding: "18px 22px 16px", borderBottom: `1px solid ${UI.rule}`, flexShrink: 0 }}>
           {/* The layout switch sits beside the product name here and in
@@ -1248,7 +1222,7 @@ export default function SpecGenerator({ startProductId, onChangeProduct, modeSwi
         {footer}
       </aside>
 
-      <section style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column" }}>
+      <section style={{ ...cardStyle, padding: 0, flex: 1, minWidth: 0, display: "flex", flexDirection: "column", overflow: "hidden" }}>
         <RiserDoorPreview product={product} config={config} resolution={resolution} />
       </section>
     </div>

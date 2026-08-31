@@ -3,7 +3,8 @@ import { useRef } from "react";
 import SteelDoorPreview from "./SteelDoorPreview";
 import BackArrow from "./BackArrow";
 import { useSteelSpecState, mmDigits } from "./steelSpecState";
-import { UI, FONT, fieldStyle } from "../lib/theme";
+import { UI, FONT, fieldStyle, cardStyle } from "../lib/theme";
+import { QS, ICONS, StepTabs } from "./quickSpecUI";
 import {
   fireRatings, leafCountsFor, highPerformanceAvailable,
   describeSteelDoor, steelSpecRows, standardsFor, hardwareNeedsText,
@@ -20,6 +21,7 @@ import { SPEC_TYPES, REQUIRE_ENQUIRY_DETAILS } from "../lib/hardwareSpec";
 // ─────────────────────────────────────────────────────────────────
 
 const STEPS = ["Doorset", "Opening", "Hardware", "Project", "Review"];
+const STEP_ICONS = ["door", "opening", "hardware", "project", "sheet"];
 
 const OPENING_FIELDS = new Set(["exposure", "frameId", "width", "height"]);
 const PROJECT_FIELDS = new Set(["email", "phone"]);
@@ -58,10 +60,10 @@ function Chips({ options, value, onChange, name }) {
             title={opt.disabled ? opt.disabledReason : opt.title}
             onClick={opt.disabled ? undefined : () => onChange(opt.value)}
             style={{
-              padding: "9px 15px", fontSize: 13.5, fontWeight: on ? 600 : 400, fontFamily: FONT,
+              padding: "9px 15px", fontSize: 13.5, fontWeight: on ? 600 : 500, fontFamily: FONT,
               border: `1px solid ${on ? UI.accent : UI.ruleStrong}`,
               background: on ? UI.accent : opt.disabled ? UI.sunken : UI.surface,
-              color: on ? "#FFFFFF" : opt.disabled ? UI.muted : UI.body,
+              color: on ? "#FFFFFF" : opt.disabled ? UI.muted : UI.ink,
               cursor: opt.disabled ? "not-allowed" : "pointer",
               opacity: opt.disabled ? 0.5 : 1,
             }}
@@ -101,40 +103,10 @@ function FieldError({ children }) {
 
 function StepBar({ currentStep, setCurrentStep, furthest }) {
   return (
-    <nav aria-label="Progress" style={{ display: "flex", borderBottom: `1px solid ${UI.rule}`, flexShrink: 0 }}>
-      {STEPS.map((label, i) => {
-        const done = i < currentStep;
-        const active = i === currentStep;
-        const reachable = i <= furthest;
-        return (
-          <button
-            key={label} type="button"
-            onClick={reachable ? () => setCurrentStep(i) : undefined}
-            aria-current={active ? "step" : undefined}
-            style={{
-              flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 7,
-              padding: "13px 4px", background: "none", border: "none",
-              borderBottom: `2px solid ${active ? UI.accent : "transparent"}`, marginBottom: -1,
-              cursor: reachable ? "pointer" : "default", fontFamily: FONT,
-              color: active ? UI.ink : reachable ? UI.body : UI.muted,
-              fontWeight: active ? 600 : 500, fontSize: 13,
-            }}
-          >
-            <span style={{
-              width: 19, height: 19, flexShrink: 0,
-              border: `1.5px solid ${active || done ? UI.accent : UI.ruleStrong}`,
-              background: done ? UI.accent : "transparent",
-              color: done ? "#FFFFFF" : active ? UI.accent : UI.muted,
-              display: "flex", alignItems: "center", justifyContent: "center",
-              fontSize: 11, fontWeight: 600,
-            }}>
-              {done ? "✓" : i + 1}
-            </span>
-            {label}
-          </button>
-        );
-      })}
-    </nav>
+    <StepTabs
+      steps={STEPS.map((label, i) => ({ label, icon: ICONS[STEP_ICONS[i]] }))}
+      current={currentStep} furthest={furthest} onSelect={setCurrentStep}
+    />
   );
 }
 
@@ -571,8 +543,10 @@ function ReviewStep({ config, resolution, specType, validation, onGenerate, gene
 
       <button
         type="button" onClick={onGenerate} disabled={generating || !validation.isValid}
+        className="qs-download"
         style={{
-          width: "100%", padding: "14px 20px",
+          width: "100%", height: 46, padding: "0 20px",
+          display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
           border: `1px solid ${validation.isValid ? UI.accent : UI.ruleStrong}`,
           fontSize: 14, fontWeight: 600, fontFamily: FONT,
           background: validation.isValid ? UI.accent : UI.sunken,
@@ -581,6 +555,7 @@ function ReviewStep({ config, resolution, specType, validation, onGenerate, gene
         }}
       >
         {generating ? "Generating" : validation.isValid ? "Download specification (PDF)" : `${validation.errors.length} to fix`}
+        {!generating && validation.isValid && ICONS.download}
       </button>
 
       {notice && (
@@ -642,14 +617,15 @@ export default function SteelDoorSpec({ onChangeProduct, modeSwitch, saveButton 
     : "Next";
 
   return (
-    <div style={{
-      display: "flex", height: "calc(100vh - 136px)", minHeight: 640,
-      borderTop: `1px solid ${UI.rule}`, background: UI.surface,
+    <div className="mf-rounded" style={{
+      display: "flex", gap: 20, height: "calc(100vh - 136px)", minHeight: 640,
+      borderTop: `1px solid ${UI.rule}`, background: QS.bg, padding: "20px 24px",
       fontFamily: FONT, color: UI.body, overflow: "hidden",
     }}>
       <aside style={{
+        ...cardStyle, padding: 0,
         width: 496, flexShrink: 0, display: "flex", flexDirection: "column",
-        borderRight: `1px solid ${UI.ruleStrong}`, minHeight: 0,
+        minHeight: 0, overflow: "hidden",
       }}>
         <header style={{ padding: "18px 22px 16px", borderBottom: `1px solid ${UI.rule}`, flexShrink: 0 }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, minWidth: 0 }}>
@@ -738,7 +714,7 @@ export default function SteelDoorSpec({ onChangeProduct, modeSwitch, saveButton 
         </div>
       </aside>
 
-      <section style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column" }}>
+      <section style={{ ...cardStyle, padding: 0, flex: 1, minWidth: 0, display: "flex", flexDirection: "column", overflow: "hidden" }}>
         <SteelDoorPreview resolution={resolution} config={config} />
       </section>
     </div>

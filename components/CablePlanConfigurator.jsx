@@ -8,6 +8,8 @@ import {
   flattenComponents, buildInclusionMap, buildInitialState,
   isMandatoryForSystem, getRemarksOverride, validateConfiguration,
 } from "../lib/cablePlanSpec";
+import { cardStyle } from "../lib/theme";
+import { QS, ICONS, StepTabs } from "./quickSpecUI";
 
 // ─── System definitions ───────────────────────────────────────────
 // One JSON file per system in data/cable-systems/ — the component
@@ -38,6 +40,7 @@ const TYPE_LABELS = {
 };
 
 const STEPS = ["System", "Components", "Project", "Review"];
+const STEP_ICONS = ["gear", "components", "project", "sheet"];
 
 const fieldStyle = {
   width: "100%", boxSizing: "border-box",
@@ -82,45 +85,10 @@ function CheckBox({ checked, onChange, label }) {
 
 function StepBar({ currentStep, setCurrentStep, furthest }) {
   return (
-    <nav aria-label="Progress" style={{ display: "flex", borderBottom: `1px solid ${UI.rule}`, flexShrink: 0 }}>
-      {STEPS.map((label, i) => {
-        const done = i < currentStep;
-        const active = i === currentStep;
-        const reachable = i <= furthest;
-        return (
-          <button
-            key={label} type="button"
-            onClick={reachable ? () => setCurrentStep(i) : undefined}
-            aria-current={active ? "step" : undefined}
-            style={{
-              flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-              padding: "14px 8px", background: "none", border: "none",
-              borderBottom: `2px solid ${active ? UI.accent : "transparent"}`, marginBottom: -1,
-              cursor: reachable ? "pointer" : "default", fontFamily: FONT,
-              color: active ? UI.ink : reachable ? UI.body : UI.muted,
-              fontWeight: active ? 600 : 500, fontSize: 13.5,
-            }}
-          >
-            <span style={{
-              width: 20, height: 20, flexShrink: 0,
-              border: `1.5px solid ${active || done ? UI.accent : UI.ruleStrong}`,
-              background: done ? UI.accent : "transparent",
-              color: done ? "#FFFFFF" : active ? UI.accent : UI.muted,
-              display: "flex", alignItems: "center", justifyContent: "center",
-              fontSize: 11, fontWeight: 600,
-            }}>
-              {done ? (
-                <svg width="10" height="8" viewBox="0 0 10 8" aria-hidden="true">
-                  <path d="M1 4L3.6 6.6L9 1.2" fill="none" stroke="#FFFFFF" strokeWidth="2"
-                    strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              ) : i + 1}
-            </span>
-            {label}
-          </button>
-        );
-      })}
-    </nav>
+    <StepTabs
+      steps={STEPS.map((label, i) => ({ label, icon: ICONS[STEP_ICONS[i]] }))}
+      current={currentStep} furthest={furthest} onSelect={setCurrentStep}
+    />
   );
 }
 
@@ -556,16 +524,17 @@ export default function CablePlanConfigurator({ startSystemId, onChangeSystem, s
   const nextDisabled = currentStep === 1 && !validation.isValid;
 
   return (
-    <div style={{
-      display: "flex", height: "calc(100vh - 136px)", minHeight: 640,
-      borderTop: `1px solid ${UI.rule}`, background: UI.surface,
+    <div className="mf-rounded" style={{
+      display: "flex", gap: 20, height: "calc(100vh - 136px)", minHeight: 640,
+      borderTop: `1px solid ${UI.rule}`, background: QS.bg, padding: "20px 24px",
       fontFamily: FONT, color: UI.body, overflow: "hidden",
     }}>
 
       {/* ── Configuration rail ── */}
       <aside style={{
+        ...cardStyle, padding: 0,
         width: 496, flexShrink: 0, display: "flex", flexDirection: "column",
-        borderRight: `1px solid ${UI.ruleStrong}`, minHeight: 0,
+        minHeight: 0, overflow: "hidden",
       }}>
 
         <header style={{ padding: "18px 22px 16px", borderBottom: `1px solid ${UI.rule}`, flexShrink: 0 }}>
@@ -661,7 +630,7 @@ export default function CablePlanConfigurator({ startSystemId, onChangeSystem, s
       </aside>
 
       {/* ── Drawing ── */}
-      <section style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column" }}>
+      <section style={{ ...cardStyle, padding: 0, flex: 1, minWidth: 0, display: "flex", flexDirection: "column", overflow: "hidden" }}>
         <DoorElevation
           system={system} componentStates={componentStates}
           activeId={activeId} onSelect={handleSelectFromDrawing}

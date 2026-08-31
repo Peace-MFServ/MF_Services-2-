@@ -2,6 +2,7 @@
 import { useState, useCallback } from "react";
 import { generateCablePlanPDF } from "../lib/generateCablePlanPDF";
 import { UI, FONT, resolveCable, flattenComponents, isMandatoryForSystem } from "../lib/cablePlanSpec";
+import { ICONS } from "./quickSpecUI";
 
 // ─── Notifications ────────────────────────────────────────────────
 
@@ -193,8 +194,10 @@ export default function ReviewAndGenerate({ system, componentStates, projectData
 
         <button
           type="button" onClick={handleGenerate} disabled={generating || !isValid}
+          className="qs-download"
           style={{
-            width: "100%", padding: "14px 20px",
+            width: "100%", height: 46, padding: "0 20px",
+            display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
             border: `1px solid ${isValid ? UI.accent : UI.ruleStrong}`,
             fontSize: 14, fontWeight: 600, fontFamily: FONT,
             background: isValid ? UI.accent : UI.sunken,
@@ -203,6 +206,7 @@ export default function ReviewAndGenerate({ system, componentStates, projectData
           }}
         >
           {generating ? "Generating" : isValid ? "Download PDF" : `${errors.length} to fix`}
+          {!generating && isValid && ICONS.download}
         </button>
       </div>
     </>

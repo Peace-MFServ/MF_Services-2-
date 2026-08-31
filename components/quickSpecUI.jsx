@@ -83,6 +83,20 @@ export const ICONS = {
       <path {...stroke} d="M12 3 20 7.5v9L12 21 4 16.5v-9L12 3z M4 7.5 12 12l8-4.5 M12 12v9" />
     </svg>
   ),
+  gear: (
+    <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true">
+      <circle {...stroke} cx="12" cy="12" r="3" />
+      <path {...stroke} d="M12 2.5v3 M12 18.5v3 M2.5 12h3 M18.5 12h3 M5.3 5.3l2.1 2.1 M16.6 16.6l2.1 2.1 M18.7 5.3l-2.1 2.1 M7.4 16.6l-2.1 2.1" />
+    </svg>
+  ),
+  components: (
+    <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true">
+      <rect {...stroke} x="3.5" y="3.5" width="7" height="7" rx="1" />
+      <rect {...stroke} x="13.5" y="3.5" width="7" height="7" rx="1" />
+      <rect {...stroke} x="3.5" y="13.5" width="7" height="7" rx="1" />
+      <rect {...stroke} x="13.5" y="13.5" width="7" height="7" rx="1" />
+    </svg>
+  ),
   restart: (
     <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true">
       <path {...stroke} d="M20 11a8 8 0 1 0-2.3 6.3 M20 4v7h-7" />
@@ -170,6 +184,51 @@ export function CardTitle({ icon, children, hint }) {
         <p style={{ margin: "5px 0 0", fontSize: 13, lineHeight: 1.5, color: QS.muted }}>{hint}</p>
       )}
     </div>
+  );
+}
+
+/**
+ * The guided flows' progress bar: one tab per step, each carrying its
+ * section icon — the same icons the quick screens and the summary use,
+ * so a section looks the same wherever it appears. A finished step
+ * swaps its icon for a check; the active one is tinted and underlined.
+ */
+export function StepTabs({ steps, current, furthest, onSelect }) {
+  return (
+    <nav aria-label="Progress" style={{ display: "flex", borderBottom: "1px solid #E2E8F0", flexShrink: 0 }}>
+      {steps.map((s, i) => {
+        const done = i < current;
+        const active = i === current;
+        const reachable = i <= furthest;
+        return (
+          <button
+            key={s.label} type="button"
+            onClick={reachable ? () => onSelect(i) : undefined}
+            aria-current={active ? "step" : undefined}
+            style={{
+              flex: "1 1 auto", minWidth: 0, display: "flex", alignItems: "center", justifyContent: "center", gap: 7,
+              padding: "12px 6px", border: "none", borderRadius: 0,
+              background: active ? QS.selected : "none",
+              borderBottom: `2px solid ${active ? UI.accent : "transparent"}`, marginBottom: -1,
+              cursor: reachable ? "pointer" : "default", fontFamily: FONT,
+              color: active ? UI.accent : reachable ? QS.ink : QS.muted,
+              fontWeight: active ? 600 : 500, fontSize: 12.5,
+            }}
+          >
+            <span aria-hidden="true" style={{
+              display: "inline-flex", flexShrink: 0,
+              color: done || active ? UI.accent : QS.muted,
+            }}>
+              {done ? ICONS.check : s.icon}
+            </span>
+            <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              {s.label}
+              {done && <span className="vh"> (done)</span>}
+            </span>
+          </button>
+        );
+      })}
+    </nav>
   );
 }
 
