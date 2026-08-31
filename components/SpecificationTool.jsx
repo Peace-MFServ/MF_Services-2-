@@ -134,7 +134,9 @@ function Card({ art, label, summary, comingSoon, onSelect }) {
       }}
     >
       <div style={{
-        position: "relative", width: "100%", height: 240, flexShrink: 0,
+        // Sized to the window, so both sections sit on one screen on a
+        // normal laptop as well as a tall monitor.
+        position: "relative", width: "100%", height: "clamp(160px, 23vh, 240px)", flexShrink: 0,
         background: "#F4F6F8",
         opacity: live ? 1 : 0.78,
       }}>
@@ -191,9 +193,9 @@ function Card({ art, label, summary, comingSoon, onSelect }) {
   );
 }
 
-function Group({ title, note, children }) {
+function Group({ title, note, last, children }) {
   return (
-    <section style={{ marginBottom: 38 }}>
+    <section style={{ marginBottom: last ? 0 : 38 }}>
       <h2 style={{
         margin: "0 0 3px", fontSize: 13, fontWeight: 700, letterSpacing: "0.07em",
         textTransform: "uppercase", color: UI.ink, fontFamily: FONT,
@@ -229,7 +231,7 @@ function Chooser({ onChoose }) {
         })}
       </Group>
 
-      <Group title="Cable plans" note="Cabling schedules for powered door systems, position by position.">
+      <Group title="Cable plans" note="Cabling schedules for powered door systems, position by position." last>
         {CABLE_SYSTEMS.map(sys => (
           <Card
             key={sys.id}
