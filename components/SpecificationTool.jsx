@@ -150,14 +150,14 @@ function Card({ art, label, summary, comingSoon, onSelect }) {
           </span>
         )}
       </div>
-      {/* The white panel floats up over the photo, and the badge
-          floats up again over both — the mf navy lives in the icon,
-          the name and the chevron rather than a solid plate. */}
+      {/* The navy plate floats up over the photo, and the white badge
+          floats up again across the seam — the brand blue carries the
+          name, the badge stays a white circle inside it. */}
       <div style={{
         position: "relative", marginTop: -12, flex: 1,
         display: "flex", alignItems: "flex-start", gap: 13,
         padding: "14px 18px 15px",
-        background: UI.surface, borderRadius: "10px 10px 0 0",
+        background: live ? UI.accent : "#5B6B7E", borderRadius: "10px 10px 0 0",
       }}>
         <span aria-hidden="true" style={{
           width: 48, height: 48, borderRadius: "50%", flexShrink: 0,
@@ -172,17 +172,17 @@ function Card({ art, label, summary, comingSoon, onSelect }) {
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{
             fontSize: 17, fontWeight: 700, letterSpacing: "-0.01em",
-            color: live ? UI.accent : UI.muted, lineHeight: 1.25,
+            color: "#FFFFFF", lineHeight: 1.25,
           }}>
             {label}
           </div>
-          <p style={{ margin: "4px 0 0", fontSize: 13, lineHeight: 1.45, color: UI.body }}>
+          <p style={{ margin: "4px 0 0", fontSize: 13, lineHeight: 1.45, color: "rgba(255,255,255,0.85)" }}>
             {summary}
           </p>
         </div>
         {live && (
           <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"
-            style={{ flexShrink: 0, color: UI.accent, alignSelf: "center" }}>
+            style={{ flexShrink: 0, color: "#FFFFFF", alignSelf: "center" }}>
             <path fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" d="M9 6l6 6-6 6" />
           </svg>
         )}
