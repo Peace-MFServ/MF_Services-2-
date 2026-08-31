@@ -19,15 +19,13 @@ const TABS = [
   { id: 'pricer', label: 'Pricer', staffOnly: true },
 ]
 
-// The specification tool is a two-pane workspace — a configuration
-// rail beside a persistent elevation — and it runs full-bleed: the
-// whole browser width is its own. Only the calculator keeps a reading
-// width.
+// The specification tool and the pricer paint their own canvas edge
+// to edge and centre their own content. Only the calculator keeps a
+// reading width here.
 const CONTENT_MAX_WIDTH = {
   overpressure: 1400,
-  pricer: 1100,
 }
-const FULL_BLEED = new Set(["specification"])
+const FULL_BLEED = new Set(["specification", "pricer"])
 
 export default function Home() {
   return (

@@ -9,7 +9,8 @@ import {
 import { useDoorsetConfig, initialConfig } from "./steelSpecState";
 import { buildQuote } from "../lib/quote";
 import SteelDoorsetFields from "./SteelDoorsetFields";
-import { UI, FONT, fieldStyle } from "../lib/theme";
+import { UI, FONT, fieldStyle, cardStyle } from "../lib/theme";
+import { QS, CardTitle, ICONS } from "./quickSpecUI";
 
 // ─────────────────────────────────────────────────────────────────
 // Pricer — MF Services staff only
@@ -35,33 +36,39 @@ const lineId = () => `line-${nextId++}-${Math.random().toString(36).slice(2, 7)}
 
 // ─── Primitives ───────────────────────────────────────────────────
 
-function Heading({ children, note }) {
+/** The tab paints its own canvas, like the specification tool. */
+function Shell({ children }) {
   return (
-    <div style={{ marginBottom: 14 }}>
-      <h2 style={{
-        margin: 0, fontSize: 12, fontWeight: 700, letterSpacing: "0.08em",
-        textTransform: "uppercase", color: UI.ink, fontFamily: FONT,
-      }}>
+    <div className="mf-rounded" style={{
+      background: QS.bg, borderTop: `1px solid ${UI.rule}`,
+      minHeight: "calc(100vh - 136px)", fontFamily: FONT, color: UI.body,
+    }}>
+      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "24px 28px 60px" }}>
         {children}
-      </h2>
-      {note && <p style={{ margin: "5px 0 0", fontSize: 12.5, lineHeight: 1.45, color: UI.muted }}>{note}</p>}
+      </div>
     </div>
   );
 }
 
-function Button({ onClick, children, primary, disabled }) {
+function Button({ onClick, children, primary, disabled, icon }) {
   return (
     <button
       type="button" onClick={onClick} disabled={disabled}
       style={{
+        display: "inline-flex", alignItems: "center", gap: 8,
         padding: primary ? "11px 20px" : "8px 14px",
-        fontSize: primary ? 13.5 : 12.5, fontWeight: primary ? 600 : 400, fontFamily: FONT,
-        border: `1px solid ${disabled ? UI.ruleStrong : primary ? UI.accent : UI.ruleStrong}`,
+        fontSize: primary ? 13.5 : 12.5, fontWeight: primary ? 600 : 500, fontFamily: FONT,
+        border: `1px solid ${disabled ? UI.ruleStrong : primary ? UI.accent : "#CBD5E1"}`,
         background: disabled ? UI.sunken : primary ? UI.accent : UI.surface,
         color: disabled ? UI.muted : primary ? "#FFFFFF" : UI.body,
         cursor: disabled ? "not-allowed" : "pointer", whiteSpace: "nowrap",
       }}
     >
+      {icon && (
+        <span aria-hidden="true" style={{ display: "inline-flex", color: disabled ? UI.muted : primary ? "#FFFFFF" : UI.accent }}>
+          {icon}
+        </span>
+      )}
       {children}
     </button>
   );
@@ -236,39 +243,41 @@ function DoorsetEditor({ initial, initialName, onCancel, onDone, existing }) {
     <div style={{ fontFamily: FONT }}>
       <div style={{
         display: "flex", alignItems: "baseline", justifyContent: "space-between",
-        gap: 16, flexWrap: "wrap", marginBottom: 22,
+        gap: 16, flexWrap: "wrap", marginBottom: 20,
       }}>
-        <h2 style={{ margin: 0, fontSize: 19, fontWeight: 600, letterSpacing: "-0.01em", color: UI.ink }}>
+        <h2 style={{ margin: 0, fontSize: 26, fontWeight: 700, letterSpacing: "-0.015em", color: QS.ink }}>
           {existing ? "Edit doorset" : "New doorset"}
         </h2>
         <Button onClick={onCancel}>Cancel</Button>
       </div>
 
-      <div style={{ marginBottom: 26, maxWidth: 340 }}>
-        <div style={{
-          fontSize: 11, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase",
-          color: UI.muted, marginBottom: 6,
-        }}>
-          Reference
+      <div style={{ ...cardStyle, marginBottom: 16 }}>
+        <div style={{ maxWidth: 340 }}>
+          <div style={{
+            fontSize: 11, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase",
+            color: QS.muted, marginBottom: 6,
+          }}>
+            Reference
+          </div>
+          <input
+            id="pricer-line-name" value={name} placeholder="e.g. D-01, ground floor plant room"
+            onChange={e => setName(e.target.value)}
+            style={{ ...fieldStyle, padding: "10px 12px", fontSize: 13 }} className="mf-field"
+          />
         </div>
-        <input
-          id="pricer-line-name" value={name} placeholder="e.g. D-01, ground floor plant room"
-          onChange={e => setName(e.target.value)}
-          style={{ ...fieldStyle, padding: "8px 10px", fontSize: 13 }} className="mf-field"
-        />
       </div>
 
       {/* The action bar is pinned to the foot of the window, so the
           form is given room to clear it rather than ending underneath. */}
       <div style={{ paddingBottom: 96 }}>
-        <SteelDoorsetFields config={config} set={set} resolution={resolution} idPrefix="pr" />
+        <SteelDoorsetFields config={config} set={set} resolution={resolution} idPrefix="pr" cards />
       </div>
 
       <div style={{
-        position: "sticky", bottom: 16, marginTop: -80,
+        ...cardStyle, position: "sticky", bottom: 16, marginTop: -80,
         display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16,
-        padding: "16px 20px", background: UI.surface,
-        border: `1px solid ${UI.ruleStrong}`, flexWrap: "wrap",
+        padding: "16px 20px", flexWrap: "wrap",
+        boxShadow: "0 6px 24px rgba(15, 23, 42, 0.12)",
       }}>
         <div style={{ minWidth: 0 }}>
           <div style={{ fontSize: 13.5, fontWeight: 600, color: UI.ink }}>
@@ -424,14 +433,14 @@ export default function Pricer() {
     setEditing({ lineId: null, config, name });
   };
 
-  if (!ready) return <div style={{ minHeight: 400 }} />;
+  if (!ready) return <Shell><div style={{ minHeight: 400 }} /></Shell>;
   if (!isStaff) {
     return (
-      <div style={{ padding: "40px 0", fontFamily: FONT }}>
+      <Shell>
         <p style={{ margin: 0, fontSize: 14, color: UI.body }}>
           Pricing is for MF Services staff.
         </p>
-      </div>
+      </Shell>
     );
   }
 
@@ -463,7 +472,7 @@ export default function Pricer() {
 
   if (editing) {
     return (
-      <div style={{ padding: "28px 0 60px", fontFamily: FONT, color: UI.body }}>
+      <Shell>
         <DoorsetEditor
           key={editing.lineId ?? "new"}
           initial={editing.config}
@@ -472,15 +481,15 @@ export default function Pricer() {
           onCancel={() => setEditing(null)}
           onDone={commit}
         />
-      </div>
+      </Shell>
     );
   }
 
   return (
-    <div style={{ padding: "28px 0 60px", fontFamily: FONT, color: UI.body }}>
+    <Shell>
 
-      <div style={{ marginBottom: 26 }}>
-        <h2 style={{ margin: 0, fontSize: 24, fontWeight: 600, letterSpacing: "-0.02em", color: UI.ink }}>
+      <div style={{ marginBottom: 20 }}>
+        <h2 style={{ margin: 0, fontSize: 26, fontWeight: 700, letterSpacing: "-0.015em", color: QS.ink }}>
           Pricer
         </h2>
         <p style={{ margin: "8px 0 0", fontSize: 14, lineHeight: 1.55, color: UI.body, maxWidth: 640 }}>
@@ -490,21 +499,17 @@ export default function Pricer() {
         </p>
       </div>
 
-      <div style={{ marginBottom: 26, maxWidth: 340 }}>
-        <div style={{
-          fontSize: 11, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase",
-          color: UI.muted, marginBottom: 6,
-        }}>
-          Project
+      <div style={{ ...cardStyle, marginBottom: 16 }}>
+        <CardTitle icon={ICONS.project}>Project</CardTitle>
+        <div style={{ marginBottom: 20, maxWidth: 340 }}>
+          <input
+            id="pricer-project" value={project} placeholder="e.g. Docklands Block C"
+            aria-label="Project"
+            onChange={e => setProject(e.target.value)}
+            style={{ ...fieldStyle, padding: "10px 12px", fontSize: 13 }} className="mf-field"
+          />
         </div>
-        <input
-          id="pricer-project" value={project} placeholder="e.g. Docklands Block C"
-          onChange={e => setProject(e.target.value)}
-          style={{ ...fieldStyle, padding: "8px 10px", fontSize: 13 }} className="mf-field"
-        />
-      </div>
 
-      <div style={{ marginBottom: 30 }}>
         <Button primary onClick={() => setEditing({ lineId: null, config: initialConfig(), name: "" })}>
           Add a doorset
         </Button>
@@ -513,18 +518,18 @@ export default function Pricer() {
           <div style={{ marginTop: 16 }}>
             <div style={{
               fontSize: 11, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase",
-              color: UI.muted, marginBottom: 8,
+              color: QS.muted, marginBottom: 8,
             }}>
               Or start from one you already have
             </div>
             <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
               {fromTool && (
-                <Button onClick={() => addFrom(fromTool.config, fromTool.name)}>
+                <Button icon={ICONS.door} onClick={() => addFrom(fromTool.config, fromTool.name)}>
                   Open in the Specification Tool — {fromTool.description}
                 </Button>
               )}
               {(projects ?? []).map(p => (
-                <Button key={p.id} onClick={() => addFrom(p.payload?.config ?? {}, p.name)}>
+                <Button key={p.id} icon={ICONS.bookmark} onClick={() => addFrom(p.payload?.config ?? {}, p.name)}>
                   Saved project — {p.name}
                 </Button>
               ))}
@@ -535,7 +540,7 @@ export default function Pricer() {
 
       {notice && (
         <div style={{
-          marginBottom: 20, padding: "10px 14px", fontSize: 13,
+          marginBottom: 16, padding: "10px 14px", fontSize: 13, borderRadius: 8,
           border: `1px solid ${UI.ruleStrong}`, borderLeft: `3px solid ${UI.warn}`,
           background: UI.surface, color: UI.body,
         }}>
@@ -543,28 +548,33 @@ export default function Pricer() {
         </div>
       )}
 
-      <Heading note={lines.length === 0
-        ? "Nothing on the quote yet. Add a doorset above and it will price itself."
-        : undefined}>
-        Schedule
-      </Heading>
+      <div style={{ ...cardStyle, marginBottom: 16 }}>
+        <CardTitle
+          icon={ICONS.door}
+          hint={lines.length === 0
+            ? "Nothing on the quote yet. Add a doorset above and it will price itself."
+            : undefined}
+        >
+          Schedule
+        </CardTitle>
 
-      {lines.length > 0 && (
-        <div style={{ marginBottom: 30 }}>
-          {lines.map(line => (
-            <Line
-              key={line.id} line={line}
-              onChange={next => setLines(cur => cur.map(l => (l.id === next.id ? next : l)))}
-              onEdit={() => editLine(line)}
-              onRemove={() => setLines(cur => cur.filter(l => l.id !== line.id))}
-            />
-          ))}
-        </div>
-      )}
+        {lines.length > 0 && (
+          <div>
+            {lines.map(line => (
+              <Line
+                key={line.id} line={line}
+                onChange={next => setLines(cur => cur.map(l => (l.id === next.id ? next : l)))}
+                onEdit={() => editLine(line)}
+                onRemove={() => setLines(cur => cur.filter(l => l.id !== line.id))}
+              />
+            ))}
+          </div>
+        )}
+      </div>
 
       {lines.length > 0 && (
         <div style={{
-          border: `1px solid ${UI.ruleStrong}`, background: UI.sunken,
+          ...cardStyle,
           padding: "18px 20px", maxWidth: 460, marginLeft: "auto",
         }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 14, padding: "6px 0" }}>
@@ -611,24 +621,29 @@ export default function Pricer() {
           }}>
             <button
               type="button" onClick={() => download("pdf")} disabled={!!exporting}
+              className="qs-download"
               style={{
                 flex: 1, padding: "11px 14px", fontSize: 13, fontWeight: 600, fontFamily: FONT,
+                display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
                 border: `1px solid ${UI.accent}`, background: UI.accent, color: "#FFFFFF",
                 cursor: exporting ? "progress" : "pointer",
               }}
             >
               {exporting === "pdf" ? "Generating" : "Download PDF"}
+              {exporting !== "pdf" && ICONS.download}
             </button>
             <button
               type="button" onClick={() => download("xlsx")} disabled={!!exporting}
               title="Every component on its own row, with live formulas — fill a missing price in Excel and the totals recalculate"
               style={{
                 flex: 1, padding: "11px 14px", fontSize: 13, fontWeight: 600, fontFamily: FONT,
+                display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
                 border: `1px solid ${UI.accent}`, background: UI.surface, color: UI.accent,
                 cursor: exporting ? "progress" : "pointer",
               }}
             >
               {exporting === "xlsx" ? "Generating" : "Download Excel"}
+              {exporting !== "xlsx" && ICONS.download}
             </button>
           </div>
           <p style={{ margin: "10px 0 0", fontSize: 11.5, lineHeight: 1.45, color: UI.muted }}>
@@ -636,6 +651,6 @@ export default function Pricer() {
           </p>
         </div>
       )}
-    </div>
+    </Shell>
   );
 }
