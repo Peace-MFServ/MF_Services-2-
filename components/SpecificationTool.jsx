@@ -7,7 +7,7 @@ import SteelDoorSpec from "./SteelDoorSpec";
 import SteelQuickSpec from "./SteelQuickSpec";
 import { useAuth } from "./AuthProvider";
 import { SaveProjectButton } from "./SavedProjects";
-import { writeWorkingState } from "../lib/projects";
+import { writeWorkingState, workingKeyFor } from "../lib/projects";
 import { useProjects } from "./ProjectsProvider";
 import { PRODUCT_ART, CABLE_ART, CableSingleArt } from "./ProductIllustrations";
 import ProductPhoto, { PRODUCT_PHOTOS, CABLE_PHOTOS } from "./ProductPhoto";
@@ -28,8 +28,31 @@ const CABLE_COMING_SOON = [
   { id: "sliding-operator", label: "Sliding operator", summary: "Automatic sliding door drive with safety sensors." },
 ];
 
+// ─── The flow rule ────────────────────────────────────────────────
+// One piece of memory decides where you are: the selection blob,
+// {kind, id, mode}. Entering a product from the chooser always
+// starts guided, on the first step — the answers resume, the place
+// in the flow does not. The mode lives inside the blob, so leaving
+// the product (Change product, the logo) forgets it too; only a
+// mid-spec refresh brings it back. Saved projects open guided.
+// ──────────────────────────────────────────────────────────────────
 const STORAGE_KEY = "mf-specification-tool-selection";
-const MODE_KEY = "mf-specification-tool-mode";
+
+/** A fresh entry starts at the first step; the answers stay. The
+ *  tools clamp the step up themselves where step 0 is the chooser. */
+function resetWorkingStep(kind, selectionId) {
+  try {
+    const key = workingKeyFor(kind, selectionId);
+    if (!key) return;
+    const raw = window.sessionStorage.getItem(key);
+    if (!raw) return;
+    const saved = JSON.parse(raw);
+    if (typeof saved.currentStep === "number" && saved.currentStep !== 0) {
+      saved.currentStep = 0;
+      window.sessionStorage.setItem(key, JSON.stringify(saved));
+    }
+  } catch { /* best-effort */ }
+}
 
 /** Guided walks you through it; quick puts the whole thing on one
  *  screen for someone who specifies these every week. */
@@ -218,21 +241,32 @@ export default function SpecificationTool() {
     // beats hiding it — it is the clearest reason to have an account.
     if (m === "quick" && !signedIn) { promptSignIn(); return; }
     setMode(m);
-    try { window.sessionStorage.setItem(MODE_KEY, m); } catch { /* best-effort */ }
+    // The mode rides inside the selection blob, so it lives and dies
+    // with this visit to the product.
+    try {
+      const raw = window.sessionStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ ...JSON.parse(raw), mode: m }));
+      }
+    } catch { /* best-effort */ }
   }, [signedIn, promptSignIn]);
 
   // Signing out drops straight back to the guided layout, including
   // when a stored preference says otherwise.
   const effectiveMode = signedIn ? mode : "guided";
 
+  /** Enter a product fresh: guided, first step, answers intact. */
   const choose = useCallback(sel => {
     setSelection(sel);
-    try { window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify(sel)); } catch { /* best-effort */ }
+    setMode("guided");
+    resetWorkingStep(sel.kind, sel.id);
+    try { window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ ...sel, mode: "guided" })); } catch { /* best-effort */ }
   }, []);
 
   const clear = useCallback(() => {
     setSelection(null);
     setOpenProject(null);
+    setMode("guided");
     try { window.sessionStorage.removeItem(STORAGE_KEY); } catch { /* best-effort */ }
   }, []);
 
@@ -294,13 +328,15 @@ export default function SpecificationTool() {
   return <SpecGenerator startProductId={selection.id} onChangeProduct={clear} modeSwitch={modeSwitch} />;
 }
 
-/** Bring back what was being specified before a refresh. */
+/** Bring back what was being specified before a refresh — selection
+ *  and mode together, from the one blob. */
 function useRestoredSelection(setSelection, setMode) {
   const [done, setDone] = useState(false);
   useEffect(() => {
     try {
-      const savedMode = window.sessionStorage.getItem(MODE_KEY);
-      if (savedMode === "quick" || savedMode === "guided") setMode(savedMode);
+      // The mode used to live under its own immortal key; forget any
+      // leftover so old sessions cannot haunt new visits.
+      window.sessionStorage.removeItem("mf-specification-tool-mode");
     } catch { /* best-effort */ }
     try {
       const raw = window.sessionStorage.getItem(STORAGE_KEY);
@@ -309,7 +345,10 @@ function useRestoredSelection(setSelection, setMode) {
         const valid = saved?.kind === "door"
           ? PRODUCT_TYPES.some(p => p.id === saved.id && p.available)
           : CABLE_SYSTEMS.some(s => s.id === saved?.id);
-        if (valid) setSelection(saved);
+        if (valid) {
+          setSelection({ kind: saved.kind, id: saved.id });
+          if (saved.mode === "quick" || saved.mode === "guided") setMode(saved.mode);
+        }
       }
     } catch { /* corrupt or unavailable storage is not worth breaking the tool over */ }
     setDone(true);
