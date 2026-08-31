@@ -16,15 +16,15 @@ import { useState } from "react";
 // ─────────────────────────────────────────────────────────────────
 
 export const PRODUCT_PHOTOS = {
-  "riser-doors":      { src: "/products/riser.jpg",       position: "center 55%" },
+  "riser-doors":      { src: "/products/riser.jpg",       position: "center 28%" },
   "steel-doors":      { src: "/products/steel.jpg",       position: "center 14%" },
   "swing-automation": { src: "/products/swing.jpg",       position: "center top" },
   "sliding-options":  { src: "/products/sliding.jpg",     position: "center" },
 };
 
 export const CABLE_PHOTOS = {
-  "ets73-single":     { src: "/products/cable-swing.jpg", position: "center 30%" },
-  "ets73-double":     { src: "/products/cable-double.jpg", position: "center" },
+  "ets73-single":     { src: "/products/cable-swing.jpg", position: "center 8%" },
+  "ets73-double":     { src: "/products/cable-double.jpg", position: "center 10%" },
   "hold-open":        { src: "/products/hold-open.jpg",   position: "center" },
   "sliding-operator": { src: "/products/sliding.jpg",     position: "center" },
 };
