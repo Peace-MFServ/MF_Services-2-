@@ -100,17 +100,60 @@ function ModeSwitch({ mode, onChange, locked }) {
   );
 }
 
-// The badge glyph — a door standing ajar in its frame, drawn to read
-// inside the round badge on every gallery card.
-const doorStroke = { fill: "none", stroke: "currentColor", strokeWidth: 1.6, strokeLinecap: "round", strokeLinejoin: "round" };
+// The badge glyphs — simplified architectural elevations, one
+// silhouette per door category, all drawn with the same stroke so
+// the set reads as a family: riser access pair under its pipework,
+// a hinged steel leaf, an operator with its swing, sliding panels,
+// the ETS operators over one and two leaves, a held-open leaf, and
+// a driven sliding panel.
+const gStroke = { fill: "none", stroke: "currentColor", strokeWidth: 1.7, strokeLinecap: "round", strokeLinejoin: "round" };
+const g = d => (
+  <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+    <path {...gStroke} d={d} />
+  </svg>
+);
+const CARD_GLYPHS = {
+  // Double access panels with pipe stubs rising into the shaft.
+  "riser-doors": g("M4 20.5h16 M6.5 20.5V6h11v14.5 M12 6v14.5 M9 6V3.5 M12 6V3.5 M15 6V3.5"),
+  // One heavy leaf: hinge ticks one side, handle the other.
+  "steel-doors": (
+    <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+      <path {...gStroke} d="M4 20.5h16 M7 20.5V4.5h10v16 M7 8.5h1.7 M7 12.5h1.7 M7 16.5h1.7" />
+      <circle cx="14.8" cy="12.5" r="0.9" fill="currentColor" stroke="none" />
+    </svg>
+  ),
+  // Operator on the header, the leaf's swing drawn as an arc.
+  "swing-automation": g("M4 20.5h16 M6 20.5V6h12v14.5 M6.5 8.5h11 M9 20.5V11 M9 20.5a8.5 8.5 0 0 1 8.5-8.5"),
+  // Two hung panels on a track, pulling apart.
+  "sliding-options": g("M4 5h16 M7 5v12.5h4.4V5 M12.6 5v12.5H17V5 M8 21H4.5 M6 19.5 4.5 21 6 22.5 M16 21h3.5 M18 19.5 19.5 21 18 22.5"),
+  // The ETS operator bar over a single leaf.
+  "ets73-single": (
+    <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+      <path {...gStroke} d="M4 20.5h16 M5.5 4.5h13v2.6h-13z M8 20.5V7.1h8v13.4" />
+      <circle cx="13.9" cy="14" r="0.9" fill="currentColor" stroke="none" />
+    </svg>
+  ),
+  // The same operator bar over a pair.
+  "ets73-double": g("M4 20.5h16 M5.5 4.5h13v2.6h-13z M6.5 20.5V7.1h11v13.4 M12 7.1v13.4"),
+  // A leaf held open by the closer arm on its box.
+  "hold-open": (
+    <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+      <path {...gStroke} d="M3 20.5h18 M5.5 20.5V5h8 M13.5 5l5 2.4v13.1 M6.5 3h5v2 M11.5 4l4.5 2.2" />
+      <circle cx="16.2" cy="13.5" r="0.9" fill="currentColor" stroke="none" />
+    </svg>
+  ),
+  // One driven panel sliding along its track.
+  "sliding-operator": g("M4 4.5h16 M4.5 4.5v2.4h15V4.5 M7 20.5V9.5h7v11 M16.5 14.5H21 M19.2 12.7l1.8 1.8-1.8 1.8"),
+};
+// Anything unmapped falls back to the door standing ajar.
 const DOOR_GLYPH = (
-  <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
-    <path {...doorStroke} d="M3 20.5h18 M5.5 20.5V4h9v16.5 M14.5 4l4.5 2.2v14.3" />
+  <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+    <path {...gStroke} d="M3 20.5h18 M5.5 20.5V4h9v16.5 M14.5 4l4.5 2.2v14.3" />
     <circle cx="17" cy="13.2" r="0.9" fill="currentColor" stroke="none" />
   </svg>
 );
 
-function Card({ art, label, summary, comingSoon, onSelect }) {
+function Card({ art, label, summary, comingSoon, onSelect, glyph }) {
   const [hover, setHover] = useState(false);
   const live = !comingSoon;
   const lift = live && hover;
@@ -169,7 +212,7 @@ function Card({ art, label, summary, comingSoon, onSelect }) {
           boxShadow: "0 2px 6px rgba(15, 23, 42, 0.08)",
           color: live ? UI.accent : UI.muted,
         }}>
-          {DOOR_GLYPH}
+          {glyph ?? DOOR_GLYPH}
         </span>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{
@@ -224,6 +267,7 @@ function Chooser({ onChoose }) {
               art={<ProductPhoto photo={PRODUCT_PHOTOS[pt.id]} fallback={Art ? <Art /> : null} />}
               label={pt.label}
               summary={pt.summary}
+              glyph={CARD_GLYPHS[pt.id]}
               comingSoon={!pt.available}
               onSelect={() => onChoose({ kind: "door", id: pt.id })}
             />
@@ -241,6 +285,7 @@ function Chooser({ onChoose }) {
             />}
             label={sys.label}
             summary={sys.summary}
+            glyph={CARD_GLYPHS[sys.id]}
             onSelect={() => onChoose({ kind: "cable", id: sys.id })}
           />
         ))}
@@ -250,6 +295,7 @@ function Chooser({ onChoose }) {
             art={<ProductPhoto photo={CABLE_PHOTOS[sys.id]} fallback={<CableSingleArt />} />}
             label={sys.label}
             summary={sys.summary}
+            glyph={CARD_GLYPHS[sys.id]}
             comingSoon
           />
         ))}
