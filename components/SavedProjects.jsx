@@ -6,6 +6,7 @@ import {
   deleteProject, describeProject,
 } from "../lib/projects";
 import { UI, FONT, fieldStyle } from "../lib/theme";
+import { ICONS } from "./quickSpecUI";
 
 // Saving and reopening work. The tools themselves stay unaware of any
 // of this — see lib/projects.js for why.
@@ -29,11 +30,16 @@ export function SaveProjectButton({ kind, selectionId, openProject, onSaved, sty
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState(null);
 
+  // Matches the Change product / Start over buttons it sits beside.
   const buttonStyle = style ?? {
-    padding: "7px 14px", fontSize: 12.5, fontFamily: FONT, fontWeight: 400,
-    border: `1px solid ${UI.ruleStrong}`, background: UI.surface, color: UI.body,
+    display: "inline-flex", alignItems: "center", gap: 8,
+    padding: "8px 14px", fontSize: 12.5, fontFamily: FONT, fontWeight: 500,
+    border: "1px solid #CBD5E1", background: UI.surface, color: UI.body,
     cursor: "pointer", whiteSpace: "nowrap",
   };
+  const saveIcon = (
+    <span aria-hidden="true" style={{ display: "inline-flex", color: UI.accent }}>{ICONS.bookmark}</span>
+  );
 
   const flash = useCallback(n => {
     setNotice(n);
@@ -66,6 +72,7 @@ export function SaveProjectButton({ kind, selectionId, openProject, onSaved, sty
   if (!signedIn) {
     return (
       <button type="button" style={buttonStyle} onClick={promptSignIn} title="Sign in to save a project">
+        {saveIcon}
         Save
       </button>
     );
@@ -84,6 +91,7 @@ export function SaveProjectButton({ kind, selectionId, openProject, onSaved, sty
         type="button" style={buttonStyle} disabled={busy}
         onClick={() => setPanel(p => (p ? null : openProject ? "confirm" : "name"))}
       >
+        {saveIcon}
         {busy ? "Saving" : "Save"}
       </button>
 

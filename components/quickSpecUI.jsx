@@ -102,6 +102,11 @@ export const ICONS = {
       <path {...stroke} d="M20 11a8 8 0 1 0-2.3 6.3 M20 4v7h-7" />
     </svg>
   ),
+  bookmark: (
+    <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true">
+      <path {...stroke} d="M6.5 3.5h11V21L12 16.8 6.5 21V3.5z" />
+    </svg>
+  ),
 };
 
 function HeaderButton({ onClick, icon, children }) {
