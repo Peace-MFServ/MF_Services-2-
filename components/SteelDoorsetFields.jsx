@@ -254,6 +254,18 @@ const HARDWARE_OPTION_PHOTOS = {
   "without preparation": "/products/hw-without-preparation.jpg",
 };
 
+// A few options look different on the passive leaf — its furniture has
+// no keyway or latch — so those questions can override the shared shot.
+const HARDWARE_OPTION_PHOTO_OVERRIDES = {
+  handlePassiveOutside: {
+    "handle on long shield": "/products/hw-passive-handle-long-shield.jpg",
+  },
+};
+
+function hardwarePhotoFor(groupId, option) {
+  return HARDWARE_OPTION_PHOTO_OVERRIDES[groupId]?.[option] ?? HARDWARE_OPTION_PHOTOS[option];
+}
+
 // The three handle questions choose from photo tiles instead of a
 // dropdown — the same floating-panel tiles as the Frame question,
 // minus the glyph badge. An option without a photograph yet keeps a
@@ -268,7 +280,7 @@ export function HardwareTiles({ group, value, onChange }) {
   // without, other) trail so the row doesn't read photo, photo,
   // blank, photo. The sheet's order holds within each half.
   const ordered = [...group.options].sort(
-    (a, b) => (HARDWARE_OPTION_PHOTOS[b] ? 1 : 0) - (HARDWARE_OPTION_PHOTOS[a] ? 1 : 0),
+    (a, b) => (hardwarePhotoFor(group.id, b) ? 1 : 0) - (hardwarePhotoFor(group.id, a) ? 1 : 0),
   );
   return (
     <div role="radiogroup" aria-label={group.label} className="qs-hw-tiles">
@@ -310,7 +322,7 @@ export function HardwareTiles({ group, value, onChange }) {
                   {ICONS.hardware}
                 </span>
               )}
-              <TilePhoto src={HARDWARE_OPTION_PHOTOS[o]} />
+              <TilePhoto src={hardwarePhotoFor(group.id, o)} />
             </span>
             <span style={{
               position: "relative", marginTop: -8, width: "100%", flex: 1,

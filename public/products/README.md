@@ -54,3 +54,4 @@ components/SteelDoorsetFields.jsx (HARDWARE_OPTION_PHOTOS).
 | hw-handle-eco-wc.jpg | handle Eco WC |
 | hw-preparation.jpg | preparation (drilled cut-outs, no furniture) |
 | hw-without-preparation.jpg | without preparation (blank leaf) |
+| hw-passive-handle-long-shield.jpg | handle on long shield, passive leaf only (blind shield, no keyway) |
