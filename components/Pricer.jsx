@@ -234,11 +234,17 @@ function Line({ line, onChange, onEdit, onRemove }) {
 
 /** The same questions the specification tool asks, asked here, so the
  *  estimator never has to go somewhere else and come back. */
-function DoorsetEditor({ initial, initialName, onCancel, onDone, existing }) {
+function DoorsetEditor({ initial, initialName, onCancel, onDone, existing, saveButton, onDraft }) {
   const { config, set, resolution } = useDoorsetConfig(initial ?? initialConfig());
   const [name, setName] = useState(initialName ?? "");
   const validation = validateSteelDoor(config);
   const ready = validation.isValid;
+
+  // The quote's Save lives on this screen too, and it should save what
+  // is being configured — so the draft is reported up as it changes.
+  useEffect(() => {
+    onDraft?.({ config, name: name.trim(), ready });
+  }, [onDraft, config, name, ready]);
 
   return (
     <div style={{ fontFamily: FONT }}>
@@ -249,7 +255,10 @@ function DoorsetEditor({ initial, initialName, onCancel, onDone, existing }) {
         <h2 style={{ margin: 0, fontSize: 26, fontWeight: 700, letterSpacing: "-0.015em", color: QS.ink }}>
           {existing ? "Edit doorset" : "New doorset"}
         </h2>
-        <Button onClick={onCancel}>Cancel</Button>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          {saveButton}
+          <Button onClick={onCancel}>Cancel</Button>
+        </div>
       </div>
 
       <div style={{ ...cardStyle, marginBottom: 16 }}>
@@ -319,6 +328,9 @@ export default function Pricer({ openProject, onSavedProject }) {
   const [editing, setEditing] = useState(null);   // null | { lineId, config, name }
   const [hydrated, setHydrated] = useState(false);
   const priceRef = useRef(null);
+  // What the doorset editor currently has on screen, for saves made
+  // from inside it.
+  const draftRef = useRef(null);
 
   useEffect(() => {
     try {
@@ -435,13 +447,13 @@ export default function Pricer({ openProject, onSavedProject }) {
     setEditing(null);
   };
 
-  const editLine = line => setEditing({ lineId: line.id, config: line.config, name: line.name });
+  const editLine = line => setEditing({ lineId: line.id, config: line.config, name: line.name, sessionKey: lineId() });
 
   const addFrom = (config, name) => {
     if (!resolveSteelDoor(config).type) { flash("That doorset is not complete enough to price."); return; }
     // Opened in the editor rather than dropped straight in, so it is
     // obvious what came across and it can be adjusted before it counts.
-    setEditing({ lineId: null, config, name });
+    setEditing({ lineId: null, config, name, sessionKey: lineId() });
   };
 
   if (!ready) return <Shell><div style={{ minHeight: 400 }} /></Shell>;
@@ -478,16 +490,59 @@ export default function Pricer({ openProject, onSavedProject }) {
     }
   };
 
+  // The Save on the editor screen must save the doorset being
+  // configured, not the quote from before it was opened. The editor
+  // reports its draft; prepare() folds a finished draft into the
+  // quote as a real line — the editor session becomes an edit of that
+  // line, so finishing it later cannot add a duplicate — and writes
+  // the working state, so the save that follows reads what is on
+  // screen. A draft that is not answerable yet stays on screen and
+  // the rest of the quote saves without it.
+  const onDraft = useCallback(d => { draftRef.current = d; }, []);
+
+  const prepareQuoteSave = useCallback(() => {
+    const draft = draftRef.current;
+    let nextLines = lines;
+    if (editing && draft?.ready) {
+      const id = editing.lineId ?? lineId();
+      nextLines = editing.lineId
+        ? lines.map(l => (l.id === id
+            ? { ...l, config: draft.config, name: draft.name || l.name, signature: null }
+            : l))
+        : [...lines, {
+            id, name: draft.name || `Doorset ${lines.length + 1}`,
+            config: draft.config, quantity: "1", signature: null, priced: null,
+          }];
+      setLines(nextLines);
+      setEditing(e => (e ? { ...e, lineId: id } : e));
+    }
+    try {
+      window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify({
+        lines: nextLines, margin, transport, labourMen, labourDays, discount, project,
+      }));
+    } catch { /* best-effort — the effect writes it again anyway */ }
+  }, [editing, lines, margin, transport, labourMen, labourDays, discount, project]);
+
+  const quoteSaveButton = (
+    <SaveProjectButton
+      kind="quote" selectionId="pricer"
+      openProject={openProject} onSaved={onSavedProject}
+      prepare={prepareQuoteSave}
+    />
+  );
+
   if (editing) {
     return (
       <Shell>
         <DoorsetEditor
-          key={editing.lineId ?? "new"}
+          key={editing.sessionKey}
           initial={editing.config}
           initialName={editing.name}
           existing={!!editing.lineId}
           onCancel={() => setEditing(null)}
           onDone={commit}
+          saveButton={quoteSaveButton}
+          onDraft={onDraft}
         />
       </Shell>
     );
@@ -507,10 +562,7 @@ export default function Pricer({ openProject, onSavedProject }) {
             numbers as the spreadsheet, without the spreadsheet.
           </p>
         </div>
-        <SaveProjectButton
-          kind="quote" selectionId="pricer"
-          openProject={openProject} onSaved={onSavedProject}
-        />
+        {quoteSaveButton}
       </div>
 
       <div style={{ ...cardStyle, marginBottom: 16 }}>
@@ -524,7 +576,7 @@ export default function Pricer({ openProject, onSavedProject }) {
           />
         </div>
 
-        <Button primary onClick={() => setEditing({ lineId: null, config: initialConfig(), name: "" })}>
+        <Button primary onClick={() => setEditing({ lineId: null, config: initialConfig(), name: "", sessionKey: lineId() })}>
           Add a doorset
         </Button>
 

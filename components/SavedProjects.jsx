@@ -23,7 +23,7 @@ function when(ts) {
 
 /** Save button for the configurator chrome. One button: naming a new
  *  project, or confirming before it writes over the open one. */
-export function SaveProjectButton({ kind, selectionId, openProject, onSaved, style }) {
+export function SaveProjectButton({ kind, selectionId, openProject, onSaved, style, prepare }) {
   const { signedIn, user, promptSignIn } = useAuth();
   const [panel, setPanel] = useState(null);   // null | "name" | "confirm"
   const [name, setName] = useState("");
@@ -47,6 +47,10 @@ export function SaveProjectButton({ kind, selectionId, openProject, onSaved, sty
   }, []);
 
   const doSave = useCallback(async overwrite => {
+    // A tool can put its unfinished work into the working state first
+    // — the pricer folds the doorset being configured into the quote —
+    // so what is on screen is what gets saved.
+    try { prepare?.(); } catch { /* the quote as it stands still saves */ }
     const payload = readWorkingState(kind, selectionId);
     if (!payload) { flash({ text: "Nothing to save yet.", error: true }); return; }
     setBusy(true);
@@ -67,7 +71,7 @@ export function SaveProjectButton({ kind, selectionId, openProject, onSaved, sty
     } finally {
       setBusy(false);
     }
-  }, [kind, selectionId, name, user, openProject, onSaved, flash]);
+  }, [kind, selectionId, name, user, openProject, onSaved, flash, prepare]);
 
   if (!signedIn) {
     return (
