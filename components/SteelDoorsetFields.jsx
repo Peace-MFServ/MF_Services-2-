@@ -262,9 +262,15 @@ export const HANDLE_TILE_IDS = new Set([
 ]);
 
 export function HardwareTiles({ group, value, onChange }) {
+  // Options with a photograph lead; the plain tiles (preparation,
+  // without, other) trail so the row doesn't read photo, photo,
+  // blank, photo. The sheet's order holds within each half.
+  const ordered = [...group.options].sort(
+    (a, b) => (HARDWARE_OPTION_PHOTOS[b] ? 1 : 0) - (HARDWARE_OPTION_PHOTOS[a] ? 1 : 0),
+  );
   return (
     <div role="radiogroup" aria-label={group.label} className="qs-hw-tiles">
-      {group.options.map(o => {
+      {ordered.map(o => {
         const on = value === o;
         return (
           <button
