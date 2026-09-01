@@ -31,5 +31,6 @@ live in components/SteelDoorsetFields.jsx (FRAME_PHOTOS).
 | frame-corner.jpg | Corner (+ Corner thermal) |
 | frame-block.jpg | Block (+ Block thermal, Block with mineral wool) |
 | frame-block-plaster.jpg | Block with plaster board (+ thermal) |
-| frame-embracing.jpg | Embracing (+ Embracing thermal) |
+| frame-embracing.jpg | Embracing |
+| frame-embracing-thermal.jpg | Embracing thermal |
 | frame-block-small.jpg | Block small (+ filled with plaster board) |

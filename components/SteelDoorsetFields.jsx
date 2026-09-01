@@ -208,10 +208,12 @@ const FRAME_PHOTOS = {
   block:        { src: "/products/frame-block.jpg",         position: "center" },
   plaster:      { src: "/products/frame-block-plaster.jpg", position: "center" },
   embracing:    { src: "/products/frame-embracing.jpg",     position: "center" },
+  "embracing-thermal": { src: "/products/frame-embracing-thermal.jpg", position: "center" },
   "block-small": { src: "/products/frame-block-small.jpg",  position: "center" },
 };
 
 function framePhotoFor(id) {
+  if (id === "embracing-thermal") return FRAME_PHOTOS["embracing-thermal"];
   if (id.startsWith("corner")) return FRAME_PHOTOS.corner;
   if (id.startsWith("embracing")) return FRAME_PHOTOS.embracing;
   if (id.startsWith("block-small")) return FRAME_PHOTOS["block-small"];
