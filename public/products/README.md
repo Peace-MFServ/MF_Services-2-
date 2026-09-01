@@ -35,10 +35,11 @@ live in components/SteelDoorsetFields.jsx (FRAME_PHOTOS).
 | frame-embracing-thermal.jpg | Embracing thermal |
 | frame-block-small.jpg | Block small (+ filled with plaster board) |
 
-## Handle previews (Hardware section)
+## Handle tiles (Hardware section)
 
-A small photo appears under the handle dropdowns when the chosen
-option has one. Keyed by the exact option strings in
+The three handle questions choose from photo tiles, like the Frame
+question. An option without a photo keeps a plain tile and fills in
+when its shot lands here. Keyed by the exact option strings in
 components/SteelDoorsetFields.jsx (HARDWARE_OPTION_PHOTOS).
 
 | File | Option |

@@ -221,18 +221,17 @@ function framePhotoFor(id) {
   return FRAME_PHOTOS.block;
 }
 
-/** The tile's photo strip; a missing file degrades to the plain grey
- *  ground and the badge carries the tile alone. */
-function FrameTilePhoto({ id }) {
-  const [failed, setFailed] = useState(false);
-  const photo = framePhotoFor(id);
-  if (!photo || failed) return null;
+/** A tile's photo strip; no photo, or one that fails to load,
+ *  degrades to the plain grey ground behind it. */
+function TilePhoto({ src, position }) {
+  const [failedSrc, setFailedSrc] = useState(null);
+  if (!src || failedSrc === src) return null;
   return (
     <img
-      src={photo.src} alt="" onError={() => setFailed(true)}
+      src={src} alt="" onError={() => setFailedSrc(src)}
       style={{
         position: "absolute", inset: 0, width: "100%", height: "100%",
-        objectFit: "cover", objectPosition: photo.position ?? "center",
+        objectFit: "cover", objectPosition: position ?? "center",
       }}
     />
   );
@@ -253,22 +252,71 @@ const HARDWARE_OPTION_PHOTOS = {
   "handle Eco WC": "/products/hw-handle-eco-wc.jpg",
 };
 
-/** A small photograph of the chosen hardware option, shown under its
- *  dropdown. Nothing renders for options without a photo, and a photo
- *  that fails to load hides itself. */
-export function HardwarePhotoPreview({ option }) {
-  const [failedSrc, setFailedSrc] = useState(null);
-  const src = HARDWARE_OPTION_PHOTOS[option];
-  if (!src || failedSrc === src) return null;
+// The three handle questions choose from photo tiles instead of a
+// dropdown — the same floating-panel tiles as the Frame question,
+// minus the glyph badge. An option without a photograph yet keeps a
+// plain grey ground with a muted mark, and fills in when its shot
+// arrives.
+export const HANDLE_TILE_IDS = new Set([
+  "handleActiveInside", "handleActiveOutside", "handlePassiveOutside",
+]);
+
+export function HardwareTiles({ group, value, onChange }) {
   return (
-    <img
-      src={src} alt="" aria-hidden="true" onError={() => setFailedSrc(src)}
-      style={{
-        display: "block", marginTop: 8, width: 84, height: 84,
-        objectFit: "cover", borderRadius: 6,
-        border: "1px solid #E2E8F0", background: "#F4F6F8",
-      }}
-    />
+    <div role="radiogroup" aria-label={group.label} className="qs-frames">
+      {group.options.map(o => {
+        const on = value === o;
+        return (
+          <button
+            key={o} type="button" role="radio" aria-checked={on}
+            onClick={() => onChange(o)}
+            style={{
+              position: "relative", padding: 0,
+              display: "flex", flexDirection: "column", textAlign: "left",
+              fontFamily: FONT, background: UI.surface,
+              border: `1px solid ${on ? UI.accent : "#D8E0EA"}`,
+              borderRadius: 6,
+              boxShadow: on ? `inset 0 0 0 1px ${UI.accent}` : "none",
+              cursor: "pointer",
+            }}
+          >
+            <span aria-hidden="true" style={{
+              position: "relative", display: "grid", placeItems: "center",
+              width: "100%", aspectRatio: "4 / 3",
+              flexShrink: 0, background: "#F4F6F8", color: "#B4BFCC",
+              borderRadius: "5px 5px 0 0", overflow: "hidden",
+            }}>
+              {ICONS.hardware}
+              <TilePhoto src={HARDWARE_OPTION_PHOTOS[o]} />
+            </span>
+            <span style={{
+              position: "relative", marginTop: -10, width: "100%", flex: 1,
+              display: "flex", alignItems: "center",
+              padding: "8px 12px 9px",
+              background: on ? QS.selected : UI.surface,
+              borderRadius: "8px 8px 5px 5px",
+            }}>
+              <span style={{
+                fontSize: 13, fontWeight: on ? 600 : 500, lineHeight: 1.25, color: QS.ink,
+              }}>
+                {o}
+              </span>
+            </span>
+            {on && (
+              <span aria-hidden="true" style={{
+                position: "absolute", top: -7, right: -7,
+                width: 19, height: 19, borderRadius: "50%",
+                background: UI.accent, color: "#FFFFFF",
+                display: "grid", placeItems: "center",
+                border: "2px solid #FFFFFF",
+              }}>
+                {ICONS.check}
+              </span>
+            )}
+          </button>
+        );
+      })}
+    </div>
   );
 }
 
@@ -304,7 +352,7 @@ export function FrameCards({ frames, value, onChange }) {
               flexShrink: 0, background: "#F4F6F8",
               borderRadius: "5px 5px 0 0", overflow: "hidden",
             }}>
-              <FrameTilePhoto id={f.id} />
+              <TilePhoto src={framePhotoFor(f.id)?.src} position={framePhotoFor(f.id)?.position} />
             </span>
             <span style={{
               position: "relative", marginTop: -10, width: "100%", flex: 1,
@@ -561,11 +609,18 @@ export default function SteelDoorsetFields({ config, set, resolution, idPrefix =
                     ? { display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: "16px 14px" }
                     : { display: "flex", gap: 14, flexWrap: "wrap" }
                   }>
-                    {groups.map(g => (
-                      <div key={g.id} style={cards ? { minWidth: 0 } : { flex: "1 1 220px", minWidth: 200, maxWidth: 320 }}>
+                    {groups.map(g => {
+                      const tiles = cards && HANDLE_TILE_IDS.has(g.id) && g.options.length > 0;
+                      return (
+                      <div key={g.id} style={cards
+                        ? { minWidth: 0, ...(tiles ? { gridColumn: "1 / -1" } : {}) }
+                        : { flex: "1 1 220px", minWidth: 200, maxWidth: 320 }}>
                         <Field label={g.label}>
-                          <Select id={`${idPrefix}-${g.id}`} group={g} value={config[g.id]} onChange={v => set(g.id, v)} tall={cards} />
-                          <HardwarePhotoPreview option={config[g.id]} />
+                          {tiles ? (
+                            <HardwareTiles group={g} value={config[g.id]} onChange={v => set(g.id, v)} />
+                          ) : (
+                            <Select id={`${idPrefix}-${g.id}`} group={g} value={config[g.id]} onChange={v => set(g.id, v)} tall={cards} />
+                          )}
                           {hardwareNeedsText(config[g.id]) && (
                             <div style={{ marginTop: 8 }}>
                               <Input
@@ -578,7 +633,8 @@ export default function SteelDoorsetFields({ config, set, resolution, idPrefix =
                           )}
                         </Field>
                       </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               );
