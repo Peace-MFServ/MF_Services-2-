@@ -72,8 +72,8 @@ body {
 }
 .qs-hw-tiles {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
-  gap: 8px;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
 }
 .qs-download:hover:not(:disabled) {
   background: #002855 !important;
@@ -84,9 +84,11 @@ body {
 }
 @media (max-width: 860px) {
   .qs-3col { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .qs-hw-tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 @media (max-width: 560px) {
   .qs-3col { grid-template-columns: 1fr; }
+  .qs-hw-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 /* ── Reduced motion ──────────────────────────────────────── */

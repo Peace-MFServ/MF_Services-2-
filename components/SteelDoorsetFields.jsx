@@ -281,10 +281,12 @@ export function HardwareTiles({ group, value, onChange }) {
             style={{
               position: "relative", padding: 0,
               display: "flex", flexDirection: "column", textAlign: "left",
-              fontFamily: FONT, background: UI.surface,
+              fontFamily: FONT, background: on ? QS.selected : UI.surface,
               border: `1px solid ${on ? UI.accent : "#D8E0EA"}`,
               borderRadius: 6,
-              boxShadow: on ? `inset 0 0 0 1px ${UI.accent}` : "none",
+              boxShadow: on
+                ? `inset 0 0 0 1px ${UI.accent}, 0 0 0 3px ${QS.tintOn}`
+                : "none",
               cursor: "pointer",
             }}
           >
@@ -294,20 +296,31 @@ export function HardwareTiles({ group, value, onChange }) {
               flexShrink: 0, background: "#F4F6F8", color: "#B4BFCC",
               borderRadius: "5px 5px 0 0", overflow: "hidden",
             }}>
-              <span style={{ display: "inline-flex", transform: "scale(0.85)" }}>
-                {ICONS.hardware}
-              </span>
+              {o === "other" ? (
+                <span style={{
+                  width: 30, height: 30, borderRadius: 8,
+                  border: "1.5px dashed #B4BFCC",
+                  display: "grid", placeItems: "center",
+                  fontSize: 17, lineHeight: 1, color: "#B4BFCC",
+                }}>
+                  +
+                </span>
+              ) : (
+                <span style={{ display: "inline-flex", transform: "scale(0.85)" }}>
+                  {ICONS.hardware}
+                </span>
+              )}
               <TilePhoto src={HARDWARE_OPTION_PHOTOS[o]} />
             </span>
             <span style={{
               position: "relative", marginTop: -8, width: "100%", flex: 1,
-              display: "flex", alignItems: "center",
-              padding: "4px 8px 6px",
+              display: "flex", alignItems: "flex-start",
+              padding: "5px 9px 7px",
               background: on ? QS.selected : UI.surface,
               borderRadius: "6px 6px 4px 4px",
             }}>
               {o === "other" ? (
-                <span style={{ display: "flex", flexDirection: "column" }}>
+                <span style={{ display: "flex", flexDirection: "column", minHeight: 30 }}>
                   <span style={{ fontSize: 11.5, fontWeight: 600, lineHeight: 1.3, color: QS.ink }}>
                     other
                   </span>
@@ -318,6 +331,7 @@ export function HardwareTiles({ group, value, onChange }) {
               ) : (
                 <span style={{
                   fontSize: 11.5, fontWeight: on ? 600 : 500, lineHeight: 1.3, color: QS.ink,
+                  minHeight: 30,
                 }}>
                   {o}
                 </span>
@@ -325,11 +339,12 @@ export function HardwareTiles({ group, value, onChange }) {
             </span>
             {on && (
               <span aria-hidden="true" style={{
-                position: "absolute", top: -6, right: -6,
-                width: 17, height: 17, borderRadius: "50%",
+                position: "absolute", top: -8, right: -8,
+                width: 22, height: 22, borderRadius: "50%",
                 background: UI.accent, color: "#FFFFFF",
                 display: "grid", placeItems: "center",
                 border: "2px solid #FFFFFF",
+                boxShadow: "0 1px 4px rgba(15, 23, 42, 0.25)",
               }}>
                 {ICONS.check}
               </span>
@@ -339,6 +354,77 @@ export function HardwareTiles({ group, value, onChange }) {
       })}
     </div>
   );
+}
+
+// The handle questions live in bordered boxes — one for the active
+// leaf with Inside and Outside sub-groups, one for the passive leaf —
+// so each group reads as a container rather than headings floating
+// over one long wall of photos. On-screen grouping only: the spec
+// sheet keeps its own row wordings.
+const HANDLE_CONTAINERS = [
+  {
+    title: "Handle — Active leaf",
+    items: [
+      { id: "handleActiveInside", sub: "Inside" },
+      { id: "handleActiveOutside", sub: "Outside" },
+    ],
+  },
+  {
+    title: "Handle — Passive leaf",
+    items: [
+      { id: "handlePassiveOutside", sub: "Outside" },
+    ],
+  },
+];
+
+export function HandleGroups({ byId, config, set, idPrefix = "ds", renderExtra }) {
+  return HANDLE_CONTAINERS.map(box => {
+    const items = box.items.filter(it => byId[it.id]);
+    if (!items.length) return null;
+    return (
+      <div key={box.title} style={{
+        border: "1px solid #E2E8F0", borderRadius: 8,
+        padding: "14px 16px 16px", background: UI.surface,
+      }}>
+        <div style={{
+          fontSize: 14, fontWeight: 600, color: UI.ink, fontFamily: FONT,
+          marginBottom: 12,
+        }}>
+          {box.title}
+        </div>
+        {items.map((it, i) => {
+          const g = byId[it.id];
+          return (
+            <div key={g.id} style={{ marginBottom: i < items.length - 1 ? 16 : 0 }}>
+              <div style={{
+                fontSize: 12, fontWeight: 600, color: UI.muted, fontFamily: FONT,
+                marginBottom: 8,
+              }}>
+                {it.sub}
+              </div>
+              {g.options.length ? (
+                <HardwareTiles group={g} value={config[g.id]} onChange={v => set(g.id, v)} />
+              ) : (
+                <div style={{ maxWidth: 320 }}>
+                  <Select id={`${idPrefix}-${g.id}`} group={g} value={config[g.id]} onChange={v => set(g.id, v)} />
+                </div>
+              )}
+              {hardwareNeedsText(config[g.id]) && (
+                <div style={{ marginTop: 10, maxWidth: 340 }}>
+                  <Input
+                    id={`${idPrefix}-${g.id}-text`} value={config[`${g.id}Text`]}
+                    onChange={v => set(`${g.id}Text`, v)}
+                    placeholder={`Describe the ${g.label.toLowerCase()} required`}
+                  />
+                </div>
+              )}
+              {renderExtra?.(g.id)}
+            </div>
+          );
+        })}
+      </div>
+    );
+  });
 }
 
 // Frame choices as photo tiles — the same floating-panel look as the
@@ -618,30 +704,27 @@ export default function SteelDoorsetFields({ config, set, resolution, idPrefix =
             {HARDWARE_SECTIONS.map(section => {
               const groups = section.ids.map(id => byId[id]).filter(Boolean);
               if (!groups.length) return null;
+              // In cards layout the handle questions leave the dropdown
+              // grid and render as their own bordered boxes below it.
+              const fieldGroups = cards ? groups.filter(g => !HANDLE_TILE_IDS.has(g.id)) : groups;
+              const hasHandles = cards && groups.some(g => HANDLE_TILE_IDS.has(g.id));
               return (
                 <div key={section.title}>
                   <div style={{
-                    fontSize: 11, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase",
+                    fontSize: 12, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase",
                     color: UI.ink, marginBottom: 8,
                   }}>
                     {section.title}
                   </div>
+                  {fieldGroups.length > 0 && (
                   <div style={cards
                     ? { display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: "16px 14px" }
                     : { display: "flex", gap: 14, flexWrap: "wrap" }
                   }>
-                    {groups.map(g => {
-                      const tiles = cards && HANDLE_TILE_IDS.has(g.id) && g.options.length > 0;
-                      return (
-                      <div key={g.id} style={cards
-                        ? { minWidth: 0, ...(tiles ? { gridColumn: "1 / -1" } : {}) }
-                        : { flex: "1 1 220px", minWidth: 200, maxWidth: 320 }}>
+                    {fieldGroups.map(g => (
+                      <div key={g.id} style={cards ? { minWidth: 0 } : { flex: "1 1 220px", minWidth: 200, maxWidth: 320 }}>
                         <Field label={g.label}>
-                          {tiles ? (
-                            <HardwareTiles group={g} value={config[g.id]} onChange={v => set(g.id, v)} />
-                          ) : (
-                            <Select id={`${idPrefix}-${g.id}`} group={g} value={config[g.id]} onChange={v => set(g.id, v)} tall={cards} />
-                          )}
+                          <Select id={`${idPrefix}-${g.id}`} group={g} value={config[g.id]} onChange={v => set(g.id, v)} tall={cards} />
                           {hardwareNeedsText(config[g.id]) && (
                             <div style={{ marginTop: 8 }}>
                               <Input
@@ -654,15 +737,20 @@ export default function SteelDoorsetFields({ config, set, resolution, idPrefix =
                           )}
                         </Field>
                       </div>
-                      );
-                    })}
+                    ))}
                   </div>
+                  )}
+                  {hasHandles && (
+                    <div style={{ display: "flex", flexDirection: "column", gap: 14, marginTop: 16 }}>
+                      <HandleGroups byId={byId} config={config} set={set} idPrefix={idPrefix} />
+                    </div>
+                  )}
                 </div>
               );
             })}
             <div>
               <div style={{
-                fontSize: 11, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase",
+                fontSize: 12, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase",
                 color: UI.ink, marginBottom: 8,
               }}>
                 Finish

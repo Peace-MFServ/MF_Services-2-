@@ -3,7 +3,7 @@ import { useRef } from "react";
 import SteelDoorPreview from "./SteelDoorPreview";
 import BackArrow from "./BackArrow";
 import { useSteelSpecState, mmDigits } from "./steelSpecState";
-import { FrameCards, HardwareTiles, HANDLE_TILE_IDS } from "./SteelDoorsetFields";
+import { FrameCards, HandleGroups, HANDLE_TILE_IDS } from "./SteelDoorsetFields";
 import { UI, FONT, fieldStyle, cardStyle } from "../lib/theme";
 import { QS, ICONS, StepTabs } from "./quickSpecUI";
 import {
@@ -323,7 +323,6 @@ function TextField({ id, label, required, value, onChange, onBlurTouch, error, t
  *  write it down when the answer is "other". */
 function HardwareField({ group, value, text, onChange, onChangeText, error }) {
   const blocked = group.options.length === 0;
-  const tiles = !blocked && HANDLE_TILE_IDS.has(group.id);
   return (
     <div style={{ marginBottom: 16 }}>
       <label htmlFor={`hw-${group.id}`} style={{
@@ -332,9 +331,6 @@ function HardwareField({ group, value, text, onChange, onChangeText, error }) {
       }}>
         {group.label}
       </label>
-      {tiles ? (
-        <HardwareTiles group={group} value={value} onChange={onChange} />
-      ) : (
       <select className="mf-field"
         id={`hw-${group.id}`} value={blocked ? "" : value || ""} disabled={blocked}
         onChange={e => onChange(e.target.value)}
@@ -349,7 +345,6 @@ function HardwareField({ group, value, text, onChange, onChangeText, error }) {
         {blocked && <option value="">{group.blocked ?? "Not available yet"}</option>}
         {group.options.map(o => <option key={o} value={o}>{o}</option>)}
       </select>
-      )}
       {hardwareNeedsText(value) && (
         <input
           id={`hw-${group.id}-text`} value={text || ""}
@@ -381,10 +376,14 @@ function HardwareStep({ config, set, hardware, errorFor }) {
       {HARDWARE_SECTIONS.map(section => {
         const groups = section.ids.map(id => byId[id]).filter(Boolean);
         if (!groups.length) return null;
+        // The handle questions render as their own bordered boxes
+        // below the section's dropdowns, same as the quick spec.
+        const fieldGroups = groups.filter(g => !HANDLE_TILE_IDS.has(g.id));
+        const hasHandles = groups.some(g => HANDLE_TILE_IDS.has(g.id));
         return (
           <div key={section.title} style={{ marginBottom: 26 }}>
             <Label>{section.title}</Label>
-            {groups.map(g => (
+            {fieldGroups.map(g => (
               <HardwareField
                 key={g.id} group={g}
                 value={config[g.id]} text={config[`${g.id}Text`]}
@@ -393,6 +392,14 @@ function HardwareStep({ config, set, hardware, errorFor }) {
                 error={errorFor(g.id)}
               />
             ))}
+            {hasHandles && (
+              <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+                <HandleGroups
+                  byId={byId} config={config} set={set} idPrefix="hw"
+                  renderExtra={id => <FieldError>{errorFor(id)}</FieldError>}
+                />
+              </div>
+            )}
           </div>
         );
       })}
