@@ -194,6 +194,18 @@ export function SavedProjectList({ onOpen, showEmpty }) {
     } catch { setError(true); }
   };
 
+  // Most quotes are a variation on the last one — copy it, open the
+  // copy, change the bits that differ.
+  const duplicate = async p => {
+    try {
+      await saveProject({
+        ownerId: user.uid, name: `${p.name} (copy)`,
+        kind: p.kind, selectionId: p.selectionId, payload: p.payload,
+      });
+      await refresh();
+    } catch { setError(true); }
+  };
+
   if (!signedIn) return null;
 
   const empty = !projects || projects.length === 0;
@@ -234,6 +246,18 @@ export function SavedProjectList({ onOpen, showEmpty }) {
                 {describeProject(p)}
                 <span style={{ color: UI.muted }}> · saved {when(p.updatedAt)}</span>
               </div>
+            </button>
+            <button
+              type="button"
+              onClick={() => duplicate(p)}
+              aria-label={`Duplicate ${p.name}`}
+              style={{
+                padding: "6px 12px", fontSize: 12.5, fontFamily: FONT,
+                border: `1px solid ${UI.ruleStrong}`, background: UI.surface,
+                color: UI.body, cursor: "pointer", flexShrink: 0,
+              }}
+            >
+              Duplicate
             </button>
             <button
               type="button"
