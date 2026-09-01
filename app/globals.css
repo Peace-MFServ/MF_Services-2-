@@ -70,6 +70,11 @@ body {
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 10px;
 }
+.qs-hw-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
+  gap: 8px;
+}
 .qs-download:hover:not(:disabled) {
   background: #002855 !important;
 }

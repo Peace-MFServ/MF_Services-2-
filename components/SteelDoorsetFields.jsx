@@ -263,7 +263,7 @@ export const HANDLE_TILE_IDS = new Set([
 
 export function HardwareTiles({ group, value, onChange }) {
   return (
-    <div role="radiogroup" aria-label={group.label} className="qs-frames">
+    <div role="radiogroup" aria-label={group.label} className="qs-hw-tiles">
       {group.options.map(o => {
         const on = value === o;
         return (
@@ -282,30 +282,32 @@ export function HardwareTiles({ group, value, onChange }) {
           >
             <span aria-hidden="true" style={{
               position: "relative", display: "grid", placeItems: "center",
-              width: "100%", aspectRatio: "4 / 3",
+              width: "100%", aspectRatio: "1 / 1",
               flexShrink: 0, background: "#F4F6F8", color: "#B4BFCC",
               borderRadius: "5px 5px 0 0", overflow: "hidden",
             }}>
-              {ICONS.hardware}
+              <span style={{ display: "inline-flex", transform: "scale(0.85)" }}>
+                {ICONS.hardware}
+              </span>
               <TilePhoto src={HARDWARE_OPTION_PHOTOS[o]} />
             </span>
             <span style={{
-              position: "relative", marginTop: -10, width: "100%", flex: 1,
+              position: "relative", marginTop: -8, width: "100%", flex: 1,
               display: "flex", alignItems: "center",
-              padding: "8px 12px 9px",
+              padding: "4px 8px 6px",
               background: on ? QS.selected : UI.surface,
-              borderRadius: "8px 8px 5px 5px",
+              borderRadius: "6px 6px 4px 4px",
             }}>
               <span style={{
-                fontSize: 13, fontWeight: on ? 600 : 500, lineHeight: 1.25, color: QS.ink,
+                fontSize: 11.5, fontWeight: on ? 600 : 500, lineHeight: 1.3, color: QS.ink,
               }}>
                 {o}
               </span>
             </span>
             {on && (
               <span aria-hidden="true" style={{
-                position: "absolute", top: -7, right: -7,
-                width: 19, height: 19, borderRadius: "50%",
+                position: "absolute", top: -6, right: -6,
+                width: 17, height: 17, borderRadius: "50%",
                 background: UI.accent, color: "#FFFFFF",
                 display: "grid", placeItems: "center",
                 border: "2px solid #FFFFFF",
