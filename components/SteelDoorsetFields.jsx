@@ -306,11 +306,22 @@ export function HardwareTiles({ group, value, onChange }) {
               background: on ? QS.selected : UI.surface,
               borderRadius: "6px 6px 4px 4px",
             }}>
-              <span style={{
-                fontSize: 11.5, fontWeight: on ? 600 : 500, lineHeight: 1.3, color: QS.ink,
-              }}>
-                {o}
-              </span>
+              {o === "other" ? (
+                <span style={{ display: "flex", flexDirection: "column" }}>
+                  <span style={{ fontSize: 11.5, fontWeight: 600, lineHeight: 1.3, color: QS.ink }}>
+                    other
+                  </span>
+                  <span style={{ fontSize: 10.5, fontWeight: 400, lineHeight: 1.3, color: QS.muted }}>
+                    custom
+                  </span>
+                </span>
+              ) : (
+                <span style={{
+                  fontSize: 11.5, fontWeight: on ? 600 : 500, lineHeight: 1.3, color: QS.ink,
+                }}>
+                  {o}
+                </span>
+              )}
             </span>
             {on && (
               <span aria-hidden="true" style={{
