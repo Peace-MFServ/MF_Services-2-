@@ -3,7 +3,7 @@ import { useRef } from "react";
 import SteelDoorPreview from "./SteelDoorPreview";
 import BackArrow from "./BackArrow";
 import { useSteelSpecState, mmDigits } from "./steelSpecState";
-import { FrameCards } from "./SteelDoorsetFields";
+import { FrameCards, HardwarePhotoPreview } from "./SteelDoorsetFields";
 import { UI, FONT, fieldStyle, cardStyle } from "../lib/theme";
 import { QS, ICONS, StepTabs } from "./quickSpecUI";
 import {
@@ -345,6 +345,7 @@ function HardwareField({ group, value, text, onChange, onChangeText, error }) {
         {blocked && <option value="">{group.blocked ?? "Not available yet"}</option>}
         {group.options.map(o => <option key={o} value={o}>{o}</option>)}
       </select>
+      <HardwarePhotoPreview option={value} />
       {hardwareNeedsText(value) && (
         <input
           id={`hw-${group.id}-text`} value={text || ""}

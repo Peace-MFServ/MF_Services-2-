@@ -238,6 +238,40 @@ function FrameTilePhoto({ id }) {
   );
 }
 
+// Photographs for the handle options, keyed by the option strings
+// exactly as the manufacturer's sheet spells them (misspellings and
+// all — the key has to match the data). Options without a photograph
+// simply show no preview.
+const HARDWARE_OPTION_PHOTOS = {
+  "handle on long shield": "/products/hw-handle-long-shield.jpg",
+  "handle on round rossette": "/products/hw-handle-round-rosette.jpg",
+  "knob on long shield": "/products/hw-knob-long-shield.jpg",
+  "knob on round rossette": "/products/hw-knob-round-rosette.jpg",
+  "handle on blind long shield standard DFM": "/products/hw-handle-blind-long-shield.jpg",
+  "knob on blind long shield Eco Schulte": "/products/hw-knob-blind-long-shield.jpg",
+  "total blind shiled Eco Schulte": "/products/hw-total-blind-shield.jpg",
+  "handle Eco WC": "/products/hw-handle-eco-wc.jpg",
+};
+
+/** A small photograph of the chosen hardware option, shown under its
+ *  dropdown. Nothing renders for options without a photo, and a photo
+ *  that fails to load hides itself. */
+export function HardwarePhotoPreview({ option }) {
+  const [failedSrc, setFailedSrc] = useState(null);
+  const src = HARDWARE_OPTION_PHOTOS[option];
+  if (!src || failedSrc === src) return null;
+  return (
+    <img
+      src={src} alt="" aria-hidden="true" onError={() => setFailedSrc(src)}
+      style={{
+        display: "block", marginTop: 8, width: 84, height: 84,
+        objectFit: "cover", borderRadius: 6,
+        border: "1px solid #E2E8F0", background: "#F4F6F8",
+      }}
+    />
+  );
+}
+
 // Frame choices as photo tiles — the same floating-panel look as the
 // gallery cards, at tile scale: photograph on top, the label panel
 // pulled up over it, the glyph badge riding the seam. The photo area
@@ -531,6 +565,7 @@ export default function SteelDoorsetFields({ config, set, resolution, idPrefix =
                       <div key={g.id} style={cards ? { minWidth: 0 } : { flex: "1 1 220px", minWidth: 200, maxWidth: 320 }}>
                         <Field label={g.label}>
                           <Select id={`${idPrefix}-${g.id}`} group={g} value={config[g.id]} onChange={v => set(g.id, v)} tall={cards} />
+                          <HardwarePhotoPreview option={config[g.id]} />
                           {hardwareNeedsText(config[g.id]) && (
                             <div style={{ marginTop: 8 }}>
                               <Input

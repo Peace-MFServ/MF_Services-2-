@@ -34,3 +34,20 @@ live in components/SteelDoorsetFields.jsx (FRAME_PHOTOS).
 | frame-embracing.jpg | Embracing |
 | frame-embracing-thermal.jpg | Embracing thermal |
 | frame-block-small.jpg | Block small (+ filled with plaster board) |
+
+## Handle previews (Hardware section)
+
+A small photo appears under the handle dropdowns when the chosen
+option has one. Keyed by the exact option strings in
+components/SteelDoorsetFields.jsx (HARDWARE_OPTION_PHOTOS).
+
+| File | Option |
+|---|---|
+| hw-handle-long-shield.jpg | handle on long shield |
+| hw-handle-round-rosette.jpg | handle on round rosette |
+| hw-knob-long-shield.jpg | knob on long shield |
+| hw-knob-round-rosette.jpg | knob on round rosette |
+| hw-handle-blind-long-shield.jpg | handle on blind long shield (standard) |
+| hw-knob-blind-long-shield.jpg | knob on blind long shield (Eco Schulte) |
+| hw-total-blind-shield.jpg | total blind shield (Eco Schulte) |
+| hw-handle-eco-wc.jpg | handle Eco WC |
