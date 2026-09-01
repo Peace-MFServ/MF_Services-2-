@@ -1,4 +1,5 @@
 'use client'
+import { useState } from "react";
 import { UI, FONT, fieldStyle, cardStyle } from "../lib/theme";
 import { QS, CardTitle, ICONS } from "./quickSpecUI";
 import { mmDigits } from "./steelSpecState";
@@ -199,9 +200,46 @@ function FrameGlyph({ id }) {
   );
 }
 
-// Frame choices as equal-height cards — the labels run long, and a
-// row of chips of wildly different widths reads badly. Cards layout
-// only; the pricer keeps its chips.
+// Each frame family has a real photograph; the thermal and filled
+// variants share their family's shot — the photo says which family,
+// the glyph on the badge says which variant.
+const FRAME_PHOTOS = {
+  corner:       { src: "/products/frame-corner.jpg",        position: "center 30%" },
+  block:        { src: "/products/frame-block.jpg",         position: "center 30%" },
+  plaster:      { src: "/products/frame-block-plaster.jpg", position: "center" },
+  embracing:    { src: "/products/frame-embracing.jpg",     position: "center" },
+  "block-small": { src: "/products/frame-block-small.jpg",  position: "center" },
+};
+
+function framePhotoFor(id) {
+  if (id.startsWith("corner")) return FRAME_PHOTOS.corner;
+  if (id.startsWith("embracing")) return FRAME_PHOTOS.embracing;
+  if (id.startsWith("block-small")) return FRAME_PHOTOS["block-small"];
+  if (id.includes("plaster")) return FRAME_PHOTOS.plaster;
+  return FRAME_PHOTOS.block;
+}
+
+/** The tile's photo strip; a missing file degrades to the plain grey
+ *  ground and the badge carries the tile alone. */
+function FrameTilePhoto({ id }) {
+  const [failed, setFailed] = useState(false);
+  const photo = framePhotoFor(id);
+  if (!photo || failed) return null;
+  return (
+    <img
+      src={photo.src} alt="" onError={() => setFailed(true)}
+      style={{
+        position: "absolute", inset: 0, width: "100%", height: "100%",
+        objectFit: "cover", objectPosition: photo.position ?? "center",
+      }}
+    />
+  );
+}
+
+// Frame choices as photo tiles — the same floating-panel look as the
+// gallery cards, at tile scale: photograph on top, the label panel
+// pulled up over it, the glyph badge riding the seam. Cards layout
+// only; the pricer's plain mode keeps its chips.
 function FrameCards({ frames, value, onChange }) {
   return (
     <div role="radiogroup" aria-label="Frame" className="qs-frames">
@@ -212,24 +250,46 @@ function FrameCards({ frames, value, onChange }) {
             key={f.id} type="button" role="radio" aria-checked={on}
             onClick={() => onChange(f.id)}
             style={{
-              position: "relative", minHeight: 58, padding: "9px 12px",
-              fontSize: 13, fontFamily: FONT,
-              fontWeight: on ? 600 : 500, textAlign: "left", lineHeight: 1.35,
-              display: "flex", alignItems: "center", gap: 10,
+              position: "relative", padding: 0,
+              display: "flex", flexDirection: "column", textAlign: "left",
+              fontFamily: FONT, background: UI.surface,
               border: `1px solid ${on ? UI.accent : "#D8E0EA"}`,
               boxShadow: on ? `inset 0 0 0 1px ${UI.accent}` : "none",
-              background: on ? QS.selected : UI.surface,
-              color: QS.ink, cursor: "pointer",
+              cursor: "pointer",
             }}
           >
             <span aria-hidden="true" style={{
-              width: 32, height: 32, borderRadius: 6, flexShrink: 0,
-              display: "grid", placeItems: "center",
-              background: on ? QS.tintOn : QS.tint, color: UI.accent,
+              position: "relative", display: "block", width: "100%", height: 64,
+              flexShrink: 0, background: "#F4F6F8",
+              borderRadius: "5px 5px 0 0", overflow: "hidden",
             }}>
-              <FrameGlyph id={f.id} />
+              <FrameTilePhoto id={f.id} />
             </span>
-            {f.label}
+            <span style={{
+              position: "relative", marginTop: -8, width: "100%", flex: 1,
+              display: "flex", alignItems: "center", gap: 8,
+              padding: "5px 10px 7px",
+              background: on ? QS.selected : UI.surface,
+              borderRadius: "6px 6px 0 0",
+            }}>
+              <span aria-hidden="true" style={{
+                width: 30, height: 30, borderRadius: "50%", flexShrink: 0,
+                marginTop: -16,
+                display: "grid", placeItems: "center",
+                background: "#FFFFFF", border: "1px solid #D8E0EA",
+                boxShadow: "0 1px 4px rgba(15, 23, 42, 0.10)",
+                color: UI.accent,
+              }}>
+                <span style={{ display: "inline-flex", transform: "scale(0.78)" }}>
+                  <FrameGlyph id={f.id} />
+                </span>
+              </span>
+              <span style={{
+                fontSize: 12.5, fontWeight: on ? 600 : 500, lineHeight: 1.25, color: QS.ink,
+              }}>
+                {f.label}
+              </span>
+            </span>
             {on && (
               <span aria-hidden="true" style={{
                 position: "absolute", top: -7, right: -7,
