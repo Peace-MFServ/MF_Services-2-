@@ -7,7 +7,7 @@ import {
   hardwareNeedsText, validateSteelDoor,
 } from "../lib/steelDoor";
 import { useDoorsetConfig, initialConfig } from "./steelSpecState";
-import { buildQuote } from "../lib/quote";
+import { buildQuote, DEFAULT_MARGIN, MIN_MEN, MAX_DISCOUNT, LABOUR_RATE } from "../lib/quote";
 import SteelDoorsetFields from "./SteelDoorsetFields";
 import { UI, FONT, fieldStyle, cardStyle } from "../lib/theme";
 import { QS, CardTitle, ICONS } from "./quickSpecUI";
@@ -304,8 +304,13 @@ function DoorsetEditor({ initial, initialName, onCancel, onDone, existing }) {
 export default function Pricer() {
   const { user, isStaff, ready } = useAuth();
   const [lines, setLines] = useState([]);
-  const [markup, setMarkup] = useState("");
+  // Margin is a share of the selling price — 40% unless changed — and
+  // the discount can never pass 5%. Labour is men × days at €450.
+  const [margin, setMargin] = useState(String(DEFAULT_MARGIN));
   const [transport, setTransport] = useState("");
+  const [labourMen, setLabourMen] = useState(String(MIN_MEN));
+  const [labourDays, setLabourDays] = useState("");
+  const [discount, setDiscount] = useState("");
   const [project, setProject] = useState("");
   const [exporting, setExporting] = useState(null);   // null | "pdf" | "xlsx"
   const [projects, setProjects] = useState(null);
@@ -320,8 +325,11 @@ export default function Pricer() {
       if (raw) {
         const saved = JSON.parse(raw);
         if (Array.isArray(saved.lines)) setLines(saved.lines);
-        if (saved.markup) setMarkup(saved.markup);
+        if (saved.margin) setMargin(saved.margin);
         if (saved.transport) setTransport(saved.transport);
+        if (saved.labourMen) setLabourMen(saved.labourMen);
+        if (saved.labourDays) setLabourDays(saved.labourDays);
+        if (saved.discount) setDiscount(saved.discount);
         if (saved.project) setProject(saved.project);
       }
     } catch { /* a corrupt quote is not worth breaking the tab over */ }
@@ -331,9 +339,11 @@ export default function Pricer() {
   useEffect(() => {
     if (!hydrated) return;
     try {
-      window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ lines, markup, transport, project }));
+      window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify({
+        lines, margin, transport, labourMen, labourDays, discount, project,
+      }));
     } catch { /* best-effort */ }
-  }, [hydrated, lines, markup, transport, project]);
+  }, [hydrated, lines, margin, transport, labourMen, labourDays, discount, project]);
 
   // Whatever is open in the Specification Tool, described so the offer
   // to bring it across says what it actually is.
@@ -444,13 +454,10 @@ export default function Pricer() {
     );
   }
 
-  const priceable = lines.filter(l => l.priced && !l.priced.onApplication);
-  const cost = priceable.reduce((sum, l) => sum + l.priced.total * (Number(l.quantity) || 0), 0);
-  const markupPct = Number(markup) || 0;
-  const withMarkup = cost * (1 + markupPct / 100);
-  const carriage = Number(transport) || 0;
-  const total = withMarkup + carriage;
-  const unpriced = lines.length - priceable.length;
+  // The screen shows the same quote the downloads render — one
+  // computation in lib/quote.js, three views of it.
+  const quoteInputs = { lines, margin, transport, labourMen, labourDays, discount, project };
+  const q = buildQuote(quoteInputs);
 
   // Both files are renderings of one quote, built at the moment of
   // download so they always match the screen. The generators are
@@ -458,7 +465,7 @@ export default function Pricer() {
   const download = async kind => {
     setExporting(kind);
     try {
-      const quote = buildQuote({ lines, markup, transport, project });
+      const quote = buildQuote(quoteInputs);
       const generate = kind === "pdf"
         ? (await import("../lib/generateQuotePDF")).generateQuotePDF
         : (await import("../lib/generateQuoteXLSX")).generateQuoteXLSX;
@@ -577,25 +584,83 @@ export default function Pricer() {
           ...cardStyle,
           padding: "18px 20px", maxWidth: 460, marginLeft: "auto",
         }}>
+          {/* Costs first, ruled into a subtotal; the margin divides —
+              40% of the sale, subtotal ÷ 0.6 — and the discount comes
+              off the lot, never more than 5%. */}
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 14, padding: "6px 0" }}>
             <span style={{ fontSize: 13 }}>Doorsets</span>
-            <span style={{ fontSize: 13.5, fontWeight: 600, color: UI.ink }}>{money.format(cost)}</span>
-          </div>
-
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 14, padding: "6px 0" }}>
-            <span style={{ fontSize: 13 }}>Margin</span>
-            <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <SmallInput id="markup" value={markup} width={62} onChange={v => setMarkup(pct(v))} placeholder="0" />
-              <span style={{ fontSize: 13, color: UI.muted }}>%</span>
-              <span style={{ fontSize: 13.5, fontWeight: 600, color: UI.ink, width: 96, textAlign: "right" }}>
-                {money.format(withMarkup - cost)}
-              </span>
-            </span>
+            <span style={{ fontSize: 13.5, fontWeight: 600, color: UI.ink }}>{money.format(q.doorsetsCost)}</span>
           </div>
 
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 14, padding: "6px 0" }}>
             <span style={{ fontSize: 13 }}>Transport</span>
             <SmallInput id="transport" value={transport} width={96} onChange={v => setTransport(pct(v))} placeholder="0.00" />
+          </div>
+
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 14, padding: "6px 0" }}>
+            <span style={{ fontSize: 13 }}>
+              Labour
+              <span style={{ display: "block", fontSize: 11, color: UI.muted }}>
+                €{LABOUR_RATE} a man a day · min {MIN_MEN} men
+              </span>
+            </span>
+            <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <SmallInput
+                id="labour-men" value={labourMen} width={44} align="center" placeholder={String(MIN_MEN)}
+                onChange={v => setLabourMen(v.replace(/\D/g, "").slice(0, 2))}
+              />
+              <span style={{ fontSize: 12, color: UI.muted }}>men ×</span>
+              <SmallInput
+                id="labour-days" value={labourDays} width={44} align="center" placeholder="0"
+                onChange={v => setLabourDays(v.replace(/[^\d.]/g, "").slice(0, 4))}
+              />
+              <span style={{ fontSize: 12, color: UI.muted }}>days</span>
+              <span style={{ fontSize: 13.5, fontWeight: 600, color: UI.ink, width: 82, textAlign: "right" }}>
+                {money.format(q.labour.total)}
+              </span>
+            </span>
+          </div>
+
+          <div style={{
+            display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 14,
+            padding: "9px 0 6px", marginTop: 4, borderTop: `1px solid ${UI.rule}`,
+          }}>
+            <span style={{ fontSize: 13, fontWeight: 600, color: UI.ink }}>Subtotal</span>
+            <span style={{ fontSize: 13.5, fontWeight: 700, color: UI.ink }}>{money.format(q.subtotal)}</span>
+          </div>
+
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 14, padding: "6px 0" }}>
+            <span style={{ fontSize: 13 }}>
+              Margin
+              <span style={{ display: "block", fontSize: 11, color: UI.muted }}>of the selling price</span>
+            </span>
+            <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <SmallInput id="margin" value={margin} width={62} onChange={v => setMargin(pct(v))} placeholder={String(DEFAULT_MARGIN)} />
+              <span style={{ fontSize: 13, color: UI.muted }}>%</span>
+              <span style={{ fontSize: 13.5, fontWeight: 600, color: UI.ink, width: 96, textAlign: "right" }}>
+                {money.format(q.marginAmount)}
+              </span>
+            </span>
+          </div>
+
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 14, padding: "6px 0" }}>
+            <span style={{ fontSize: 13 }}>
+              Discount
+              <span style={{ display: "block", fontSize: 11, color: UI.muted }}>up to {MAX_DISCOUNT}%</span>
+            </span>
+            <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <SmallInput
+                id="discount" value={discount} width={62} placeholder="0"
+                onChange={v => {
+                  const s = pct(v);
+                  setDiscount(Number(s) > MAX_DISCOUNT ? String(MAX_DISCOUNT) : s);
+                }}
+              />
+              <span style={{ fontSize: 13, color: UI.muted }}>%</span>
+              <span style={{ fontSize: 13.5, fontWeight: 600, color: UI.ink, width: 96, textAlign: "right" }}>
+                {q.discountAmount > 0 ? `−${money.format(q.discountAmount)}` : money.format(0)}
+              </span>
+            </span>
           </div>
 
           <div style={{
@@ -605,13 +670,13 @@ export default function Pricer() {
             <span style={{ fontSize: 13, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: UI.ink }}>
               Total
             </span>
-            <span style={{ fontSize: 19, fontWeight: 700, color: UI.ink }}>{money.format(total)}</span>
+            <span style={{ fontSize: 19, fontWeight: 700, color: UI.ink }}>{money.format(q.total)}</span>
           </div>
 
-          {unpriced > 0 && (
+          {q.unpriced > 0 && (
             <p style={{ margin: "12px 0 0", fontSize: 12.5, lineHeight: 1.5, color: UI.warn }}>
-              {unpriced} {unpriced === 1 ? "line is" : "lines are"} on application and
-              {unpriced === 1 ? " is" : " are"} not in this total.
+              {q.unpriced} {q.unpriced === 1 ? "line is" : "lines are"} on application and
+              {q.unpriced === 1 ? " is" : " are"} not in this total.
             </p>
           )}
 
