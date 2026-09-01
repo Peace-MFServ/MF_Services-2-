@@ -7,9 +7,10 @@ import Pricer from '../components/Pricer'
 import AuthProvider from '../components/AuthProvider'
 import { AccountBar } from '../components/AccountPanel'
 import SignInDialog from '../components/SignInDialog'
-import ProjectsProvider from '../components/ProjectsProvider'
+import ProjectsProvider, { useProjects } from '../components/ProjectsProvider'
 import ProjectsDialog from '../components/ProjectsDialog'
 import { useAuth } from '../components/AuthProvider'
+import { writeWorkingState } from '../lib/projects'
 
 const TABS = [
   { id: 'specification', label: 'Specification Tool' },
@@ -45,7 +46,28 @@ function Toolbox() {
   // so it forgets its selection and shows the front door again.
   const [homeNonce, setHomeNonce] = useState(0)
   const { isStaff } = useAuth()
+  const { pendingOpen, consumeOpen } = useProjects()
+  // The saved quote currently open in the pricer, so its Save can
+  // overwrite rather than copy. Remounted via nonce when one opens.
+  const [openQuote, setOpenQuote] = useState(null)
+  const [pricerNonce, setPricerNonce] = useState(0)
   const tabs = TABS.filter(t => !t.staffOnly || isStaff)
+
+  // Route an opened project to the tool that owns it. Quotes belong
+  // to the pricer; everything else belongs to the specification tool,
+  // which consumes the request itself once its tab is showing.
+  useEffect(() => {
+    if (!pendingOpen) return
+    if (pendingOpen.kind === 'quote') {
+      writeWorkingState(pendingOpen.kind, pendingOpen.selectionId, pendingOpen.payload)
+      setOpenQuote({ id: pendingOpen.id, name: pendingOpen.name })
+      setPricerNonce(n => n + 1)
+      setActiveTab('pricer')
+      consumeOpen()
+    } else if (activeTab !== 'specification') {
+      setActiveTab('specification')
+    }
+  }, [pendingOpen, activeTab, consumeOpen])
 
   const goHome = () => {
     try { window.sessionStorage.removeItem('mf-specification-tool-selection') } catch { /* best-effort */ }
@@ -103,7 +125,9 @@ function Toolbox() {
       }}>
         {activeTab === 'specification' && <SpecificationTool key={homeNonce} />}
         {activeTab === 'overpressure'  && <OverpressureCalculator />}
-        {activeTab === 'pricer'        && <Pricer />}
+        {activeTab === 'pricer'        && (
+          <Pricer key={pricerNonce} openProject={openQuote} onSavedProject={setOpenQuote} />
+        )}
       </div>
 
     </div>

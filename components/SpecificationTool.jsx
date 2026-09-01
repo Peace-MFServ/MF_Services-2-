@@ -356,6 +356,8 @@ export default function SpecificationTool() {
 
   useEffect(() => {
     if (!pendingOpen) return;
+    // Quotes belong to the pricer — the page routes them there.
+    if (pendingOpen.kind === "quote") return;
     openProjectRecord(pendingOpen);
     consumeOpen();
   }, [pendingOpen, openProjectRecord, consumeOpen]);

@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useAuth } from "./AuthProvider";
 import { listProjects } from "../lib/projects";
+import { SaveProjectButton } from "./SavedProjects";
 import {
   resolveSteelDoor, describeSteelDoor, hardwareGroupsFor,
   hardwareNeedsText, validateSteelDoor,
@@ -301,7 +302,7 @@ function DoorsetEditor({ initial, initialName, onCancel, onDone, existing }) {
 
 // ─── Main ─────────────────────────────────────────────────────────
 
-export default function Pricer() {
+export default function Pricer({ openProject, onSavedProject }) {
   const { user, isStaff, ready } = useAuth();
   const [lines, setLines] = useState([]);
   // Margin is a share of the selling price — 40% unless changed — and
@@ -495,15 +496,21 @@ export default function Pricer() {
   return (
     <Shell>
 
-      <div style={{ marginBottom: 20 }}>
-        <h2 style={{ margin: 0, fontSize: 26, fontWeight: 700, letterSpacing: "-0.015em", color: QS.ink }}>
-          Pricer
-        </h2>
-        <p style={{ margin: "8px 0 0", fontSize: 14, lineHeight: 1.55, color: UI.body, maxWidth: 640 }}>
-          Build a schedule of steel doorsets and price it. Figures are ex-works
-          in euro, from the manufacturer&rsquo;s October 2025 list — the same
-          numbers as the spreadsheet, without the spreadsheet.
-        </p>
+      <div style={{ marginBottom: 20, display: "flex", alignItems: "flex-start", gap: 16 }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <h2 style={{ margin: 0, fontSize: 26, fontWeight: 700, letterSpacing: "-0.015em", color: QS.ink }}>
+            Pricer
+          </h2>
+          <p style={{ margin: "8px 0 0", fontSize: 14, lineHeight: 1.55, color: UI.body, maxWidth: 640 }}>
+            Build a schedule of steel doorsets and price it. Figures are ex-works
+            in euro, from the manufacturer&rsquo;s October 2025 list — the same
+            numbers as the spreadsheet, without the spreadsheet.
+          </p>
+        </div>
+        <SaveProjectButton
+          kind="quote" selectionId="pricer"
+          openProject={openProject} onSaved={onSavedProject}
+        />
       </div>
 
       <div style={{ ...cardStyle, marginBottom: 16 }}>
