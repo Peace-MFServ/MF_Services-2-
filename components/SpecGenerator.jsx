@@ -1160,7 +1160,9 @@ export default function SpecGenerator({ startProductId, onChangeProduct, modeSwi
     }}>
       <aside style={{
         ...cardStyle, padding: 0,
-        width: 496, flexShrink: 0, display: "flex", flexDirection: "column",
+        // Half the workspace each — the questions deserve as much room
+        // as the drawing.
+        flex: "1 1 0", minWidth: 0, display: "flex", flexDirection: "column",
         minHeight: 0, overflow: "hidden",
       }}>
         <header style={{ padding: "18px 22px 16px", borderBottom: `1px solid ${UI.rule}`, flexShrink: 0 }}>

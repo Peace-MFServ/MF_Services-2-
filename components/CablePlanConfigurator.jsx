@@ -539,7 +539,9 @@ export default function CablePlanConfigurator({ startSystemId, onChangeSystem, s
       {/* ── Configuration rail ── */}
       <aside style={{
         ...cardStyle, padding: 0,
-        width: 496, flexShrink: 0, display: "flex", flexDirection: "column",
+        // Half the workspace each — the questions deserve as much room
+        // as the drawing.
+        flex: "1 1 0", minWidth: 0, display: "flex", flexDirection: "column",
         minHeight: 0, overflow: "hidden",
       }}>
 
