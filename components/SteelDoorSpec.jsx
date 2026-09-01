@@ -3,6 +3,7 @@ import { useRef } from "react";
 import SteelDoorPreview from "./SteelDoorPreview";
 import BackArrow from "./BackArrow";
 import { useSteelSpecState, mmDigits } from "./steelSpecState";
+import { FrameCards } from "./SteelDoorsetFields";
 import { UI, FONT, fieldStyle, cardStyle } from "../lib/theme";
 import { QS, ICONS, StepTabs } from "./quickSpecUI";
 import {
@@ -231,11 +232,10 @@ function OpeningStep({ config, set, errorFor, resolution }) {
       </Section>
 
       <Section title="Frame" note="The frame decides how much of the structural opening is left clear.">
-        <Chips
-          name="Frame"
+        <FrameCards
+          frames={frames}
           value={config.frameId}
           onChange={v => set("frameId", v)}
-          options={frames.map(f => ({ value: f.id, label: f.label }))}
         />
         <FieldError>{errorFor("frameId")}</FieldError>
       </Section>

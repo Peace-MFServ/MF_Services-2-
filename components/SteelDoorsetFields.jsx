@@ -204,8 +204,8 @@ function FrameGlyph({ id }) {
 // variants share their family's shot — the photo says which family,
 // the glyph on the badge says which variant.
 const FRAME_PHOTOS = {
-  corner:       { src: "/products/frame-corner.jpg",        position: "center 30%" },
-  block:        { src: "/products/frame-block.jpg",         position: "center 30%" },
+  corner:       { src: "/products/frame-corner.jpg",        position: "center" },
+  block:        { src: "/products/frame-block.jpg",         position: "center" },
   plaster:      { src: "/products/frame-block-plaster.jpg", position: "center" },
   embracing:    { src: "/products/frame-embracing.jpg",     position: "center" },
   "block-small": { src: "/products/frame-block-small.jpg",  position: "center" },
@@ -238,9 +238,12 @@ function FrameTilePhoto({ id }) {
 
 // Frame choices as photo tiles — the same floating-panel look as the
 // gallery cards, at tile scale: photograph on top, the label panel
-// pulled up over it, the glyph badge riding the seam. Cards layout
-// only; the pricer's plain mode keeps its chips.
-function FrameCards({ frames, value, onChange }) {
+// pulled up over it, the glyph badge riding the seam. The photo area
+// keeps the photographs' own 4:3 shape so a full elevation shows the
+// frame around the opening, not a strip of leaf. Used by the quick
+// spec, the guided flow and the pricer's cards layout; the pricer's
+// plain mode keeps its chips.
+export function FrameCards({ frames, value, onChange }) {
   return (
     <div role="radiogroup" aria-label="Frame" className="qs-frames">
       {frames.map(f => {
@@ -254,38 +257,40 @@ function FrameCards({ frames, value, onChange }) {
               display: "flex", flexDirection: "column", textAlign: "left",
               fontFamily: FONT, background: UI.surface,
               border: `1px solid ${on ? UI.accent : "#D8E0EA"}`,
+              borderRadius: 6,
               boxShadow: on ? `inset 0 0 0 1px ${UI.accent}` : "none",
               cursor: "pointer",
             }}
           >
             <span aria-hidden="true" style={{
-              position: "relative", display: "block", width: "100%", height: 64,
+              position: "relative", display: "block", width: "100%",
+              aspectRatio: "4 / 3",
               flexShrink: 0, background: "#F4F6F8",
               borderRadius: "5px 5px 0 0", overflow: "hidden",
             }}>
               <FrameTilePhoto id={f.id} />
             </span>
             <span style={{
-              position: "relative", marginTop: -8, width: "100%", flex: 1,
-              display: "flex", alignItems: "center", gap: 8,
-              padding: "5px 10px 7px",
+              position: "relative", marginTop: -10, width: "100%", flex: 1,
+              display: "flex", alignItems: "center", gap: 9,
+              padding: "6px 11px 8px",
               background: on ? QS.selected : UI.surface,
-              borderRadius: "6px 6px 0 0",
+              borderRadius: "8px 8px 5px 5px",
             }}>
               <span aria-hidden="true" style={{
-                width: 30, height: 30, borderRadius: "50%", flexShrink: 0,
-                marginTop: -16,
+                width: 34, height: 34, borderRadius: "50%", flexShrink: 0,
+                marginTop: -19,
                 display: "grid", placeItems: "center",
                 background: "#FFFFFF", border: "1px solid #D8E0EA",
                 boxShadow: "0 1px 4px rgba(15, 23, 42, 0.10)",
                 color: UI.accent,
               }}>
-                <span style={{ display: "inline-flex", transform: "scale(0.78)" }}>
+                <span style={{ display: "inline-flex", transform: "scale(0.85)" }}>
                   <FrameGlyph id={f.id} />
                 </span>
               </span>
               <span style={{
-                fontSize: 12.5, fontWeight: on ? 600 : 500, lineHeight: 1.25, color: QS.ink,
+                fontSize: 13, fontWeight: on ? 600 : 500, lineHeight: 1.25, color: QS.ink,
               }}>
                 {f.label}
               </span>

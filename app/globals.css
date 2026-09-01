@@ -67,14 +67,11 @@ body {
 }
 .qs-frames {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 10px;
 }
 .qs-download:hover:not(:disabled) {
   background: #002855 !important;
-}
-@media (max-width: 1150px) {
-  .qs-frames { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 1024px) {
   .qs-grid { grid-template-columns: 1fr; }
@@ -84,7 +81,7 @@ body {
   .qs-3col { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 560px) {
-  .qs-3col, .qs-frames { grid-template-columns: 1fr; }
+  .qs-3col { grid-template-columns: 1fr; }
 }
 
 /* ── Reduced motion ──────────────────────────────────────── */
