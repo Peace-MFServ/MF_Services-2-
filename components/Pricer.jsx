@@ -673,13 +673,6 @@ export default function Pricer() {
             <span style={{ fontSize: 19, fontWeight: 700, color: UI.ink }}>{money.format(q.total)}</span>
           </div>
 
-          {q.unpriced > 0 && (
-            <p style={{ margin: "12px 0 0", fontSize: 12.5, lineHeight: 1.5, color: UI.warn }}>
-              {q.unpriced} {q.unpriced === 1 ? "line is" : "lines are"} on application and
-              {q.unpriced === 1 ? " is" : " are"} not in this total.
-            </p>
-          )}
-
           <div style={{
             display: "flex", gap: 8, marginTop: 16, paddingTop: 14,
             borderTop: `1px solid ${UI.ruleStrong}`,
