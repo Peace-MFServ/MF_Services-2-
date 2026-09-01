@@ -250,6 +250,8 @@ const HARDWARE_OPTION_PHOTOS = {
   "knob on blind long shield Eco Schulte": "/products/hw-knob-blind-long-shield.jpg",
   "total blind shiled Eco Schulte": "/products/hw-total-blind-shield.jpg",
   "handle Eco WC": "/products/hw-handle-eco-wc.jpg",
+  "preparation": "/products/hw-preparation.jpg",
+  "without preparation": "/products/hw-without-preparation.jpg",
 };
 
 // The three handle questions choose from photo tiles instead of a

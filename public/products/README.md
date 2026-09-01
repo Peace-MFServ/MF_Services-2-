@@ -52,3 +52,5 @@ components/SteelDoorsetFields.jsx (HARDWARE_OPTION_PHOTOS).
 | hw-knob-blind-long-shield.jpg | knob on blind long shield (Eco Schulte) |
 | hw-total-blind-shield.jpg | total blind shield (Eco Schulte) |
 | hw-handle-eco-wc.jpg | handle Eco WC |
+| hw-preparation.jpg | preparation (drilled cut-outs, no furniture) |
+| hw-without-preparation.jpg | without preparation (blank leaf) |
