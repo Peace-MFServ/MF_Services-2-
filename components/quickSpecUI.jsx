@@ -1,4 +1,5 @@
 'use client'
+import { useState } from "react";
 import { UI, FONT } from "../lib/theme";
 import BackArrow from "./BackArrow";
 
@@ -242,6 +243,92 @@ export function StepTabs({ steps, current, furthest, onSelect }) {
  * A group with labels: null takes everything the others did not claim,
  * and any unmatched row still lands there — nothing is ever dropped.
  */
+/** A tile's photo; a missing or failed file leaves the grey ground. */
+function TilePhoto({ src }) {
+  const [failedSrc, setFailedSrc] = useState(null);
+  if (!src || failedSrc === src) return null;
+  return (
+    <img
+      src={src} alt="" onError={() => setFailedSrc(src)}
+      style={{
+        position: "absolute", inset: 0, width: "100%", height: "100%",
+        objectFit: "cover",
+      }}
+    />
+  );
+}
+
+/**
+ * Compact photo tiles for choosing between products — the same cards
+ * as the steel handle questions: square photo, small label, navy ring
+ * and tick when chosen. Options: { value, label, photo, title,
+ * disabled, disabledReason }.
+ */
+export function PhotoTiles({ name, value, onChange, options }) {
+  return (
+    <div role="radiogroup" aria-label={name} className="qs-hw-tiles">
+      {options.map(o => {
+        const on = value === o.value;
+        return (
+          <button
+            key={o.value} type="button" role="radio" aria-checked={on}
+            onClick={o.disabled ? undefined : () => onChange(o.value)}
+            disabled={o.disabled}
+            title={o.disabled ? o.disabledReason : o.title}
+            style={{
+              position: "relative", padding: 0,
+              display: "flex", flexDirection: "column", textAlign: "left",
+              fontFamily: FONT, background: on ? QS.selected : UI.surface,
+              border: `1px solid ${on ? UI.accent : "#D8E0EA"}`,
+              borderRadius: 6,
+              boxShadow: on
+                ? `inset 0 0 0 1px ${UI.accent}, 0 0 0 3px ${QS.tintOn}`
+                : "none",
+              cursor: o.disabled ? "not-allowed" : "pointer",
+              opacity: o.disabled ? 0.45 : 1,
+            }}
+          >
+            <span aria-hidden="true" style={{
+              position: "relative", display: "block",
+              width: "100%", aspectRatio: "1 / 1",
+              flexShrink: 0, background: "#F4F6F8",
+              borderRadius: "5px 5px 0 0", overflow: "hidden",
+            }}>
+              <TilePhoto src={o.photo} />
+            </span>
+            <span style={{
+              position: "relative", marginTop: -8, width: "100%", flex: 1,
+              display: "flex", alignItems: "flex-start",
+              padding: "5px 9px 7px",
+              background: on ? QS.selected : UI.surface,
+              borderRadius: "6px 6px 4px 4px",
+            }}>
+              <span style={{
+                fontSize: 11.5, fontWeight: on ? 600 : 500, lineHeight: 1.3, color: QS.ink,
+                minHeight: 30,
+              }}>
+                {o.label}
+              </span>
+            </span>
+            {on && (
+              <span aria-hidden="true" style={{
+                position: "absolute", top: -8, right: -8,
+                width: 22, height: 22, borderRadius: "50%",
+                background: UI.accent, color: "#FFFFFF",
+                display: "grid", placeItems: "center",
+                border: "2px solid #FFFFFF",
+                boxShadow: "0 1px 4px rgba(15, 23, 42, 0.25)",
+              }}>
+                {ICONS.check}
+              </span>
+            )}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 export function groupSheetRows(rows, groups) {
   const claimed = new Set(groups.flatMap(g => g.labels ?? []));
   return groups

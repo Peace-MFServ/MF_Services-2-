@@ -74,3 +74,25 @@ components/SteelDoorsetFields.jsx (HARDWARE_OPTION_PHOTOS).
 | hw-pht001-black.jpg | PHT001 surface-mounted handle, black (NFR and EI) |
 | hw-pht06-silver.jpg | PHT06 surface-mounted knob, silver (NFR and EI) |
 | hw-pht06-black.jpg | PHT06 surface-mounted knob, black (NFR and EI) |
+
+## Riser door choices (walls, frames, locks)
+
+Photo tiles in the quick spec and the choice cards in the guided
+flow. Keyed by option id in components/riserPhotos.js — a missing
+file leaves the line drawing (guided) or plain tile (quick).
+
+| File | Option |
+|---|---|
+| riser-wall-timber-stud.jpg | Timber stud partition |
+| riser-wall-steel-stud.jpg | Steel stud partition |
+| riser-wall-masonry.jpg | Masonry / blockwork |
+| riser-wall-shaftwall.jpg | Shaftwall |
+| riser-wall-masonry-lined.jpg | Masonry / concrete with lining system |
+| riser-frame-flush.jpg | Flush (standard) |
+| riser-frame-picture.jpg | Picture frame |
+| riser-frame-raised-picture.jpg | Raised picture frame |
+| riser-lock-slik-plus-euro.jpg | SLIK+ with euro cylinder |
+| riser-lock-slik-plus-thumb.jpg | SLIK+ with thumb turn |
+| riser-lock-slik-euro.jpg | SLIK and euro cylinder |
+| riser-lock-slik-euro-thumb.jpg | SLIK and euro thumb turn |
+| riser-lock-slik-concealed.jpg | Fully concealed SLIK point |

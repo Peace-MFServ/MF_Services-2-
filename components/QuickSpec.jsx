@@ -3,7 +3,8 @@ import { useState, useCallback, useEffect } from "react";
 import { generateHardwareSpecPDF } from "../lib/generateHardwareSpecPDF";
 import { UI, FONT, fieldStyle, cardStyle } from "../lib/theme";
 import { Field, Chips, Input } from "./SteelDoorsetFields";
-import { QS, CardTitle, ICONS, groupSheetRows, QuickHeader } from "./quickSpecUI";
+import { QS, CardTitle, ICONS, groupSheetRows, QuickHeader, PhotoTiles } from "./quickSpecUI";
+import { RISER_PHOTOS } from "./riserPhotos";
 import {
   SPEC_TYPES, CHRISTO, getProduct,
   buildInitialConfig, resolveProduct, validateSpec, specRows,
@@ -220,19 +221,21 @@ export default function QuickSpec({ productTypeId = "riser-doors", onChangeProdu
               <CardTitle icon={ICONS.wall}>Being fixed into</CardTitle>
               <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                 <Field label="Wall construction">
-                  <Chips
+                  <PhotoTiles
                     name="Wall construction" value={config.wallType} onChange={v => set("wallType", v)}
                     options={CHRISTO.walls.map(w => ({
-                      value: w.id, label: w.label,
+                      value: w.id, label: w.label, photo: RISER_PHOTOS.wall[w.id],
                       disabled: (config.leaves || 1) > w.maxLeaves,
                       disabledReason: `Approved to ${w.maxLeaves} leaves`,
                     }))}
                   />
                 </Field>
                 <Field label="Frame">
-                  <Chips
+                  <PhotoTiles
                     name="Frame" value={config.frameStyle || "flush"} onChange={v => set("frameStyle", v)}
-                    options={CHRISTO.frames.map(f => ({ value: f.id, label: f.label, title: f.summary }))}
+                    options={CHRISTO.frames.map(f => ({
+                      value: f.id, label: f.label, title: f.summary, photo: RISER_PHOTOS.frame[f.id],
+                    }))}
                   />
                 </Field>
                 <Field label="Finish">
@@ -256,9 +259,11 @@ export default function QuickSpec({ productTypeId = "riser-doors", onChangeProdu
               <CardTitle icon={ICONS.key} hint={(config.leaves || 1) > 1 ? CHRISTO.passiveLeafLockNote : undefined}>
                 Lock &amp; key
               </CardTitle>
-              <Chips
+              <PhotoTiles
                 name="Lock" value={config.lockType} onChange={v => set("lockType", v)}
-                options={CHRISTO.locks.map(l => ({ value: l.id, label: l.label, title: l.summary }))}
+                options={CHRISTO.locks.map(l => ({
+                  value: l.id, label: l.label, title: l.summary, photo: RISER_PHOTOS.lock[l.id],
+                }))}
               />
             </section>
 

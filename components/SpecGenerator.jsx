@@ -4,6 +4,7 @@ import RiserDoorPreview from "./RiserDoorPreview";
 import { PRODUCT_ART } from "./ProductIllustrations";
 import { generateHardwareSpecPDF } from "../lib/generateHardwareSpecPDF";
 import BackArrow from "./BackArrow";
+import { RISER_PHOTOS } from "./riserPhotos";
 import { UI, FONT, fieldStyle, cardStyle } from "../lib/theme";
 import { QS, ICONS, StepTabs } from "./quickSpecUI";
 import {
@@ -522,6 +523,19 @@ function FrameArt({ id }) {
   );
 }
 
+/** The real photograph where one exists; the line drawing stays as
+ *  the fallback when a file is missing or fails to load. */
+function ChoicePhoto({ src, fallback }) {
+  const [failed, setFailed] = useState(false);
+  if (!src || failed) return fallback;
+  return (
+    <img
+      src={src} alt="" onError={() => setFailed(true)}
+      style={{ display: "block", width: "100%", aspectRatio: "4 / 3", objectFit: "cover" }}
+    />
+  );
+}
+
 function ChoiceCard({ art, artWidth = 108, label, summary, selected, disabled, disabledNote, onSelect }) {
   return (
     <button
@@ -569,7 +583,7 @@ function WallStep({ product, config, setConfig, leaves, markTouched, errorFor })
         return (
           <ChoiceCard
             key={w.id}
-            art={<WallArt id={w.id} />}
+            art={<ChoicePhoto src={RISER_PHOTOS.wall[w.id]} fallback={<WallArt id={w.id} />} />}
             label={w.label}
             summary={w.summary}
             selected={config.wallType === w.id}
@@ -584,7 +598,7 @@ function WallStep({ product, config, setConfig, leaves, markTouched, errorFor })
         {CHRISTO.frames.map(f => (
           <ChoiceCard
             key={f.id}
-            art={<FrameArt id={f.id} />}
+            art={<ChoicePhoto src={RISER_PHOTOS.frame[f.id]} fallback={<FrameArt id={f.id} />} />}
             label={f.label}
             summary={f.summary}
             selected={config.frameStyle === f.id}
@@ -759,7 +773,7 @@ function LockStep({ config, setConfig, leaves }) {
       {CHRISTO.locks.map(l => (
         <ChoiceCard
           key={l.id}
-          art={<LockArt id={l.id} />}
+          art={<ChoicePhoto src={RISER_PHOTOS.lock[l.id]} fallback={<LockArt id={l.id} />} />}
           artWidth={164}
           label={l.label}
           summary={l.summary}
