@@ -683,10 +683,7 @@ export default function Pricer({ openProject, onSavedProject }) {
           </div>
 
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 14, padding: "6px 0" }}>
-            <span style={{ fontSize: 13 }}>
-              Margin
-              <span style={{ display: "block", fontSize: 11, color: UI.muted }}>{DEFAULT_MARGIN}% of the selling price</span>
-            </span>
+            <span style={{ fontSize: 13 }}>Margin</span>
             <span style={{ fontSize: 13.5, fontWeight: 600, color: UI.ink }}>
               {money.format(q.marginAmount)}
             </span>
