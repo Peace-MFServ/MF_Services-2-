@@ -21,19 +21,25 @@ in components/ProductPhoto.jsx.
 
 ## Frame tiles (steel doorset Frame question)
 
-These appear on the frame photo tiles in the quick spec and pricer.
-Thermal and filled variants share their family's photograph — the
-glyph on the tile's badge tells the variants apart. Crop positions
-live in components/SteelDoorsetFields.jsx (FRAME_PHOTOS).
+These appear on the frame photo tiles in the quick spec, guided flow
+and pricer. Every variant has its own shot — the thermal and filled
+ones are section renders cut from the supplied composites, showing
+the break or fill in the profile. Keyed by frame id in
+components/SteelDoorsetFields.jsx (FRAME_PHOTOS).
 
-| File | Frame family |
+| File | Frame |
 |---|---|
-| frame-corner.jpg | Corner (+ Corner thermal) |
-| frame-block.jpg | Block (+ Block thermal, Block with mineral wool) |
-| frame-block-plaster.jpg | Block with plaster board (+ thermal) |
+| frame-corner.jpg | Corner |
+| frame-corner-thermal.jpg | Corner thermal |
+| frame-block.jpg | Block |
+| frame-block-thermal.jpg | Block thermal |
+| frame-block-plaster.jpg | Block with plaster board |
+| frame-block-thermal-plaster.jpg | Block thermal with plaster board |
+| frame-block-wool.jpg | Block with mineral wool |
 | frame-embracing.jpg | Embracing |
 | frame-embracing-thermal.jpg | Embracing thermal |
-| frame-block-small.jpg | Block small (+ filled with plaster board) |
+| frame-block-small.jpg | Block small |
+| frame-block-small-plaster.jpg | Block small filled with plaster board |
 
 ## Handle tiles (Hardware section)
 

@@ -200,24 +200,29 @@ function FrameGlyph({ id }) {
   );
 }
 
-// Each frame family has a real photograph; the thermal and filled
-// variants share their family's shot — the photo says which family,
-// the glyph on the badge says which variant.
+// Every frame variant has its own photograph, keyed by the frame id
+// from the manufacturer's sheet. The family fallback below only
+// matters if a new variant ever appears without a shot.
 const FRAME_PHOTOS = {
-  corner:       { src: "/products/frame-corner.jpg",        position: "center" },
-  block:        { src: "/products/frame-block.jpg",         position: "center" },
-  plaster:      { src: "/products/frame-block-plaster.jpg", position: "center" },
-  embracing:    { src: "/products/frame-embracing.jpg",     position: "center" },
-  "embracing-thermal": { src: "/products/frame-embracing-thermal.jpg", position: "center" },
-  "block-small": { src: "/products/frame-block-small.jpg",  position: "center" },
+  "corner":              { src: "/products/frame-corner.jpg",               position: "center" },
+  "corner-thermal":      { src: "/products/frame-corner-thermal.jpg",       position: "center" },
+  "block":               { src: "/products/frame-block.jpg",                position: "center" },
+  "block-thermal":       { src: "/products/frame-block-thermal.jpg",        position: "center" },
+  "block-with-plaster-board": { src: "/products/frame-block-plaster.jpg",   position: "center" },
+  "block-thermal-with-plaster-board": { src: "/products/frame-block-thermal-plaster.jpg", position: "center" },
+  "block-with-mineral-wool": { src: "/products/frame-block-wool.jpg",       position: "center" },
+  "embracing":           { src: "/products/frame-embracing.jpg",            position: "center" },
+  "embracing-thermal":   { src: "/products/frame-embracing-thermal.jpg",    position: "center" },
+  "block-small":         { src: "/products/frame-block-small.jpg",          position: "center" },
+  "block-small-filled-with-plaster-board": { src: "/products/frame-block-small-plaster.jpg", position: "center" },
 };
 
 function framePhotoFor(id) {
-  if (id === "embracing-thermal") return FRAME_PHOTOS["embracing-thermal"];
+  if (FRAME_PHOTOS[id]) return FRAME_PHOTOS[id];
   if (id.startsWith("corner")) return FRAME_PHOTOS.corner;
   if (id.startsWith("embracing")) return FRAME_PHOTOS.embracing;
   if (id.startsWith("block-small")) return FRAME_PHOTOS["block-small"];
-  if (id.includes("plaster")) return FRAME_PHOTOS.plaster;
+  if (id.includes("plaster")) return FRAME_PHOTOS["block-with-plaster-board"];
   return FRAME_PHOTOS.block;
 }
 
