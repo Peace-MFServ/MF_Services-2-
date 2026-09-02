@@ -5,7 +5,7 @@ import { listProjects } from "../lib/projects";
 import { SaveProjectButton } from "./SavedProjects";
 import {
   resolveSteelDoor, describeSteelDoor, hardwareGroupsFor,
-  hardwareNeedsText, validateSteelDoor,
+  hardwareNeedsText, validateSteelDoor, steelSpecRows,
 } from "../lib/steelDoor";
 import { useDoorsetConfig, initialConfig } from "./steelSpecState";
 import { buildQuote, DEFAULT_MARGIN, MIN_MEN, MAX_DISCOUNT, LABOUR_RATE } from "../lib/quote";
@@ -103,7 +103,6 @@ function outstanding(line) {
 }
 
 function Line({ line, onChange, onEdit, onRemove }) {
-  const [open, setOpen] = useState(false);
   const resolution = resolveSteelDoor(line.config);
   const priced = line.priced;
   const gaps = outstanding(line);
@@ -114,6 +113,13 @@ function Line({ line, onChange, onEdit, onRemove }) {
   const unit = priced?.total ?? null;
   const lineTotal = unit == null ? null : unit * qty;
 
+  // What is on the door, in words — the cost breakdown itself lives
+  // only in the PDF and Excel. The headline already carries the
+  // doorset, size and rating, so those rows are not repeated.
+  const components = steelSpecRows(line.config, resolution)
+    .filter(r => !["Quantity", "Doorset", "Structural opening", "Clear opening", "Leaf size"].includes(r.label))
+    .filter(r => r.value && r.value !== "—");
+
   return (
     <div style={{ borderBottom: `1px solid ${UI.rule}`, fontFamily: FONT }}>
       <div style={{ display: "flex", alignItems: "flex-start", gap: 14, padding: "13px 0" }}>
@@ -122,17 +128,12 @@ function Line({ line, onChange, onEdit, onRemove }) {
           <div style={{ fontSize: 12.5, color: UI.body, marginTop: 3, lineHeight: 1.45 }}>
             {resolution.type ? describeSteelDoor(resolution.type) : "Not a doorset we make"}
             {line.config.width && line.config.height && ` · ${line.config.width} × ${line.config.height} mm`}
-            {resolution.frame && ` · ${resolution.frame.label} frame`}
           </div>
-          <button
-            type="button" onClick={() => setOpen(o => !o)}
-            style={{
-              background: "none", border: "none", padding: "5px 0 0", fontFamily: FONT,
-              fontSize: 12.5, color: UI.accent, textDecoration: "underline", cursor: "pointer",
-            }}
-          >
-            {open ? "Hide the breakdown" : "Show the breakdown"}
-          </button>
+          {components.length > 0 && (
+            <div style={{ fontSize: 12, color: UI.muted, marginTop: 5, lineHeight: 1.6 }}>
+              {components.map(r => `${r.label}: ${r.value}`).join(" · ")}
+            </div>
+          )}
         </div>
 
         <div style={{ flexShrink: 0 }}>
@@ -203,28 +204,10 @@ function Line({ line, onChange, onEdit, onRemove }) {
         </div>
       )}
 
-      {open && (
-        <div style={{ padding: "0 0 16px" }}>
-          {priced?.lines?.length ? priced.lines.map((l, i) => (
-            <div key={`${l.label}-${i}`} style={{
-              display: "flex", justifyContent: "space-between", gap: 14,
-              padding: "5px 0", fontSize: 12.5, color: UI.body,
-              borderBottom: `1px solid ${UI.rule}`,
-            }}>
-              <span>
-                {l.label}
-                {l.detail && <span style={{ color: UI.muted }}> · {l.detail}</span>}
-              </span>
-              <span style={{ fontWeight: 600, color: l.amount == null ? UI.warn : UI.ink, whiteSpace: "nowrap" }}>
-                {l.amount == null ? "on application" : money.format(l.amount)}
-              </span>
-            </div>
-          )) : (
-            <p style={{ margin: 0, fontSize: 12.5, color: UI.muted }}>
-              {line.error ?? "Nothing priced yet."}
-            </p>
-          )}
-        </div>
+      {line.error && (
+        <p style={{ margin: 0, padding: "0 0 12px", fontSize: 12.5, color: UI.warn }}>
+          {line.error}
+        </p>
       )}
     </div>
   );
