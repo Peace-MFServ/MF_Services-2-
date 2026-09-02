@@ -5,7 +5,7 @@ import { listProjects } from "../lib/projects";
 import { SaveProjectButton } from "./SavedProjects";
 import {
   resolveSteelDoor, describeSteelDoor, hardwareGroupsFor,
-  hardwareNeedsText, validateSteelDoor, steelSpecRows,
+  hardwareNeedsText, validateSteelDoor,
 } from "../lib/steelDoor";
 import { useDoorsetConfig, initialConfig } from "./steelSpecState";
 import { buildQuote, DEFAULT_MARGIN, MIN_MEN, MAX_DISCOUNT, LABOUR_RATE } from "../lib/quote";
@@ -113,13 +113,6 @@ function Line({ line, onChange, onEdit, onRemove }) {
   const unit = priced?.total ?? null;
   const lineTotal = unit == null ? null : unit * qty;
 
-  // What is on the door, in words — the cost breakdown itself lives
-  // only in the PDF and Excel. The headline already carries the
-  // doorset, size and rating, so those rows are not repeated.
-  const components = steelSpecRows(line.config, resolution)
-    .filter(r => !["Quantity", "Doorset", "Structural opening", "Clear opening", "Leaf size"].includes(r.label))
-    .filter(r => r.value && r.value !== "—");
-
   return (
     <div style={{ borderBottom: `1px solid ${UI.rule}`, fontFamily: FONT }}>
       <div style={{ display: "flex", alignItems: "flex-start", gap: 14, padding: "13px 0" }}>
@@ -128,12 +121,8 @@ function Line({ line, onChange, onEdit, onRemove }) {
           <div style={{ fontSize: 12.5, color: UI.body, marginTop: 3, lineHeight: 1.45 }}>
             {resolution.type ? describeSteelDoor(resolution.type) : "Not a doorset we make"}
             {line.config.width && line.config.height && ` · ${line.config.width} × ${line.config.height} mm`}
+            {resolution.frame && ` · ${resolution.frame.label} frame`}
           </div>
-          {components.length > 0 && (
-            <div style={{ fontSize: 12, color: UI.muted, marginTop: 5, lineHeight: 1.6 }}>
-              {components.map(r => `${r.label}: ${r.value}`).join(" · ")}
-            </div>
-          )}
         </div>
 
         <div style={{ flexShrink: 0 }}>
