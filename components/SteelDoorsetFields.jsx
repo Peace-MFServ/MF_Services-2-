@@ -267,11 +267,12 @@ const HARDWARE_OPTION_PHOTO_OVERRIDES = {
   },
 };
 
-// The surface-mounted PHA2000 and PHB3000 bars come in point-count,
-// height and certification variants that all photograph the same —
-// only the product and its colour matter, so those resolve by pattern.
+// The surface-mounted hardware — PHA2000/PHB3000 bars, PHT001 handle,
+// PHT06 knob — comes in point-count, height and certification variants
+// that all photograph the same; only the product and its colour
+// matter, so those resolve by pattern.
 function barPhotoFor(option) {
-  const m = /^(PHA2000|PHB3000)\b.*\b(silver|black)\b/.exec(option ?? "");
+  const m = /^(PHA2000|PHB3000|PHT001|PHT06)\b.*\b(silver|black)\b/.exec(option ?? "");
   return m ? `/products/hw-${m[1].toLowerCase()}-${m[2]}.jpg` : null;
 }
 

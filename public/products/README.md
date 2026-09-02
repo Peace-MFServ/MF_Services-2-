@@ -64,3 +64,7 @@ components/SteelDoorsetFields.jsx (HARDWARE_OPTION_PHOTOS).
 | hw-pha2000-black.jpg | every PHA2000 panic bar variant in black |
 | hw-phb3000-silver.jpg | every PHB3000 pushbar variant in silver |
 | hw-phb3000-black.jpg | every PHB3000 pushbar variant in black |
+| hw-pht001-silver.jpg | PHT001 surface-mounted handle, silver (NFR and EI) |
+| hw-pht001-black.jpg | PHT001 surface-mounted handle, black (NFR and EI) |
+| hw-pht06-silver.jpg | PHT06 surface-mounted knob, silver (NFR and EI) |
+| hw-pht06-black.jpg | PHT06 surface-mounted knob, black (NFR and EI) |
