@@ -55,3 +55,12 @@ components/SteelDoorsetFields.jsx (HARDWARE_OPTION_PHOTOS).
 | hw-preparation.jpg | preparation (drilled cut-outs, no furniture) |
 | hw-without-preparation.jpg | without preparation (blank leaf) |
 | hw-passive-handle-long-shield.jpg | handle on long shield, passive leaf only (blind shield, no keyway) |
+| hw-passive-handle-round-rosette.jpg | handle on round rosette, passive leaf only |
+| hw-epn900-black.jpg | panic bar EPN 900 black |
+| hw-epn900-alu.jpg | panic bar EPN 900 alu |
+| hw-epn900-inox.jpg | panic bar EPN 900 inox |
+| hw-pushbar-inox.jpg | pushbar inox |
+| hw-pha2000-silver.jpg | every PHA2000 panic bar variant in silver (pts/height/cert share it) |
+| hw-pha2000-black.jpg | every PHA2000 panic bar variant in black |
+| hw-phb3000-silver.jpg | every PHB3000 pushbar variant in silver |
+| hw-phb3000-black.jpg | every PHB3000 pushbar variant in black |

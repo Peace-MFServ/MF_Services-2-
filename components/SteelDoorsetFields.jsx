@@ -252,6 +252,10 @@ const HARDWARE_OPTION_PHOTOS = {
   "handle Eco WC": "/products/hw-handle-eco-wc.jpg",
   "preparation": "/products/hw-preparation.jpg",
   "without preparation": "/products/hw-without-preparation.jpg",
+  "panic bar EPN 900 black": "/products/hw-epn900-black.jpg",
+  "panic bar EPN 900 alu": "/products/hw-epn900-alu.jpg",
+  "panic bar EPN 900 inox": "/products/hw-epn900-inox.jpg",
+  "pushbar inox": "/products/hw-pushbar-inox.jpg",
 };
 
 // A few options look different on the passive leaf — its furniture has
@@ -259,11 +263,22 @@ const HARDWARE_OPTION_PHOTOS = {
 const HARDWARE_OPTION_PHOTO_OVERRIDES = {
   handlePassiveOutside: {
     "handle on long shield": "/products/hw-passive-handle-long-shield.jpg",
+    "handle on round rossette": "/products/hw-passive-handle-round-rosette.jpg",
   },
 };
 
+// The surface-mounted PHA2000 and PHB3000 bars come in point-count,
+// height and certification variants that all photograph the same —
+// only the product and its colour matter, so those resolve by pattern.
+function barPhotoFor(option) {
+  const m = /^(PHA2000|PHB3000)\b.*\b(silver|black)\b/.exec(option ?? "");
+  return m ? `/products/hw-${m[1].toLowerCase()}-${m[2]}.jpg` : null;
+}
+
 function hardwarePhotoFor(groupId, option) {
-  return HARDWARE_OPTION_PHOTO_OVERRIDES[groupId]?.[option] ?? HARDWARE_OPTION_PHOTOS[option];
+  return HARDWARE_OPTION_PHOTO_OVERRIDES[groupId]?.[option]
+    ?? HARDWARE_OPTION_PHOTOS[option]
+    ?? barPhotoFor(option);
 }
 
 // The three handle questions choose from photo tiles instead of a
