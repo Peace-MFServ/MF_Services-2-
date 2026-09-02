@@ -314,9 +314,9 @@ function DoorsetEditor({ initial, initialName, onCancel, onDone, existing, saveB
 export default function Pricer({ openProject, onSavedProject }) {
   const { user, isStaff, ready } = useAuth();
   const [lines, setLines] = useState([]);
-  // Margin is a share of the selling price — 40% unless changed — and
-  // the discount can never pass 5%. Labour is men × days at €450.
-  const [margin, setMargin] = useState(String(DEFAULT_MARGIN));
+  // Margin is fixed at 40% of the selling price — the estimators
+  // asked for no input on screen (the Excel export keeps its editable
+  // cell). The discount can never pass 5%; labour is men × days at €450.
   const [transport, setTransport] = useState("");
   const [labourMen, setLabourMen] = useState(String(MIN_MEN));
   const [labourDays, setLabourDays] = useState("");
@@ -338,7 +338,6 @@ export default function Pricer({ openProject, onSavedProject }) {
       if (raw) {
         const saved = JSON.parse(raw);
         if (Array.isArray(saved.lines)) setLines(saved.lines);
-        if (saved.margin) setMargin(saved.margin);
         if (saved.transport) setTransport(saved.transport);
         if (saved.labourMen) setLabourMen(saved.labourMen);
         if (saved.labourDays) setLabourDays(saved.labourDays);
@@ -353,10 +352,10 @@ export default function Pricer({ openProject, onSavedProject }) {
     if (!hydrated) return;
     try {
       window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify({
-        lines, margin, transport, labourMen, labourDays, discount, project,
+        lines, transport, labourMen, labourDays, discount, project,
       }));
     } catch { /* best-effort */ }
-  }, [hydrated, lines, margin, transport, labourMen, labourDays, discount, project]);
+  }, [hydrated, lines, transport, labourMen, labourDays, discount, project]);
 
   // Whatever is open in the Specification Tool, described so the offer
   // to bring it across says what it actually is.
@@ -469,7 +468,7 @@ export default function Pricer({ openProject, onSavedProject }) {
 
   // The screen shows the same quote the downloads render — one
   // computation in lib/quote.js, three views of it.
-  const quoteInputs = { lines, margin, transport, labourMen, labourDays, discount, project };
+  const quoteInputs = { lines, margin: DEFAULT_MARGIN, transport, labourMen, labourDays, discount, project };
   const q = buildQuote(quoteInputs);
 
   // Both files are renderings of one quote, built at the moment of
@@ -518,10 +517,10 @@ export default function Pricer({ openProject, onSavedProject }) {
     }
     try {
       window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify({
-        lines: nextLines, margin, transport, labourMen, labourDays, discount, project,
+        lines: nextLines, transport, labourMen, labourDays, discount, project,
       }));
     } catch { /* best-effort — the effect writes it again anyway */ }
-  }, [editing, lines, margin, transport, labourMen, labourDays, discount, project]);
+  }, [editing, lines, transport, labourMen, labourDays, discount, project]);
 
   const quoteSaveButton = (
     <SaveProjectButton
@@ -647,22 +646,17 @@ export default function Pricer({ openProject, onSavedProject }) {
               40% of the sale, subtotal ÷ 0.6 — and the discount comes
               off the lot, never more than 5%. */}
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 14, padding: "6px 0" }}>
-            <span style={{ fontSize: 13 }}>Doorsets</span>
+            <span style={{ fontSize: 13 }}>Doorsets (cost)</span>
             <span style={{ fontSize: 13.5, fontWeight: 600, color: UI.ink }}>{money.format(q.doorsetsCost)}</span>
           </div>
 
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 14, padding: "6px 0" }}>
-            <span style={{ fontSize: 13 }}>Transport</span>
+            <span style={{ fontSize: 13 }}>Transport (cost)</span>
             <SmallInput id="transport" value={transport} width={96} onChange={v => setTransport(pct(v))} placeholder="0.00" />
           </div>
 
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 14, padding: "6px 0" }}>
-            <span style={{ fontSize: 13 }}>
-              Labour
-              <span style={{ display: "block", fontSize: 11, color: UI.muted }}>
-                €{LABOUR_RATE} a man a day · min {MIN_MEN} men
-              </span>
-            </span>
+            <span style={{ fontSize: 13 }}>Labour</span>
             <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
               <SmallInput
                 id="labour-men" value={labourMen} width={44} align="center" placeholder={String(MIN_MEN)}
@@ -688,17 +682,13 @@ export default function Pricer({ openProject, onSavedProject }) {
             <span style={{ fontSize: 13.5, fontWeight: 700, color: UI.ink }}>{money.format(q.subtotal)}</span>
           </div>
 
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 14, padding: "6px 0" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 14, padding: "6px 0" }}>
             <span style={{ fontSize: 13 }}>
               Margin
-              <span style={{ display: "block", fontSize: 11, color: UI.muted }}>of the selling price</span>
+              <span style={{ display: "block", fontSize: 11, color: UI.muted }}>{DEFAULT_MARGIN}% of the selling price</span>
             </span>
-            <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <SmallInput id="margin" value={margin} width={62} onChange={v => setMargin(pct(v))} placeholder={String(DEFAULT_MARGIN)} />
-              <span style={{ fontSize: 13, color: UI.muted }}>%</span>
-              <span style={{ fontSize: 13.5, fontWeight: 600, color: UI.ink, width: 96, textAlign: "right" }}>
-                {money.format(q.marginAmount)}
-              </span>
+            <span style={{ fontSize: 13.5, fontWeight: 600, color: UI.ink }}>
+              {money.format(q.marginAmount)}
             </span>
           </div>
 
@@ -727,7 +717,7 @@ export default function Pricer({ openProject, onSavedProject }) {
             padding: "12px 0 0", marginTop: 8, borderTop: `1px solid ${UI.ruleStrong}`,
           }}>
             <span style={{ fontSize: 13, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: UI.ink }}>
-              Total
+              Total (ex. VAT)
             </span>
             <span style={{ fontSize: 19, fontWeight: 700, color: UI.ink }}>{money.format(q.total)}</span>
           </div>
