@@ -51,7 +51,7 @@ function Shell({ children }) {
   );
 }
 
-function Button({ onClick, children, primary, disabled, icon }) {
+function Button({ onClick, children, primary, disabled, icon, wrap }) {
   return (
     <button
       type="button" onClick={onClick} disabled={disabled}
@@ -62,7 +62,11 @@ function Button({ onClick, children, primary, disabled, icon }) {
         border: `1px solid ${disabled ? UI.ruleStrong : primary ? UI.accent : "#CBD5E1"}`,
         background: disabled ? UI.sunken : primary ? UI.accent : UI.surface,
         color: disabled ? UI.muted : primary ? "#FFFFFF" : UI.body,
-        cursor: disabled ? "not-allowed" : "pointer", whiteSpace: "nowrap",
+        cursor: disabled ? "not-allowed" : "pointer",
+        // Long labels (the start-from buttons) wrap on a phone instead
+        // of running off the screen.
+        whiteSpace: wrap ? "normal" : "nowrap",
+        textAlign: "left", maxWidth: "100%",
       }}
     >
       {icon && (
@@ -561,12 +565,12 @@ export default function Pricer({ openProject, onSavedProject }) {
             </div>
             <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
               {fromTool && (
-                <Button icon={ICONS.door} onClick={() => addFrom(fromTool.config, fromTool.name)}>
+                <Button wrap icon={ICONS.door} onClick={() => addFrom(fromTool.config, fromTool.name)}>
                   Open in the Specification Tool — {fromTool.description}
                 </Button>
               )}
               {(projects ?? []).map(p => (
-                <Button key={p.id} icon={ICONS.bookmark} onClick={() => addFrom(p.payload?.config ?? {}, p.name)}>
+                <Button wrap key={p.id} icon={ICONS.bookmark} onClick={() => addFrom(p.payload?.config ?? {}, p.name)}>
                   Saved project — {p.name}
                 </Button>
               ))}
