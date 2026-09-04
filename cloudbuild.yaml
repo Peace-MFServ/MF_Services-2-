@@ -6,10 +6,35 @@
 # release can be rolled back to by redeploying an earlier image.
 
 steps:
+  # Warm the layer cache from the previous run. The build-stage image
+  # carries the npm ci layer, so dependencies only reinstall when
+  # package-lock.json actually changes; a missing cache (first run,
+  # cleaned registry) is fine — the build just runs cold.
+  - id: pull-cache
+    name: gcr.io/cloud-builders/docker
+    entrypoint: bash
+    args:
+      - -c
+      - docker pull europe-west1-docker.pkg.dev/$PROJECT_ID/app/spec-tool-build-cache:latest || exit 0
+
+  - id: build-stage
+    name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - --target
+      - build
+      - --cache-from
+      - europe-west1-docker.pkg.dev/$PROJECT_ID/app/spec-tool-build-cache:latest
+      - -t
+      - europe-west1-docker.pkg.dev/$PROJECT_ID/app/spec-tool-build-cache:latest
+      - .
+
   - id: build
     name: gcr.io/cloud-builders/docker
     args:
       - build
+      - --cache-from
+      - europe-west1-docker.pkg.dev/$PROJECT_ID/app/spec-tool-build-cache:latest
       - -t
       - europe-west1-docker.pkg.dev/$PROJECT_ID/app/spec-tool:$COMMIT_SHA
       - -t
@@ -18,10 +43,12 @@ steps:
 
   - id: push
     name: gcr.io/cloud-builders/docker
+    entrypoint: bash
     args:
-      - push
-      - --all-tags
-      - europe-west1-docker.pkg.dev/$PROJECT_ID/app/spec-tool
+      - -c
+      - |
+        docker push --all-tags europe-west1-docker.pkg.dev/$PROJECT_ID/app/spec-tool
+        docker push europe-west1-docker.pkg.dev/$PROJECT_ID/app/spec-tool-build-cache:latest
 
   - id: deploy
     name: gcr.io/google.com/cloudsdktool/cloud-sdk

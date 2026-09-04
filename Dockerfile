@@ -1,13 +1,8 @@
 # Build and run the Specification Tool on Cloud Run.
 #
-# Three stages so the image that actually runs carries only the built
-# app and its production dependencies — no source, no dev tooling.
-
-# ── Dependencies ─────────────────────────────────────────────────
-FROM node:22-alpine AS deps
-WORKDIR /app
-COPY package.json package-lock.json* ./
-RUN npm ci --omit=dev
+# Two stages so the image that actually runs carries only the built
+# app — Next's standalone output bundles the production dependencies
+# it needs, so no separate dependency stage exists.
 
 # ── Build ────────────────────────────────────────────────────────
 FROM node:22-alpine AS build
