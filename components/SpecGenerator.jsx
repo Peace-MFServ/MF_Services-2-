@@ -353,7 +353,7 @@ function SpecifyStep({ product, config, setConfig, errorFor, markTouched, resolu
   return (
     <div style={{ padding: "20px 22px" }}>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 24 }}>
+      <div className="qs-2col" style={{ marginBottom: 24 }}>
         <div>
           <Label htmlFor="cfg-width">Structural width (mm)</Label>
           <input

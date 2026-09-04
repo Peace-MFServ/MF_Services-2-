@@ -293,7 +293,7 @@ export default function QuickSpec({ productTypeId = "riser-doors", onChangeProdu
                     />
                   </Field>
                 </div>
-                <div className="qs-3col" style={{ gridTemplateColumns: "repeat(2, minmax(0, 1fr))" }}>
+                <div className="qs-2col">
                   <Field label="Email"><Input tall id="qs-email" type="email" value={projectData.email} onChange={v => setPd("email", v)} /></Field>
                   <Field label="Phone"><Input tall id="qs-phone" type="tel" value={projectData.phone} onChange={v => setPd("phone", v)} /></Field>
                   <Field label="Project name"><Input tall id="qs-project" value={projectData.projectName} onChange={v => setPd("projectName", v)} /></Field>

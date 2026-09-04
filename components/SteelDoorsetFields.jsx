@@ -799,8 +799,10 @@ export default function SteelDoorsetFields({ config, set, resolution, idPrefix =
                     {section.title}
                   </div>
                   {fieldGroups.length > 0 && (
-                  <div style={cards
-                    ? { display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: "16px 14px" }
+                  <div
+                    className={cards ? "qs-3col" : undefined}
+                    style={cards
+                    ? { gap: "16px 14px" }
                     : { display: "flex", gap: 14, flexWrap: "wrap" }
                   }>
                     {fieldGroups.map(g => (

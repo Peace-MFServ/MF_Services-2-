@@ -65,6 +65,19 @@ body {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 16px;
 }
+.qs-2col {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+/* The overpressure calculator's three-panel spread and intro split
+   stack on narrow screens. */
+@media (max-width: 1100px) {
+  .op-grid { grid-template-columns: 1fr !important; }
+}
+@media (max-width: 720px) {
+  .op-intro-grid { grid-template-columns: 1fr !important; }
+}
 .qs-frames {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -87,7 +100,7 @@ body {
   .qs-hw-tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 @media (max-width: 560px) {
-  .qs-3col { grid-template-columns: 1fr; }
+  .qs-3col, .qs-2col { grid-template-columns: 1fr; }
   .qs-hw-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
