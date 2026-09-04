@@ -389,6 +389,55 @@ export function HardwareTiles({ group, value, onChange }) {
   );
 }
 
+// What each lock actually is, in plain words, shown under the Lock
+// dropdown as the pick changes — the info the estimators asked for.
+// Keyed by the option strings exactly as the manufacturer's sheet
+// spells them; a pattern handles the families. An option without an
+// entry simply shows nothing.
+function lockInfoFor(value = "") {
+  if (!value || value === "other") return "";
+  if (value === "standard") return "Key lock — the handle works the latch, the key throws the deadbolt.";
+  if (value === "WC") return "Bathroom lock — thumb turn on the inside, emergency release outside; no key.";
+  if (value === "roller") return "Roller latch — holds the door closed without locking it.";
+  if (value === "GBS 90") return "GBS 90 sashlock from the manufacturer's list.";
+  if (/^3 pts panic/.test(value)) {
+    return "Three-point locking with the escape function — locks top, centre and bottom, and always opens from the inside in one movement.";
+  }
+  if (value === "3 pts") return "Three-point locking — locks at the centre and at the top and bottom of the leaf.";
+  if (/^panic/.test(value)) {
+    const twoLeaf = / for 2 Lv$/.test(value) ? " Made for double doors — both leaves carry escape hardware." : "";
+    return `Escape-route lock — always opens from the inside in one movement, even when locked from outside.${twoLeaf}`;
+  }
+  if (/^EL \d/.test(value)) return "Electric lock — locking and release driven by the access-control system.";
+  if (/^Dorma SVP/.test(value)) return "Self-locking panic lock — deadlocks itself every time the door closes, and always opens from the inside.";
+  if (/^Dorma SVZ/.test(value)) return "Self-locking lock — deadlocks itself every time the door closes.";
+  if (/^WITHOUT \(NFR/.test(value)) return "No lock in the door — the surface-mounted hardware carries the locking (non-fire-rated hardware).";
+  if (/^WITHOUT \(EI/.test(value)) return "No lock in the door — the surface-mounted hardware carries the locking (fire-rated hardware).";
+  return "";
+}
+
+/** The plain-words line under the Lock dropdown. */
+export function LockInfo({ value }) {
+  const text = lockInfoFor(value);
+  if (!text) return null;
+  return (
+    <p style={{
+      display: "flex", gap: 6, alignItems: "flex-start",
+      margin: "7px 0 0", fontSize: 12, lineHeight: 1.5, color: UI.muted, fontFamily: FONT,
+    }}>
+      <span aria-hidden="true" style={{
+        flexShrink: 0, marginTop: 1, width: 14, height: 14, borderRadius: "50%",
+        border: `1.3px solid ${UI.accent}`, color: UI.accent,
+        display: "grid", placeItems: "center",
+        fontSize: 9.5, fontWeight: 700, fontStyle: "normal",
+      }}>
+        i
+      </span>
+      {text}
+    </p>
+  );
+}
+
 // The handle questions live in bordered boxes — one for the active
 // leaf with Inside and Outside sub-groups, one for the passive leaf —
 // so each group reads as a container rather than headings floating
@@ -758,6 +807,7 @@ export default function SteelDoorsetFields({ config, set, resolution, idPrefix =
                       <div key={g.id} style={cards ? { minWidth: 0 } : { flex: "1 1 220px", minWidth: 200, maxWidth: 320 }}>
                         <Field label={g.label}>
                           <Select id={`${idPrefix}-${g.id}`} group={g} value={config[g.id]} onChange={v => set(g.id, v)} tall={cards} />
+                          {g.id === "lock" && <LockInfo value={config.lock} />}
                           {hardwareNeedsText(config[g.id]) && (
                             <div style={{ marginTop: 8 }}>
                               <Input

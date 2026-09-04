@@ -1168,7 +1168,7 @@ export default function SpecGenerator({ startProductId, onChangeProduct, modeSwi
   }
 
   return (
-    <div className="mf-rounded" style={{
+    <div className="mf-rounded qs-workspace" style={{
       ...shell, display: "flex", gap: 20, height: "calc(100vh - 62px)",
       minHeight: 640, padding: "20px 24px", overflow: "hidden",
     }}>
@@ -1182,7 +1182,7 @@ export default function SpecGenerator({ startProductId, onChangeProduct, modeSwi
         <header style={{ padding: "18px 22px 16px", borderBottom: `1px solid ${UI.rule}`, flexShrink: 0 }}>
           {/* The layout switch sits beside the product name here and in
               the quick layout, so it does not move between the two. */}
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, minWidth: 0 }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px 16px", minWidth: 0, flexWrap: "wrap" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
               <BackArrow onClick={goBack} />
               <h2 style={{ margin: 0, fontSize: 19, fontWeight: 600, letterSpacing: "-0.01em", color: UI.ink, lineHeight: 1.3 }}>
@@ -1238,7 +1238,7 @@ export default function SpecGenerator({ startProductId, onChangeProduct, modeSwi
         {footer}
       </aside>
 
-      <section style={{ ...cardStyle, padding: 0, flex: 1, minWidth: 0, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+      <section className="qs-drawing" style={{ ...cardStyle, padding: 0, flex: 1, minWidth: 0, display: "flex", flexDirection: "column", overflow: "hidden" }}>
         <RiserDoorPreview product={product} config={config} resolution={resolution} />
       </section>
     </div>

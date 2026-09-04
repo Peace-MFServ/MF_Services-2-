@@ -3,7 +3,7 @@ import { useRef } from "react";
 import SteelDoorPreview from "./SteelDoorPreview";
 import BackArrow from "./BackArrow";
 import { useSteelSpecState, mmDigits } from "./steelSpecState";
-import { FrameCards, HandleGroups, HANDLE_TILE_IDS } from "./SteelDoorsetFields";
+import { FrameCards, HandleGroups, HANDLE_TILE_IDS, LockInfo } from "./SteelDoorsetFields";
 import { UI, FONT, fieldStyle, cardStyle } from "../lib/theme";
 import { QS, ICONS, StepTabs } from "./quickSpecUI";
 import {
@@ -345,6 +345,7 @@ function HardwareField({ group, value, text, onChange, onChangeText, error }) {
         {blocked && <option value="">{group.blocked ?? "Not available yet"}</option>}
         {group.options.map(o => <option key={o} value={o}>{o}</option>)}
       </select>
+      {group.id === "lock" && <LockInfo value={value} />}
       {hardwareNeedsText(value) && (
         <input
           id={`hw-${group.id}-text`} value={text || ""}
@@ -629,7 +630,7 @@ export default function SteelDoorSpec({ onChangeProduct, modeSwitch, saveButton 
     : "Next";
 
   return (
-    <div className="mf-rounded" style={{
+    <div className="mf-rounded qs-workspace" style={{
       display: "flex", gap: 20, height: "calc(100vh - 62px)", minHeight: 640,
       borderTop: `1px solid ${UI.rule}`, background: QS.bg, padding: "20px 24px",
       fontFamily: FONT, color: UI.body, overflow: "hidden",
@@ -642,7 +643,7 @@ export default function SteelDoorSpec({ onChangeProduct, modeSwitch, saveButton 
         minHeight: 0, overflow: "hidden",
       }}>
         <header style={{ padding: "18px 22px 16px", borderBottom: `1px solid ${UI.rule}`, flexShrink: 0 }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, minWidth: 0 }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px 16px", minWidth: 0, flexWrap: "wrap" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
               <BackArrow onClick={goBack} />
               <h2 style={{ margin: 0, fontSize: 19, fontWeight: 600, letterSpacing: "-0.01em", color: UI.ink }}>
@@ -728,7 +729,7 @@ export default function SteelDoorSpec({ onChangeProduct, modeSwitch, saveButton 
         </div>
       </aside>
 
-      <section style={{ ...cardStyle, padding: 0, flex: 1, minWidth: 0, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+      <section className="qs-drawing" style={{ ...cardStyle, padding: 0, flex: 1, minWidth: 0, display: "flex", flexDirection: "column", overflow: "hidden" }}>
         <SteelDoorPreview resolution={resolution} config={config} />
       </section>
     </div>

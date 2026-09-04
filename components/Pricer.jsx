@@ -115,7 +115,7 @@ function Line({ line, onChange, onEdit, onRemove }) {
 
   return (
     <div style={{ borderBottom: `1px solid ${UI.rule}`, fontFamily: FONT }}>
-      <div style={{ display: "flex", alignItems: "flex-start", gap: 14, padding: "13px 0" }}>
+      <div style={{ display: "flex", alignItems: "flex-start", gap: 14, padding: "13px 0", flexWrap: "wrap" }}>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ fontSize: 14, fontWeight: 600, color: UI.ink }}>{line.name}</div>
           <div style={{ fontSize: 12.5, color: UI.body, marginTop: 3, lineHeight: 1.45 }}>

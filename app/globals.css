@@ -169,7 +169,52 @@ body {
   color: #00387B;
 }
 
+.mf-nav-tabs {
+  display: flex;
+  gap: 6px;
+  margin-left: 18px;
+  min-width: 0;
+  overflow-x: auto;
+}
+
+/* On a phone the bar becomes two rows: identity and account on the
+   first, the section tabs scrolling on their own row beneath. The
+   title block goes — the logo already says who we are. */
 @media (max-width: 720px) {
-  .mf-nav-inner { padding: 0 12px; gap: 8px; }
+  .mf-nav-inner {
+    flex-wrap: wrap;
+    height: auto;
+    min-height: 52px;
+    padding: 8px 12px;
+    row-gap: 6px;
+  }
+  .mf-nav-title { display: none; }
+  .mf-nav-tabs {
+    order: 3;
+    flex: 1 1 100%;
+    margin-left: 0;
+    -webkit-overflow-scrolling: touch;
+  }
   .mf-tab { height: 34px; padding: 0 12px; font-size: 12.5px; }
+}
+
+/* The guided workspaces are a fixed-height two-column split on a
+   desktop. On a phone they stack: the questions first at natural
+   height, the drawing in a compact panel beneath. */
+@media (max-width: 900px) {
+  .qs-workspace {
+    flex-direction: column;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    padding: 14px 12px !important;
+  }
+  .qs-workspace > aside {
+    flex: 0 0 auto !important;
+    overflow: visible !important;
+  }
+  .qs-workspace > .qs-drawing {
+    flex: 0 0 auto !important;
+    height: 440px;
+  }
 }

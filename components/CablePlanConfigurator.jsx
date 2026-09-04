@@ -530,7 +530,7 @@ export default function CablePlanConfigurator({ startSystemId, onChangeSystem, s
   const nextDisabled = currentStep === 1 && !validation.isValid;
 
   return (
-    <div className="mf-rounded" style={{
+    <div className="mf-rounded qs-workspace" style={{
       display: "flex", gap: 20, height: "calc(100vh - 62px)", minHeight: 640,
       borderTop: `1px solid ${UI.rule}`, background: QS.bg, padding: "20px 24px",
       fontFamily: FONT, color: UI.body, overflow: "hidden",
@@ -546,7 +546,7 @@ export default function CablePlanConfigurator({ startSystemId, onChangeSystem, s
       }}>
 
         <header style={{ padding: "18px 22px 16px", borderBottom: `1px solid ${UI.rule}`, flexShrink: 0 }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, minWidth: 0 }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px 16px", minWidth: 0, flexWrap: "wrap" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
               <BackArrow onClick={goBack} />
               <h2 style={{ margin: 0, fontSize: 19, fontWeight: 600, letterSpacing: "-0.01em", color: UI.ink, lineHeight: 1.3 }}>
@@ -638,7 +638,7 @@ export default function CablePlanConfigurator({ startSystemId, onChangeSystem, s
       </aside>
 
       {/* ── Drawing ── */}
-      <section style={{ ...cardStyle, padding: 0, flex: 1, minWidth: 0, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+      <section className="qs-drawing" style={{ ...cardStyle, padding: 0, flex: 1, minWidth: 0, display: "flex", flexDirection: "column", overflow: "hidden" }}>
         <DoorElevation
           system={system} componentStates={componentStates}
           activeId={activeId} onSelect={handleSelectFromDrawing}

@@ -265,6 +265,14 @@ export default function QuickSpec({ productTypeId = "riser-doors", onChangeProdu
                   value: l.id, label: l.label, title: l.summary, photo: RISER_PHOTOS.lock[l.id],
                 }))}
               />
+              {(() => {
+                const chosen = CHRISTO.locks.find(l => l.id === config.lockType);
+                return chosen?.summary ? (
+                  <p style={{ margin: "10px 0 0", fontSize: 12, lineHeight: 1.5, color: QS.muted }}>
+                    {chosen.label} — {chosen.summary}
+                  </p>
+                ) : null;
+              })()}
             </section>
 
             <section style={cardStyle}>

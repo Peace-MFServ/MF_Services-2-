@@ -96,11 +96,11 @@ function Toolbox() {
           >
             <img src="/linkedin.jpg" alt="MF Services" width={925} height={184} style={{ height: 30, width: 'auto', borderRadius: 3 }} />
           </button>
-          <div style={{ flexShrink: 0 }}>
+          <div className="mf-nav-title" style={{ flexShrink: 0 }}>
             <h1 style={{ color: '#FFFFFF', fontWeight: 700, fontSize: 13.5, letterSpacing: '-0.01em', lineHeight: 1.2 }}>MF Services</h1>
             <div style={{ color: 'rgba(255,255,255,0.74)', fontSize: 10.5, letterSpacing: '0.03em' }}>Door Systems Toolbox</div>
           </div>
-          <nav aria-label="Sections" style={{ display: 'flex', gap: 6, marginLeft: 18, minWidth: 0, overflowX: 'auto' }}>
+          <nav aria-label="Sections" className="mf-nav-tabs">
             {tabs.map(tab => (
               <button
                 key={tab.id}
