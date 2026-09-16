@@ -5,7 +5,7 @@ import BackArrow from "./BackArrow";
 import { useSteelSpecState, mmDigits } from "./steelSpecState";
 import { FrameCards, HandleGroups, HANDLE_TILE_IDS, LockInfo } from "./SteelDoorsetFields";
 import { UI, FONT, fieldStyle, cardStyle } from "../lib/theme";
-import { QS, ICONS, StepTabs } from "./quickSpecUI";
+import { QS, ICONS, StepTabs, MobileDrawingDock } from "./quickSpecUI";
 import {
   fireRatings, leafCountsFor, highPerformanceAvailable,
   describeSteelDoor, steelSpecRows, standardsFor, hardwareNeedsText,
@@ -732,6 +732,11 @@ export default function SteelDoorSpec({ onChangeProduct, modeSwitch, saveButton 
       <section className="qs-drawing" style={{ ...cardStyle, padding: 0, flex: 1, minWidth: 0, display: "flex", flexDirection: "column", overflow: "hidden" }}>
         <SteelDoorPreview resolution={resolution} config={config} />
       </section>
+
+      {/* Phones hide the panel above and get this floating live copy. */}
+      <MobileDrawingDock>
+        <SteelDoorPreview resolution={resolution} config={config} />
+      </MobileDrawingDock>
     </div>
   );
 }

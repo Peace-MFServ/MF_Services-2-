@@ -329,6 +329,83 @@ export function PhotoTiles({ name, value, onChange, options }) {
   );
 }
 
+/**
+ * Floating live-drawing dock for phones. The guided screens hide
+ * their drawing panel below 768px, so this keeps a small live copy
+ * of the same preview pinned to the bottom of the screen; tapping it
+ * opens the drawing full screen. Hidden on wider screens by the
+ * .qs-dock rules in globals.css.
+ *
+ * Children may be a function ({ close }) => preview, for previews
+ * that want to close the full-screen view after an interaction.
+ */
+export function MobileDrawingDock({ children }) {
+  const [open, setOpen] = useState(false);
+  const close = () => setOpen(false);
+  const content = typeof children === "function" ? children({ close }) : children;
+
+  if (open) {
+    return (
+      <div className="qs-dock" style={{
+        position: "fixed", inset: 0, zIndex: 60, background: QS.bg,
+        padding: 10, fontFamily: FONT,
+      }}>
+        <div style={{
+          height: "100%", display: "flex", flexDirection: "column",
+          background: UI.surface, border: "1px solid #E2E8F0",
+          borderRadius: 10, overflow: "hidden",
+        }}>
+          {content}
+        </div>
+        <button
+          type="button" onClick={close} aria-label="Close drawing"
+          style={{
+            position: "absolute", top: 20, right: 20, zIndex: 61,
+            width: 38, height: 38, borderRadius: "50%",
+            border: "1px solid #CBD5E1", background: "rgba(255, 255, 255, 0.94)",
+            color: QS.ink, fontSize: 17, lineHeight: 1, cursor: "pointer",
+            display: "grid", placeItems: "center",
+            boxShadow: "0 2px 8px rgba(15, 23, 42, 0.25)",
+          }}
+        >
+          ✕
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="qs-dock" style={{
+      position: "fixed", left: 10, right: 10, bottom: 10, zIndex: 40,
+      height: 132, background: UI.surface, border: "1px solid #CBD5E1",
+      borderRadius: 10, overflow: "hidden", fontFamily: FONT,
+      boxShadow: "0 8px 24px rgba(15, 23, 42, 0.18)",
+    }}>
+      <div className="qs-dock-mini" style={{
+        position: "absolute", inset: 0, pointerEvents: "none",
+        display: "flex", flexDirection: "column",
+      }}>
+        {content}
+      </div>
+      <button
+        type="button" onClick={() => setOpen(true)} aria-label="Show drawing full screen"
+        style={{
+          position: "absolute", inset: 0, padding: 0,
+          background: "transparent", border: "none", cursor: "pointer",
+        }}
+      />
+      <span aria-hidden="true" style={{
+        position: "absolute", right: 8, bottom: 6, pointerEvents: "none",
+        padding: "3px 8px", borderRadius: 4,
+        background: "rgba(255, 255, 255, 0.88)", border: "1px solid #E2E8F0",
+        fontSize: 10.5, fontWeight: 600, color: QS.muted, fontFamily: FONT,
+      }}>
+        Tap to enlarge
+      </span>
+    </div>
+  );
+}
+
 export function groupSheetRows(rows, groups) {
   const claimed = new Set(groups.flatMap(g => g.labels ?? []));
   return groups

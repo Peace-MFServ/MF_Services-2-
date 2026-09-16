@@ -214,20 +214,37 @@ body {
 /* The guided workspaces are a fixed-height two-column split on a
    desktop. On a phone they stack: the questions first at natural
    height, the drawing in a compact panel beneath. */
-@media (max-width: 900px) {
+/* Phones stack the guided workspace; tablets (≥768px) keep the
+   side-by-side split so the drawing stays visible while answering.
+   On phones the drawing panel is replaced by the floating dock
+   (.qs-dock) pinned to the bottom of the screen. */
+.qs-dock {
+  display: none;
+}
+@media (max-width: 767px) {
   .qs-workspace {
     flex-direction: column;
     height: auto !important;
     min-height: 0 !important;
     overflow: visible !important;
-    padding: 14px 12px !important;
+    padding: 14px 12px 158px !important;
   }
   .qs-workspace > aside {
     flex: 0 0 auto !important;
     overflow: visible !important;
   }
   .qs-workspace > .qs-drawing {
-    flex: 0 0 auto !important;
-    height: 440px;
+    display: none !important;
+  }
+  .qs-dock {
+    display: block;
+  }
+  /* The mini strip hides the preview's own navy title bar and footer
+     caption — at this size only the drawing itself earns the room. */
+  .qs-dock-mini > div > div:not(:has(> svg)) {
+    display: none !important;
+  }
+  .qs-dock-mini > div > div:has(> svg) {
+    padding: 6px 10px !important;
   }
 }

@@ -9,7 +9,7 @@ import {
   isMandatoryForSystem, getRemarksOverride, validateConfiguration,
 } from "../lib/cablePlanSpec";
 import { cardStyle } from "../lib/theme";
-import { QS, ICONS, StepTabs } from "./quickSpecUI";
+import { QS, ICONS, StepTabs, MobileDrawingDock } from "./quickSpecUI";
 
 // ─── System definitions ───────────────────────────────────────────
 // One JSON file per system in data/cable-systems/ — the component
@@ -644,6 +644,19 @@ export default function CablePlanConfigurator({ startSystemId, onChangeSystem, s
           activeId={activeId} onSelect={handleSelectFromDrawing}
         />
       </section>
+
+      {/* Phones hide the panel above and get this floating live copy.
+          Tapping a device in the full-screen view jumps back to its
+          question, so the view closes itself on select. */}
+      <MobileDrawingDock>
+        {({ close }) => (
+          <DoorElevation
+            system={system} componentStates={componentStates}
+            activeId={activeId}
+            onSelect={id => { close(); handleSelectFromDrawing(id); }}
+          />
+        )}
+      </MobileDrawingDock>
     </div>
   );
 }

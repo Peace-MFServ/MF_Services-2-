@@ -6,7 +6,7 @@ import { generateHardwareSpecPDF } from "../lib/generateHardwareSpecPDF";
 import BackArrow from "./BackArrow";
 import { RISER_PHOTOS } from "./riserPhotos";
 import { UI, FONT, fieldStyle, cardStyle } from "../lib/theme";
-import { QS, ICONS, StepTabs } from "./quickSpecUI";
+import { QS, ICONS, StepTabs, MobileDrawingDock } from "./quickSpecUI";
 import {
   PRODUCT_TYPES, SPEC_TYPES, CHRISTO, getProduct,
   buildInitialConfig, resolveProduct, validateSpec, specRows, REQUIRE_ENQUIRY_DETAILS,
@@ -1241,6 +1241,11 @@ export default function SpecGenerator({ startProductId, onChangeProduct, modeSwi
       <section className="qs-drawing" style={{ ...cardStyle, padding: 0, flex: 1, minWidth: 0, display: "flex", flexDirection: "column", overflow: "hidden" }}>
         <RiserDoorPreview product={product} config={config} resolution={resolution} />
       </section>
+
+      {/* Phones hide the panel above and get this floating live copy. */}
+      <MobileDrawingDock>
+        <RiserDoorPreview product={product} config={config} resolution={resolution} />
+      </MobileDrawingDock>
     </div>
   );
 }
