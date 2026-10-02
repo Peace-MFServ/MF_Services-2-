@@ -1,5 +1,5 @@
 {
-  "_internal": "PRICES — never served to a browser. Read from the DFM ETA/CE price configurator of October 2025; the figures are the manufacturer's own and are commercially confidential.",
+  "_internal": "PRICES — never served to a browser. Read from the DFM ETA/CE price configurator 2026 (version 1.3); the figures are the manufacturer's own and are commercially confidential.",
   "currency": "EUR",
   "exchangeRate": 4.25,
   "base": {
@@ -18,28 +18,28 @@
       ],
       "grid": [
         [
-          441,
-          481,
-          504,
-          518
+          457,
+          499,
+          523,
+          537
         ],
         [
-          449,
-          489,
-          512,
-          526
+          465,
+          507,
+          532,
+          546
         ],
         [
-          529,
-          572,
-          574,
-          615
+          548,
+          593,
+          595,
+          638
         ],
         [
-          544,
-          617,
-          619,
-          652
+          564,
+          640,
+          642,
+          676
         ]
       ]
     },
@@ -59,34 +59,34 @@
       ],
       "grid": [
         [
-          934,
-          996,
-          998,
-          1031
-        ],
-        [
-          977,
+          969,
           1033,
-          1050,
-          1068
+          1035,
+          1070
         ],
         [
-          979,
-          1063,
-          1081,
-          1098
+          1013,
+          1071,
+          1090,
+          1108
         ],
         [
-          1005,
-          1144,
-          1162,
-          1179
+          1015,
+          1103,
+          1121,
+          1139
         ],
         [
-          1268,
-          1330,
-          1332,
-          1400
+          1043,
+          1187,
+          1205,
+          1223
+        ],
+        [
+          1315,
+          1380,
+          1382,
+          1453
         ]
       ]
     },
@@ -105,28 +105,28 @@
       ],
       "grid": [
         [
-          467,
-          512,
-          536,
-          551
+          472,
+          517,
+          542,
+          557
         ],
         [
-          475,
-          520,
-          545,
-          559
+          480,
+          525,
+          550,
+          565
         ],
         [
-          549,
-          605,
-          634,
-          651
+          555,
+          611,
+          640,
+          658
         ],
         [
-          565,
-          651,
-          653,
-          687
+          571,
+          658,
+          660,
+          695
         ]
       ]
     },
@@ -146,34 +146,34 @@
       ],
       "grid": [
         [
-          971,
-          1038,
-          1056,
-          1068
+          982,
+          1049,
+          1067,
+          1079
         ],
         [
-          1007,
-          1158,
-          1176,
-          1192
+          1017,
+          1170,
+          1188,
+          1205
         ],
         [
-          1028,
-          1141,
-          1195,
-          1227
+          1039,
+          1153,
+          1207,
+          1240
         ],
         [
-          1036,
-          1204,
-          1229,
-          1254
+          1047,
+          1217,
+          1242,
+          1268
         ],
         [
-          1306,
-          1395,
-          1397,
-          1469
+          1320,
+          1410,
+          1412,
+          1485
         ]
       ]
     },
@@ -192,28 +192,28 @@
       ],
       "grid": [
         [
-          511,
-          554,
-          581,
-          596
+          517,
+          560,
+          587,
+          603
         ],
         [
-          520,
-          563,
-          590,
-          606
+          525,
+          569,
+          596,
+          612
         ],
         [
-          602,
-          648,
-          679,
-          697
+          608,
+          655,
+          686,
+          704
         ],
         [
-          619,
-          697,
-          699,
-          736
+          626,
+          704,
+          706,
+          744
         ]
       ]
     },
@@ -233,34 +233,34 @@
       ],
       "grid": [
         [
-          1055,
-          1145,
-          1200,
-          1232
+          1066,
+          1157,
+          1212,
+          1245
         ],
         [
-          1099,
-          1191,
-          1247,
-          1281
+          1111,
+          1203,
+          1261,
+          1295
         ],
         [
-          1122,
-          1213,
-          1281,
-          1308
+          1134,
+          1226,
+          1295,
+          1322
         ],
         [
-          1132,
-          1281,
-          1308,
-          1334
+          1144,
+          1295,
+          1322,
+          1348
         ],
         [
-          1409,
-          1472,
-          1472,
-          1548
+          1424,
+          1488,
+          1488,
+          1564
         ]
       ]
     },
@@ -279,26 +279,26 @@
       ],
       "grid": [
         [
-          689,
-          710,
-          742,
-          795
+          696,
+          718,
+          750,
+          803
         ],
         [
-          731,
-          763,
-          795,
-          848
+          739,
+          771,
+          803,
+          857
         ],
         [
-          784,
-          816,
-          848,
+          792,
+          825,
+          857,
           null
         ],
         [
-          821,
-          869,
+          830,
+          878,
           null,
           null
         ]
@@ -319,28 +319,28 @@
       ],
       "grid": [
         [
-          921,
-          1006,
-          1047,
-          1101
+          930,
+          1017,
+          1059,
+          1113
         ],
         [
-          1008,
-          1101,
-          1147,
-          1207
+          1018,
+          1113,
+          1159,
+          1219
         ],
         [
-          1095,
-          1197,
-          1247,
-          1312
+          1107,
+          1210,
+          1260,
+          1325
         ],
         [
-          1191,
-          1302,
-          1356,
-          1427
+          1204,
+          1316,
+          1371,
+          1442
         ]
       ]
     },
@@ -360,34 +360,34 @@
       ],
       "grid": [
         [
-          1791,
-          2011,
-          2094,
-          2203
+          1810,
+          2032,
+          2116,
+          2226
         ],
         [
-          1848,
-          2112,
-          2200,
-          2314
+          1868,
+          2134,
+          2223,
+          2338
         ],
         [
-          1936,
-          2174,
-          2265,
-          2382
+          1957,
+          2197,
+          2289,
+          2407
         ],
         [
-          2121,
-          2382,
-          2482,
-          2611
+          2144,
+          2407,
+          2508,
+          2639
         ],
         [
-          2571,
-          2757,
-          2872,
-          3023
+          2598,
+          2786,
+          2903,
+          3055
         ]
       ]
     },
@@ -406,28 +406,28 @@
       ],
       "grid": [
         [
-          441,
-          481,
-          504,
-          518
+          457,
+          499,
+          523,
+          537
         ],
         [
-          449,
-          489,
-          512,
-          526
+          465,
+          507,
+          532,
+          546
         ],
         [
-          529,
-          572,
-          574,
-          615
+          548,
+          593,
+          595,
+          638
         ],
         [
-          544,
-          617,
-          619,
-          652
+          564,
+          640,
+          642,
+          676
         ]
       ]
     },
@@ -447,34 +447,34 @@
       ],
       "grid": [
         [
-          934,
-          996,
-          998,
-          1031
-        ],
-        [
-          977,
+          969,
           1033,
-          1050,
-          1068
+          1035,
+          1070
         ],
         [
-          979,
-          1063,
-          1081,
-          1098
+          1013,
+          1071,
+          1090,
+          1108
         ],
         [
-          1005,
-          1144,
-          1162,
-          1179
+          1015,
+          1103,
+          1121,
+          1139
         ],
         [
-          1268,
-          1330,
-          1332,
-          1400
+          1043,
+          1187,
+          1205,
+          1223
+        ],
+        [
+          1315,
+          1380,
+          1382,
+          1453
         ]
       ]
     },
@@ -493,28 +493,28 @@
       ],
       "grid": [
         [
-          467,
-          512,
-          536,
-          551
+          472,
+          517,
+          542,
+          557
         ],
         [
-          475,
-          520,
-          545,
-          559
+          480,
+          525,
+          550,
+          565
         ],
         [
-          549,
-          605,
-          634,
-          651
+          555,
+          611,
+          640,
+          658
         ],
         [
-          565,
-          651,
-          653,
-          687
+          571,
+          658,
+          660,
+          695
         ]
       ]
     },
@@ -534,34 +534,34 @@
       ],
       "grid": [
         [
-          971,
-          1038,
-          1056,
-          1068
+          982,
+          1049,
+          1067,
+          1079
         ],
         [
-          1007,
-          1158,
-          1176,
-          1192
+          1017,
+          1170,
+          1188,
+          1205
         ],
         [
-          1028,
-          1141,
-          1195,
-          1227
+          1039,
+          1153,
+          1207,
+          1240
         ],
         [
-          1036,
-          1204,
-          1229,
-          1254
+          1047,
+          1217,
+          1242,
+          1268
         ],
         [
-          1306,
-          1395,
-          1397,
-          1469
+          1320,
+          1410,
+          1412,
+          1485
         ]
       ]
     },
@@ -580,28 +580,28 @@
       ],
       "grid": [
         [
-          511,
-          554,
-          581,
-          596
+          517,
+          560,
+          587,
+          603
         ],
         [
-          520,
-          563,
-          590,
-          606
+          525,
+          569,
+          596,
+          612
         ],
         [
-          602,
-          648,
-          679,
-          697
+          608,
+          655,
+          686,
+          704
         ],
         [
-          619,
-          697,
-          699,
-          736
+          626,
+          704,
+          706,
+          744
         ]
       ]
     },
@@ -621,69 +621,69 @@
       ],
       "grid": [
         [
-          1055,
-          1145,
-          1200,
-          1232
+          1066,
+          1157,
+          1212,
+          1245
         ],
         [
-          1099,
-          1191,
-          1247,
-          1281
+          1111,
+          1203,
+          1261,
+          1295
         ],
         [
-          1122,
-          1213,
-          1281,
-          1308
+          1134,
+          1226,
+          1295,
+          1322
         ],
         [
-          1132,
-          1281,
-          1308,
-          1334
+          1144,
+          1295,
+          1322,
+          1348
         ],
         [
-          1409,
-          1472,
-          1472,
-          1548
+          1424,
+          1488,
+          1488,
+          1564
         ]
       ]
     }
   },
   "option": {
     "corner": 0,
-    "corner thermal": 18,
+    "corner thermal": 24,
     "block": 10,
-    "block thermal": 24,
-    "block with plaster board": 29,
-    "block thermal with plaster board": 43,
-    "block with mineral wool": 23,
+    "block thermal": 34,
+    "block with plaster board": 30,
+    "block thermal with plaster board": 56,
+    "block with mineral wool": 25,
     "block small": 10,
-    "block small filled with plaster board": 22,
+    "block small filled with plaster board": 30,
     "standard": 0,
     "panic B": 88,
     "panic D": 37,
-    "panic E": 35,
-    "3 pts": 218,
-    "3 pts panic D": 285,
-    "3 pts panic E": 318,
+    "panic E": 37,
+    "3 pts": 230,
+    "3 pts panic D": 290,
+    "3 pts panic E": 330,
     "panic B for 2 Lv": 270,
     "panic D for 2 Lv": 270,
     "panic E for 2 Lv": 270,
     "WC": 21,
     "roller": 62,
-    "GBS 90": 329,
+    "GBS 90": 330,
     "WITHOUT (NFR surface m. silver)": 0,
     "WITHOUT (NFR surface m. black)": 0,
     "WITHOUT (EI surface m. silver)": 0,
     "WITHOUT (EI surface m. black)": 0,
-    "EL 560": 635,
-    "EL 561": 635,
-    "EL 518": 930,
-    "EL 520": 1260,
+    "EL 560": 625,
+    "EL 561": 625,
+    "EL 518": 1030,
+    "EL 520": 1356,
     "Dorma SVP 6000": 630,
     "Dorma SVZ 6000": 630,
     "Dorma SVP 2000": 918,
@@ -703,10 +703,10 @@
     "PHT06-knob surface m. EI silver": 63,
     "PHT001-handle surface m. EI black": 95,
     "PHT06-knob surface m. EI black": 80,
-    "panic bar EPN 900 black": 84,
+    "panic bar EPN 900 black": 95,
     "panic bar EPN 900 alu": 146,
-    "panic bar EPN 900 inox": 236,
-    "pushbar inox": 446,
+    "panic bar EPN 900 inox": 245,
+    "pushbar inox": 464,
     "handle Eco WC": 24,
     "PHA2000 1 pt NFR silver panic bar": 89,
     "PHB3000 1 pt NFR silver pushbar": 115,
@@ -780,14 +780,14 @@
     "NO for NFR 24V, 2 Lv, ab. main lock + cable tran.": 130,
     "NO for NFR 12V, 2 Lv, with main lock + cable tran.": 130,
     "NO for NFR 24V, 2 Lv, with main lock + cable tran.": 130,
-    "NC for EI 12V, 1 leaf": 185,
-    "NC for EI 24V, 1 leaf": 185,
-    "NO for EI 12V, 1 leaf, ab. main lock": 199,
-    "NO for EI 24V, 1 leaf, ab. main lock": 199,
-    "NC for EI 12V, 2 Lv + cable transfer": 240,
-    "NC for EI 24V, 2 Lv + cable transfer": 240,
-    "NO for EI 12V, 2 Lv, ab. main lock + cable tran.": 263,
-    "NO for EI 24V, 2 Lv, ab. main lock + cable tran.": 263,
+    "NC for EI 12V, 1 leaf": 195,
+    "NC for EI 24V, 1 leaf": 195,
+    "NO for EI 12V, 1 leaf, ab. main lock": 210,
+    "NO for EI 24V, 1 leaf, ab. main lock": 210,
+    "NC for EI 12V, 2 Lv + cable transfer": 260,
+    "NC for EI 24V, 2 Lv + cable transfer": 260,
+    "NO for EI 12V, 2 Lv, ab. main lock + cable tran.": 280,
+    "NO for EI 24V, 2 Lv, ab. main lock + cable tran.": 280,
     "TS 11": 34,
     "TS 20": 39,
     "TS 50": 69,
@@ -800,67 +800,67 @@
     "TS 50 x2 + RKZ 402": 165,
     "TS 41 SR": 215,
     "TS 41 SR BG": 292,
-    "TS 61 SR": 349.99999999999994,
+    "TS 61 SR": 350.0,
     "TS 61 SR BG": 439,
     "TS 41 B x 2 + RKZ 402": 165,
     "TS 41 G x 2 + RKZ 402": 165,
     "TS 61 B x 2 + RKZ 402": 303,
     "TS 61 G x 2 + RKZ 402": 303,
-    "NFR size up to 0,3m2 single": 122,
-    "NFR fi350": 148,
-    "EI30 size up to 0,3m2 single": 187,
-    "EI30 fi350": 221,
-    "EI60 size up to 0,3m2 single": 261,
-    "EI60 fi350": 322,
-    "EI120 size up to 0,3m2 single": 661,
-    "NFR size up to 0,3m2 single, act. L": 122,
-    "NFR size up to 0,3m2 single, 2 Lv": 243,
-    "NFR fi350, act L": 148,
-    "NFR fi350, 2 Lv": 296,
-    "EI30 size up to 0,3m2 single, act. L": 187,
-    "EI30 size up to 0,3m2 single, 2 Lv": 374,
-    "EI30 fi350, act L": 221,
-    "EI30 fi350, 2 Lv": 442,
-    "EI60 size up to 0,3m2 single, act. L": 260.9,
-    "EI60 size up to 0,3m2 singlee, 2 Lv": 522,
-    "EI60 fi350, act L": 322,
-    "EI60 fi350, 2 Lv": 644,
-    "EI120 size up to 0,3m2 single, 2 Lv": 1321,
-    "NFR size up to 0,3m2 double": 154,
-    "EI30 size up to 0,3m2 double": 217,
-    "EI60 size up to 0,3m2 double": 292,
-    "NFR size up to 0,3m2 double, act. L": 154,
-    "NFR size up to 0,3m2 double, 2 Lv": 307,
-    "EI30 size up to 0,3m2 double, act. L": 217,
-    "EI30 size up to 0,3m2 double, 2 Lv": 433,
-    "EI60 size up to 0,3m2 double, act. L": 292,
-    "EI60 size up to 0,3m2 double, 2 Lv": 583,
-    "EI 120 fi350, act L": 884,
-    "EI 120 fi350, 2 Lv": 1768,
+    "NFR size up to 0,3m2 single": 128,
+    "NFR fi350": 150,
+    "EI30 size up to 0,3m2 single": 198,
+    "EI30 fi350": 230,
+    "EI60 size up to 0,3m2 single": 278,
+    "EI60 fi350": 335,
+    "EI120 size up to 0,3m2 single": 726,
+    "NFR size up to 0,3m2 single, act. L": 128,
+    "NFR size up to 0,3m2 single, 2 Lv": 256,
+    "NFR fi350, act L": 150,
+    "NFR fi350, 2 Lv": 300,
+    "EI30 size up to 0,3m2 single, act. L": 198,
+    "EI30 size up to 0,3m2 single, 2 Lv": 395,
+    "EI30 fi350, act L": 230,
+    "EI30 fi350, 2 Lv": 460,
+    "EI60 size up to 0,3m2 single, act. L": 277.3,
+    "EI60 size up to 0,3m2 singlee, 2 Lv": 555,
+    "EI60 fi350, act L": 335,
+    "EI60 fi350, 2 Lv": 670,
+    "EI120 size up to 0,3m2 single, 2 Lv": 1451,
+    "NFR size up to 0,3m2 double": 159,
+    "EI30 size up to 0,3m2 double": 230,
+    "EI60 size up to 0,3m2 double": 311,
+    "NFR size up to 0,3m2 double, act. L": 159,
+    "NFR size up to 0,3m2 double, 2 Lv": 317,
+    "EI30 size up to 0,3m2 double, act. L": 230,
+    "EI30 size up to 0,3m2 double, 2 Lv": 460,
+    "EI60 size up to 0,3m2 double, act. L": 311,
+    "EI60 size up to 0,3m2 double, 2 Lv": 621,
+    "EI 120 fi350, act L": 893,
+    "EI 120 fi350, 2 Lv": 1786,
     "KWZ: 440x120": 80,
-    "Z:400x200": 165,
-    "Z:400x400": 165,
-    "Z: max 0,5m2": 218,
+    "Z:400x200": 176,
+    "Z:400x400": 176,
+    "Z: max 0,5m2": 231,
     "KWZ: 440x120 act L": 80,
-    "Z:400x200 act L": 165,
-    "Z:400x400 act L": 165,
-    "Z: max 0,5m2 act L": 218,
+    "Z:400x200 act L": 176,
+    "Z:400x400 act L": 176,
+    "Z: max 0,5m2 act L": 231,
     "KWZ: 440x120 2 Lv": 160,
-    "Z:400x200 2 Lv": 330,
-    "Z:400x400 2 Lv": 330,
-    "Z: max 0,5m2, 2 Lv": 436,
-    "KWZ: 440x120 +mosquito net": 127,
-    "Z:400x200 +mosquito net": 212,
-    "Z:400x400 +mosquito net": 212,
-    "Z: max 0,5m2 +mosquito net": 265,
-    "KWZ: 440x120 +mosquito net, act L": 127,
-    "Z:400x200+mosquito net, act L": 212,
-    "Z:400x400 +mosquito net, act L": 212,
-    "Z: max 0,5m2+mosquito net,act L": 265,
-    "KWZ: 440x120+mosquito net, 2 Lv": 254,
-    "Z:400x200+mosquito net, 2Lv": 424,
-    "Z:400x400+mosquito net, 2 Lv": 424,
-    "Z: max 0,5m2+mosquito net, 2 Lv": 530,
+    "Z:400x200 2 Lv": 352,
+    "Z:400x400 2 Lv": 352,
+    "Z: max 0,5m2, 2 Lv": 462,
+    "KWZ: 440x120 +mosquito net": 128,
+    "Z:400x200 +mosquito net": 224,
+    "Z:400x400 +mosquito net": 224,
+    "Z: max 0,5m2 +mosquito net": 279,
+    "KWZ: 440x120 +mosquito net, act L": 128,
+    "Z:400x200+mosquito net, act L": 224,
+    "Z:400x400 +mosquito net, act L": 224,
+    "Z: max 0,5m2+mosquito net,act L": 279,
+    "KWZ: 440x120+mosquito net, 2 Lv": 256,
+    "Z:400x200+mosquito net, 2Lv": 448,
+    "Z:400x400+mosquito net, 2 Lv": 448,
+    "Z: max 0,5m2+mosquito net, 2 Lv": 558,
     "EI 400x200 int": 288,
     "EI 400x400 int": 425,
     "EI 400x600 int": 563,
@@ -879,15 +879,15 @@
     "EI 400x200 ext 2 Lv": 764,
     "EI 400x400 ext 2 Lv": 1038,
     "EI 400x600 ext 2 Lv": 1312,
-    "EI 400x200 ext +mosquito net, act L": 429,
-    "EI 400x400 ext +mosquito net, act L": 566,
-    "EI 400x600 ext +mosquito net, act L": 703,
-    "EI 400x200 ext +mosquito net, 2 Lv": 858,
-    "EI 400x400 ext +mosquito net, 2 Lv": 1132,
+    "EI 400x200 ext +mosquito net, act L": 430,
+    "EI 400x400 ext +mosquito net, act L": 567,
+    "EI 400x600 ext +mosquito net, act L": 704,
+    "EI 400x200 ext +mosquito net, 2 Lv": 860,
+    "EI 400x400 ext +mosquito net, 2 Lv": 1134,
     "automatic 1 L": 30,
     "automatic 2 Lv": 60,
-    "1 pc door stopper": 14,
-    "2 pcs door stopper": 28,
+    "1 pc door stopper": 13,
+    "2 pcs door stopper": 26,
     "MC - 1 L": 23,
     "Eff Eff - 1 L": 0,
     "MC - 2 Lv": 46,
@@ -910,14 +910,14 @@
   },
   "hingeByCount": {
     "embracing": {
-      "2": 18,
-      "3": 29,
-      "4": 31
+      "2": 20,
+      "3": 30,
+      "4": 32
     },
     "embracing thermal": {
-      "2": 36,
-      "3": 42,
-      "4": 44
+      "2": 44,
+      "3": 50,
+      "4": 52
     },
     "3D INOX 95mm": {
       "2": 20,
@@ -941,8 +941,8 @@
     },
     "hidden for HP - opening angle max 90 degrees": {
       "2": 96,
-      "3": 144,
-      "4": 192
+      "3": 141,
+      "4": 188
     },
     "PANEL FOR HP": {
       "2": 0
@@ -957,15 +957,15 @@
   "embracingByWall": {
     "embracing": [
       null,
-      18,
-      29,
-      31
+      20,
+      30,
+      32
     ],
     "embracing thermal": [
       null,
-      36,
-      42,
-      44
+      44,
+      50,
+      52
     ]
   },
   "surcharge": {
@@ -979,12 +979,12 @@
     },
     "highPerformanceExtra": {
       "unrated": {
-        "1": 87,
-        "2": 128
+        "1": 88,
+        "2": 129
       },
       "rated": {
-        "1": 116,
-        "2": 187
+        "1": 117,
+        "2": 189
       }
     },
     "hpPanelPerSquareMetre": 84
