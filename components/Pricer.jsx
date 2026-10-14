@@ -79,6 +79,41 @@ function Button({ onClick, children, primary, disabled, icon, wrap }) {
   );
 }
 
+/** A labelled pair of download buttons — customer or internal. */
+function DownloadGroup({ heading, colour, note, buttons, primary = false, exporting, onDownload }) {
+  return (
+    <div style={{ marginTop: primary ? 0 : 18 }}>
+      <div style={{
+        display: "flex", alignItems: "center", gap: 8, marginBottom: 8,
+        fontSize: 11, fontWeight: 700, letterSpacing: "0.07em", textTransform: "uppercase", color: colour,
+      }}>
+        {heading}
+        <span aria-hidden="true" style={{ flex: 1, height: 1, background: colour, opacity: 0.25 }} />
+      </div>
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+        {buttons.map(([kind, label]) => (
+          <button
+            key={kind} type="button" onClick={() => onDownload(kind)} disabled={!!exporting}
+            className={primary ? "qs-download" : undefined}
+            style={{
+              flex: "1 1 140px", padding: "11px 14px", fontSize: 13, fontWeight: 600, fontFamily: FONT,
+              display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+              border: `1px solid ${primary ? UI.accent : UI.ruleStrong}`,
+              background: primary ? UI.accent : UI.surface,
+              color: primary ? "#FFFFFF" : UI.body,
+              cursor: exporting ? "progress" : "pointer",
+            }}
+          >
+            {exporting === kind ? "Generating" : label}
+            {exporting !== kind && ICONS.download}
+          </button>
+        ))}
+      </div>
+      <p style={{ margin: "7px 0 0", fontSize: 11.5, lineHeight: 1.45, color: UI.muted }}>{note}</p>
+    </div>
+  );
+}
+
 function SmallInput({ id, value, onChange, width = 78, align = "right", placeholder, warn = false }) {
   return (
     <input
@@ -462,14 +497,19 @@ export default function Pricer({ openProject, onSavedProject }) {
   // Both files are renderings of one quote, built at the moment of
   // download so they always match the screen. The generators are
   // loaded on demand — no reason for exceljs to travel with the page.
+  // The customer files are rendered from the customer quote, which is
+  // built from this one and holds selling prices only.
   const download = async kind => {
     setExporting(kind);
     try {
       const quote = buildQuote(quoteInputs);
-      const generate = kind === "pdf"
-        ? (await import("../lib/generateQuotePDF")).generateQuotePDF
-        : (await import("../lib/generateQuoteXLSX")).generateQuoteXLSX;
-      await generate(quote);
+      const pdf = () => import("../lib/generateQuotePDF");
+      const xlsx = () => import("../lib/generateQuoteXLSX");
+      const customer = () => import("../lib/customerQuote").then(m => m.buildCustomerQuote(quote));
+      if (kind === "customer-pdf") await (await pdf()).generateCustomerQuotePDF(await customer());
+      else if (kind === "customer-xlsx") await (await xlsx()).generateCustomerQuoteXLSX(await customer());
+      else if (kind === "internal-pdf") await (await pdf()).generateQuotePDF(quote);
+      else await (await xlsx()).generateQuoteXLSX(quote);
     } catch {
       flash("The download failed. Try again in a moment.");
     } finally {
@@ -707,40 +747,20 @@ export default function Pricer({ openProject, onSavedProject }) {
             <span style={{ fontSize: 19, fontWeight: 700, color: UI.ink }}>{money.format(q.total)}</span>
           </div>
 
-          <div style={{
-            display: "flex", gap: 8, marginTop: 16, paddingTop: 14,
-            borderTop: `1px solid ${UI.ruleStrong}`,
-          }}>
-            <button
-              type="button" onClick={() => download("pdf")} disabled={!!exporting}
-              className="qs-download"
-              style={{
-                flex: 1, padding: "11px 14px", fontSize: 13, fontWeight: 600, fontFamily: FONT,
-                display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-                border: `1px solid ${UI.accent}`, background: UI.accent, color: "#FFFFFF",
-                cursor: exporting ? "progress" : "pointer",
-              }}
-            >
-              {exporting === "pdf" ? "Generating" : "Download PDF"}
-              {exporting !== "pdf" && ICONS.download}
-            </button>
-            <button
-              type="button" onClick={() => download("xlsx")} disabled={!!exporting}
-              title="Every component on its own row, with live formulas — fill a missing price in Excel and the totals recalculate"
-              style={{
-                flex: 1, padding: "11px 14px", fontSize: 13, fontWeight: 600, fontFamily: FONT,
-                display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-                border: `1px solid ${UI.accent}`, background: UI.surface, color: UI.accent,
-                cursor: exporting ? "progress" : "pointer",
-              }}
-            >
-              {exporting === "xlsx" ? "Generating" : "Download Excel"}
-              {exporting !== "xlsx" && ICONS.download}
-            </button>
+          <div style={{ marginTop: 16, paddingTop: 14, borderTop: `1px solid ${UI.ruleStrong}` }}>
+            <DownloadGroup
+              heading="Customer quote — safe to send" colour={UI.accent}
+              note="Selling prices only — no costs, margin or labour."
+              buttons={[["customer-pdf", "Customer PDF"], ["customer-xlsx", "Customer Excel"]]}
+              primary exporting={exporting} onDownload={download}
+            />
+            <DownloadGroup
+              heading="Internal — do not send" colour={UI.warn}
+              note="Costs, margin and labour, for MF Services only."
+              buttons={[["internal-pdf", "Internal PDF"], ["internal-xlsx", "Internal Excel"]]}
+              exporting={exporting} onDownload={download}
+            />
           </div>
-          <p style={{ margin: "10px 0 0", fontSize: 11.5, lineHeight: 1.45, color: UI.muted }}>
-            Both carry the cost breakdown — internal use only.
-          </p>
         </div>
       )}
     </Shell>
