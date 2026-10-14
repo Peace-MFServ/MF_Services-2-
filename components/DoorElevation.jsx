@@ -4,6 +4,7 @@ import {
   UI, FONT, DRAW,
   resolveCable, activeCableLegend,
   flattenComponents, buildInclusionMap, isMandatoryForSystem,
+  hasVisionPanel, visionPanelRect, activeLeafMarkerY,
 } from '../lib/cablePlanSpec'
 
 const R_MAIN = 11
@@ -101,6 +102,23 @@ function DeviceSymbol({ device, stroke, fill }) {
   }
 }
 
+/** A glazed vision panel: a beaded frame, the glass, and the two
+ *  diagonal strokes that read as glass on an elevation. */
+function VisionPanel({ x, y, w, h }) {
+  const bead = 4
+  return (
+    <g>
+      <rect x={x} y={y} width={w} height={h} fill={DRAW.frame} stroke={DRAW.leafEdge} strokeWidth="1.1" />
+      <rect x={x + bead} y={y + bead} width={w - 2 * bead} height={h - 2 * bead}
+        fill="#E4F0F8" stroke={DRAW.leafEdge} strokeWidth="0.7" />
+      <g stroke="#9DB8CC" strokeWidth="1.2" strokeLinecap="round">
+        <line x1={x + w * 0.28} y1={y + h * 0.30} x2={x + w * 0.62} y2={y + h * 0.13} />
+        <line x1={x + w * 0.30} y1={y + h * 0.42} x2={x + w * 0.74} y2={y + h * 0.20} />
+      </g>
+    </g>
+  )
+}
+
 export default function DoorElevation({ system, componentStates, activeId, onSelect }) {
   if (!system?.drawing) return null
 
@@ -119,6 +137,8 @@ export default function DoorElevation({ system, componentStates, activeId, onSel
   // handle, cylinder and (on fire doors) the intumescent strip sit.
   const leadingX = activeLeaf.hinge === "left" ? activeLeaf.r : activeLeaf.l
   const leadDir = activeLeaf.hinge === "left" ? -1 : 1   // into the leaf
+  const glazed = hasVisionPanel(system, componentStates)
+  const markerY = activeLeafMarkerY(glazed)
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%", minHeight: 0, background: UI.surface }}>
@@ -174,6 +194,7 @@ export default function DoorElevation({ system, componentStates, activeId, onSel
               {/* Stile / rail relief */}
               <rect x={leaf.l + 14} y={geo.leafTop + 14} width={leaf.r - leaf.l - 28} height={geo.leafBot - geo.leafTop - 28}
                 fill="none" stroke={DRAW.leafEdge} strokeWidth="0.6" opacity="0.45" />
+              {glazed && <VisionPanel {...visionPanelRect(geo, leaf)} />}
               {/* Hinges on this leaf's hinge side */}
               {HINGE_FRACTIONS.map(f => {
                 const hy = geo.leafTop + (geo.leafBot - geo.leafTop) * f
@@ -205,8 +226,8 @@ export default function DoorElevation({ system, componentStates, activeId, onSel
           {/* Active-leaf marker on double doors */}
           {geo.leaves.length > 1 && (
             <>
-              <circle cx={(activeLeaf.l + activeLeaf.r) / 2} cy={300} r={20} fill="none" stroke={DRAW.leafEdge} strokeWidth="1.3" />
-              <text x={(activeLeaf.l + activeLeaf.r) / 2} y={306} textAnchor="middle" fontSize="15" fontWeight="500"
+              <circle cx={(activeLeaf.l + activeLeaf.r) / 2} cy={markerY} r={20} fill="none" stroke={DRAW.leafEdge} strokeWidth="1.3" />
+              <text x={(activeLeaf.l + activeLeaf.r) / 2} y={markerY + 6} textAnchor="middle" fontSize="15" fontWeight="500"
                 fontFamily={FONT} fill={DRAW.label}>GF</text>
             </>
           )}

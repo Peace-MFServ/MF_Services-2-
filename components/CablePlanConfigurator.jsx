@@ -37,6 +37,7 @@ const TYPE_LABELS = {
   manual_release_button: "Release button", smoke_detector: "Smoke detector",
   sequence_controller: "Door coordinator", operating_element: "Operating element",
   cladding: "Cladding", system_cable: "System cable",
+  vision_panel: "Door option",
 };
 
 const STEPS = ["System", "Components", "Project", "Review"];
@@ -342,6 +343,48 @@ function ComponentEntry({ comp, depth, system, componentStates, inclusion, onSta
   );
 }
 
+// A door option — a choice about the door, not a wired position, so
+// it has no number and no cable. It changes the drawing, and is listed
+// on the PDF.
+function DoorOptionEntry({ option, componentStates, onStateChange }) {
+  const on = !!componentStates[option.id]?.included;
+  return (
+    <section style={{ borderBottom: `1px solid ${UI.rule}`, borderLeft: "3px solid transparent" }}>
+      <div style={{ padding: "16px 22px 18px" }}>
+        <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
+          <div style={{ paddingTop: 2 }}>
+            <CheckBox
+              checked={on}
+              onChange={() => onStateChange(option.id, { included: !on })}
+              label={`Include ${option.label}`}
+            />
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <h3 style={{
+              margin: 0, fontSize: 14.5, fontWeight: 600, lineHeight: 1.4,
+              color: on ? UI.ink : UI.muted, fontFamily: FONT,
+            }}>
+              {option.label}
+            </h3>
+            <div style={{ fontSize: 12.5, color: UI.muted, fontFamily: FONT, marginTop: 4 }}>
+              {TYPE_LABELS[option.type] || "Door option"} · no cable
+            </div>
+          </div>
+        </div>
+        {on && option.remarks && (
+          <div style={{
+            marginTop: 16, marginLeft: 29, padding: "11px 13px",
+            background: UI.sunken, borderLeft: `3px solid ${UI.ruleStrong}`,
+            fontSize: 13, lineHeight: 1.55, fontFamily: FONT, color: UI.body,
+          }}>
+            {option.remarks}
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
 // ─── Issues ───────────────────────────────────────────────────────
 
 function IssueList({ validation }) {
@@ -589,6 +632,13 @@ export default function CablePlanConfigurator({ startSystemId, onChangeSystem, s
               active={activeId === comp.id}
               onActivate={() => setActiveId(comp.id)}
               entryRef={el => { entryRefs.current[comp.id] = el; }}
+            />
+          ))}
+
+          {currentStep === 1 && (system.doorOptions ?? []).map(option => (
+            <DoorOptionEntry
+              key={option.id} option={option}
+              componentStates={componentStates} onStateChange={handleStateChange}
             />
           ))}
 

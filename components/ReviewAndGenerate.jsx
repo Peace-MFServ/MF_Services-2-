@@ -122,6 +122,9 @@ export default function ReviewAndGenerate({ system, componentStates, projectData
           <Row label="Leaf type" value={system.leafType} />
           <Row label="Fire door" value={system.isFireDoor ? "Yes" : "No"} accent={system.isFireDoor ? UI.warn : undefined} />
           <Row label="Positions" value={`${included.length} of ${flat.length}`} />
+          {(system.doorOptions ?? []).map(option => (
+            <Row key={option.id} label={option.label} value={componentStates[option.id]?.included ? "Yes" : "No"} />
+          ))}
         </div>
 
         <div style={{ marginBottom: 26 }}>

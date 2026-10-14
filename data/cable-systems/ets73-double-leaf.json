@@ -37,6 +37,10 @@
     { "id": "comp-15", "position": "15", "label": "Alternative operating element", "type": "operating_element", "mandatory": false, "optional": true, "cable": { "defaultCable": "J-Y(ST)Y 4 x 0.8 mm²", "allowedCables": ["J-Y(ST)Y 4 x 0.8 mm²"], "allowOther": true }, "remarks": "In-wall socket, cable laying in building. Routed to the slave drive" }
   ],
 
+  "doorOptions": [
+    { "id": "vision-panel", "label": "Vision panel", "type": "vision_panel", "remarks": "Glazed vision panel in both leaves. On a fire door the glazing must be fire rated to match the door." }
+  ],
+
   "drawing": {
     "view": { "x": 118, "y": 22, "w": 686, "h": 568 },
     "geo": {
