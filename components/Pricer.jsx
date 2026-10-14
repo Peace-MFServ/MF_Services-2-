@@ -160,7 +160,9 @@ function Line({ line, onChange, onEdit, onRemove }) {
 
   const setConfig = (key, value) => onChange({ ...line, config: { ...line.config, [key]: value } });
 
-  const unit = priced?.total ?? null;
+  // A price with a part still missing is not a price yet — show it as
+  // on application, the way the totals and the downloads treat it.
+  const unit = priced && !priced.onApplication ? priced.total : null;
   const lineTotal = unit == null ? null : unit * qty;
 
   return (
