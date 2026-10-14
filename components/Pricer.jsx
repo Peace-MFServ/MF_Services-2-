@@ -79,37 +79,48 @@ function Button({ onClick, children, primary, disabled, icon, wrap }) {
   );
 }
 
-function SmallInput({ id, value, onChange, width = 78, align = "right", placeholder }) {
+function SmallInput({ id, value, onChange, width = 78, align = "right", placeholder, warn = false }) {
   return (
     <input
       id={id} value={value ?? ""} placeholder={placeholder}
       onChange={e => onChange(e.target.value)}
-      style={{ ...fieldStyle, width, padding: "6px 8px", fontSize: 12.5, textAlign: align }} className="mf-field"
+      style={{
+        ...fieldStyle, width, padding: "6px 8px", fontSize: 12.5, textAlign: align,
+        ...(warn && { borderColor: UI.warn }),
+      }}
+      className="mf-field"
     />
   );
 }
 
 // ─── A line of the schedule ───────────────────────────────────────
 
-/** What still has to be answered before this line can carry a price. */
-function outstanding(line) {
-  const gaps = [];
+/**
+ * The figures this line needs from the estimator because the price list
+ * cannot supply them. A field stays on screen for as long as it applies,
+ * filled in or not — it must not vanish after the first keystroke, and
+ * a figure once entered has to stay correctable.
+ */
+function extraFields(line) {
+  const fields = [];
   const { config } = line;
-  if (/^embracing/.test(config.frameId ?? "") && !config.wallThickness) {
-    gaps.push({ field: "wallThickness", label: "Wall thickness" });
+  if (/^embracing/.test(config.frameId ?? "")) {
+    fields.push({ field: "wallThickness", label: "Wall thickness", missing: !config.wallThickness });
   }
   for (const g of hardwareGroupsFor(config)) {
-    if (hardwareNeedsText(config[g.id]) && !Number.isFinite(Number(config[`${g.id}Price`]))) {
-      gaps.push({ field: `${g.id}Price`, label: g.label });
+    if (hardwareNeedsText(config[g.id])) {
+      const value = config[`${g.id}Price`];
+      const missing = value == null || value === "" || !Number.isFinite(Number(value));
+      fields.push({ field: `${g.id}Price`, label: g.label, missing });
     }
   }
-  return gaps;
+  return fields;
 }
 
 function Line({ line, onChange, onEdit, onRemove }) {
   const resolution = resolveSteelDoor(line.config);
   const priced = line.priced;
-  const gaps = outstanding(line);
+  const extras = extraFields(line);
   const qty = Number(line.quantity) || 0;
 
   const setConfig = (key, value) => onChange({ ...line, config: { ...line.config, [key]: value } });
@@ -179,16 +190,17 @@ function Line({ line, onChange, onEdit, onRemove }) {
         </div>
       </div>
 
-      {gaps.length > 0 && (
+      {extras.length > 0 && (
         <div style={{ padding: "0 0 14px", display: "flex", gap: 16, flexWrap: "wrap" }}>
-          {gaps.map(g => (
+          {extras.map(g => (
             <div key={g.field}>
-              <div style={{ fontSize: 10.5, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: UI.warn, marginBottom: 5 }}>
+              <div style={{ fontSize: 10.5, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: g.missing ? UI.warn : UI.muted, marginBottom: 5 }}>
                 {g.label}{g.field === "wallThickness" ? " (mm)" : " price"}
               </div>
               <SmallInput
                 id={`${line.id}-${g.field}`}
                 value={line.config[g.field]}
+                warn={g.missing}
                 placeholder={g.field === "wallThickness" ? "200" : "0.00"}
                 onChange={v => setConfig(g.field, v.replace(/[^\d.]/g, "").slice(0, 8))}
               />
@@ -533,7 +545,7 @@ export default function Pricer({ openProject, onSavedProject }) {
           </h2>
           <p style={{ margin: "8px 0 0", fontSize: 14, lineHeight: 1.55, color: UI.body, maxWidth: 640 }}>
             Build a schedule of steel doorsets and price it. Figures are ex-works
-            in euro, from the manufacturer&rsquo;s October 2025 list — the same
+            in euro, from the manufacturer&rsquo;s 2026 list — the same
             numbers as the spreadsheet, without the spreadsheet.
           </p>
         </div>
