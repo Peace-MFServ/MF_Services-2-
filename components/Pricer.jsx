@@ -80,6 +80,11 @@ function Button({ onClick, children, primary, disabled, icon, wrap }) {
 }
 
 /** A labelled pair of download buttons — customer or internal. */
+const fieldLabel = {
+  display: "block", fontSize: 10.5, fontWeight: 600, letterSpacing: "0.06em",
+  textTransform: "uppercase", color: UI.muted, fontFamily: FONT,
+};
+
 function DownloadGroup({ heading, colour, note, buttons, primary = false, exporting, onDownload }) {
   return (
     <div style={{ marginTop: primary ? 0 : 18 }}>
@@ -347,6 +352,7 @@ export default function Pricer({ openProject, onSavedProject }) {
   const [labourDays, setLabourDays] = useState("");
   const [discount, setDiscount] = useState("");
   const [project, setProject] = useState("");
+  const [customer, setCustomer] = useState("");
   const [exporting, setExporting] = useState(null);   // null | "pdf" | "xlsx"
   const [projects, setProjects] = useState(null);
   const [notice, setNotice] = useState(null);
@@ -368,6 +374,7 @@ export default function Pricer({ openProject, onSavedProject }) {
         if (saved.labourDays) setLabourDays(saved.labourDays);
         if (saved.discount) setDiscount(saved.discount);
         if (saved.project) setProject(saved.project);
+        if (saved.customer) setCustomer(saved.customer);
       }
     } catch { /* a corrupt quote is not worth breaking the tab over */ }
     setHydrated(true);
@@ -377,10 +384,10 @@ export default function Pricer({ openProject, onSavedProject }) {
     if (!hydrated) return;
     try {
       window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify({
-        lines, transport, labourMen, labourDays, discount, project,
+        lines, transport, labourMen, labourDays, discount, project, customer,
       }));
     } catch { /* best-effort */ }
-  }, [hydrated, lines, transport, labourMen, labourDays, discount, project]);
+  }, [hydrated, lines, transport, labourMen, labourDays, discount, project, customer]);
 
   // Whatever is open in the Specification Tool, described so the offer
   // to bring it across says what it actually is.
@@ -493,7 +500,7 @@ export default function Pricer({ openProject, onSavedProject }) {
 
   // The screen shows the same quote the downloads render — one
   // computation in lib/quote.js, three views of it.
-  const quoteInputs = { lines, margin: DEFAULT_MARGIN, transport, labourMen, labourDays, discount, project };
+  const quoteInputs = { lines, margin: DEFAULT_MARGIN, transport, labourMen, labourDays, discount, project, customer };
   const q = buildQuote(quoteInputs);
 
   // Both files are renderings of one quote, built at the moment of
@@ -547,10 +554,10 @@ export default function Pricer({ openProject, onSavedProject }) {
     }
     try {
       window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify({
-        lines: nextLines, transport, labourMen, labourDays, discount, project,
+        lines: nextLines, transport, labourMen, labourDays, discount, project, customer,
       }));
     } catch { /* best-effort — the effect writes it again anyway */ }
-  }, [editing, lines, transport, labourMen, labourDays, discount, project]);
+  }, [editing, lines, transport, labourMen, labourDays, discount, project, customer]);
 
   const quoteSaveButton = (
     <SaveProjectButton
@@ -596,13 +603,25 @@ export default function Pricer({ openProject, onSavedProject }) {
 
       <div style={{ ...cardStyle, marginBottom: 16 }}>
         <CardTitle icon={ICONS.project}>Project</CardTitle>
-        <div style={{ marginBottom: 20, maxWidth: 340 }}>
-          <input
-            id="pricer-project" value={project} placeholder="e.g. Docklands Block C"
-            aria-label="Project"
-            onChange={e => setProject(e.target.value)}
-            style={{ ...fieldStyle, padding: "10px 12px", fontSize: 13 }} className="mf-field"
-          />
+        <div className="qs-2col" style={{ gap: 12, marginBottom: 20, maxWidth: 700 }}>
+          <label style={fieldLabel}>
+            Project
+            <input
+              id="pricer-project" value={project} placeholder="e.g. Docklands Block C"
+              onChange={e => setProject(e.target.value)}
+              style={{ ...fieldStyle, padding: "10px 12px", fontSize: 13, marginTop: 6 }} className="mf-field"
+            />
+          </label>
+          {/* Who the customer quote is addressed to — optional; the
+              quote leaves the block out when it is empty. */}
+          <label style={fieldLabel}>
+            Prepared for <span style={{ fontWeight: 400, textTransform: "none", letterSpacing: 0 }}>(optional)</span>
+            <input
+              id="pricer-customer" value={customer} placeholder="e.g. J. Murphy, ABC Construction"
+              onChange={e => setCustomer(e.target.value)}
+              style={{ ...fieldStyle, padding: "10px 12px", fontSize: 13, marginTop: 6 }} className="mf-field"
+            />
+          </label>
         </div>
 
         <Button primary onClick={() => setEditing({ lineId: null, config: initialConfig(), name: "", sessionKey: lineId() })}>
