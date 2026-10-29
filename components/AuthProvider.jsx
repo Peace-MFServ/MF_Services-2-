@@ -39,6 +39,9 @@ export function useAuth() {
 export default function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [role, setRole] = useState(ROLES.PUBLIC);
+  // The admin flag is set by hand on one profile in the console; the
+  // rules stop anyone setting it on their own.
+  const [admin, setAdmin] = useState(false);
   // Until Firebase has reported in we do not know whether anyone is
   // signed in, and painting the signed-out state first makes the page
   // flicker for people who are.
@@ -52,16 +55,19 @@ export default function AuthProvider({ children }) {
       setUser(current);
       if (!current) {
         setRole(ROLES.PUBLIC);
+        setAdmin(false);
         setReady(true);
         return;
       }
       try {
         const snap = await getDoc(doc(db, "users", current.uid));
         setRole(snap.exists() ? (snap.data().role ?? ROLES.TRADE) : ROLES.TRADE);
+        setAdmin(snap.exists() && snap.data().admin === true);
       } catch {
         // A missing or unreadable profile should not lock someone out
         // of what any signed-in user can do.
         setRole(ROLES.TRADE);
+        setAdmin(false);
       }
       setReady(true);
     });
@@ -101,6 +107,7 @@ export default function AuthProvider({ children }) {
     user, role, ready,
     signedIn: !!user,
     isStaff: role === ROLES.STAFF,
+    isAdmin: admin,
     signUp, signIn, signOut, resetPassword,
     promptOpen, promptSignIn, closePrompt,
   };

@@ -350,7 +350,9 @@ export default function SpecificationTool() {
 
   const openProjectRecord = useCallback(record => {
     writeWorkingState(record.kind, record.selectionId, record.payload);
-    setOpenProject({ id: record.id, name: record.name });
+    // A copy (someone else's project opened by the admin) has no id,
+    // so its Save makes a new project rather than overwriting theirs.
+    setOpenProject(record.id ? { id: record.id, name: record.name } : null);
     choose({ kind: record.kind, id: record.selectionId });
   }, [choose]);
 

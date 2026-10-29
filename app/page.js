@@ -4,6 +4,7 @@ import { FONT } from '../lib/theme'
 import SpecificationTool from '../components/SpecificationTool'
 import OverpressureCalculator from '../components/OverpressureCalculator'
 import Pricer from '../components/Pricer'
+import AllProjects from '../components/AllProjects'
 import AuthProvider from '../components/AuthProvider'
 import { AccountBar } from '../components/AccountPanel'
 import SignInDialog from '../components/SignInDialog'
@@ -18,6 +19,9 @@ const TABS = [
   // The estimator is ours. It is not shown to anyone else, and the
   // endpoint behind it refuses anyone else regardless.
   { id: 'pricer', label: 'Pricer', staffOnly: true },
+  // Everyone's saved projects — the admin's alone; the security rules
+  // refuse the read to anyone else.
+  { id: 'all-projects', label: 'All projects', adminOnly: true },
 ]
 
 // The specification tool and the pricer paint their own canvas edge
@@ -25,6 +29,7 @@ const TABS = [
 // reading width here.
 const CONTENT_MAX_WIDTH = {
   overpressure: 1400,
+  'all-projects': 1200,
 }
 const FULL_BLEED = new Set(["specification", "pricer"])
 
@@ -45,13 +50,13 @@ function Toolbox() {
   // Bumped when the logo is clicked: remounts the specification tool
   // so it forgets its selection and shows the front door again.
   const [homeNonce, setHomeNonce] = useState(0)
-  const { isStaff } = useAuth()
+  const { isStaff, isAdmin } = useAuth()
   const { pendingOpen, consumeOpen } = useProjects()
   // The saved quote currently open in the pricer, so its Save can
   // overwrite rather than copy. Remounted via nonce when one opens.
   const [openQuote, setOpenQuote] = useState(null)
   const [pricerNonce, setPricerNonce] = useState(0)
-  const tabs = TABS.filter(t => !t.staffOnly || isStaff)
+  const tabs = TABS.filter(t => (!t.staffOnly || isStaff) && (!t.adminOnly || isAdmin))
 
   // Route an opened project to the tool that owns it. Quotes belong
   // to the pricer; everything else belongs to the specification tool,
@@ -60,7 +65,9 @@ function Toolbox() {
     if (!pendingOpen) return
     if (pendingOpen.kind === 'quote') {
       writeWorkingState(pendingOpen.kind, pendingOpen.selectionId, pendingOpen.payload)
-      setOpenQuote({ id: pendingOpen.id, name: pendingOpen.name })
+      // A copy (someone else's quote opened by the admin) has no id, so
+      // its Save makes a new project rather than overwriting theirs.
+      setOpenQuote(pendingOpen.id ? { id: pendingOpen.id, name: pendingOpen.name } : null)
       setPricerNonce(n => n + 1)
       setActiveTab('pricer')
       consumeOpen()
@@ -125,6 +132,7 @@ function Toolbox() {
       }}>
         {activeTab === 'specification' && <SpecificationTool key={homeNonce} />}
         {activeTab === 'overpressure'  && <OverpressureCalculator />}
+        {activeTab === 'all-projects'  && <AllProjects />}
         {activeTab === 'pricer'        && (
           <Pricer key={pricerNonce} openProject={openQuote} onSavedProject={setOpenQuote} />
         )}

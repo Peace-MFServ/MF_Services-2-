@@ -7,9 +7,10 @@ rules_version = '2';
 // actually protects the data — the interface merely reflects them.
 //
 // The rule that matters most: a person may create and read their own
-// profile, but may never write their own role. Staff is granted from
-// outside the app (console or an admin acting server-side), so nobody
-// can promote themselves into the prices.
+// profile, but may never write their own role or admin flag. Staff and
+// admin are granted from outside the app (by hand in the console), so
+// nobody can promote themselves into the prices or into everyone's
+// projects.
 // ─────────────────────────────────────────────────────────────────
 
 service cloud.firestore {
@@ -29,26 +30,37 @@ service cloud.firestore {
         && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'staff';
     }
 
+    // The one account that sees every saved project.
+    function isAdmin() {
+      return signedIn()
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('admin', false) == true;
+    }
+
     // ── Profiles ────────────────────────────────────────────────
     match /users/{uid} {
-      allow read: if isOwner(uid) || isStaff();
+      allow read: if isOwner(uid) || isStaff() || isAdmin();
 
-      // A new account may only create itself, and only as trade.
+      // A new account may only create itself, only as trade, and never
+      // as an admin.
       allow create: if isOwner(uid)
-        && request.resource.data.role == 'trade';
+        && request.resource.data.role == 'trade'
+        && !('admin' in request.resource.data);
 
-      // Details are the owner's to change; the role is not.
+      // Details are the owner's to change; the role and admin flag are not.
       allow update: if isOwner(uid)
-        && request.resource.data.role == resource.data.role;
+        && request.resource.data.role == resource.data.role
+        && request.resource.data.get('admin', false) == resource.data.get('admin', false);
 
       allow delete: if false;
     }
 
     // ── Saved projects ──────────────────────────────────────────
-    // A project belongs to whoever created it. Staff can read them so
-    // sales can pick up an enquiry, but cannot quietly rewrite one.
+    // A project belongs to whoever created it. The admin can read every
+    // project, but cannot quietly rewrite one — opening someone else's
+    // saves as a copy of the admin's own.
     match /projects/{projectId} {
-      allow read: if isOwner(resource.data.ownerId) || isStaff();
+      allow read: if isOwner(resource.data.ownerId) || isAdmin();
       allow create: if isOwner(request.resource.data.ownerId);
       allow update: if isOwner(resource.data.ownerId)
         && request.resource.data.ownerId == resource.data.ownerId;
