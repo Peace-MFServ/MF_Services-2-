@@ -8,7 +8,8 @@ import {
   hardwareNeedsText, validateSteelDoor,
 } from "../lib/steelDoor";
 import { useDoorsetConfig, initialConfig } from "./steelSpecState";
-import { buildQuote, DEFAULT_MARGIN, MIN_MEN, MAX_DISCOUNT, LABOUR_RATE } from "../lib/quote";
+import { buildQuote, DEFAULT_MARGIN, MIN_MEN, MAX_DISCOUNT, LABOUR_RATE, VAT_RATES, DEFAULT_VAT } from "../lib/quote";
+import { buildCustomerQuote } from "../lib/customerQuote";
 import SteelDoorsetFields from "./SteelDoorsetFields";
 import { UI, FONT, fieldStyle, cardStyle } from "../lib/theme";
 import { QS, CardTitle, ICONS } from "./quickSpecUI";
@@ -116,6 +117,32 @@ function DownloadGroup({ heading, colour, note, buttons, primary = false, export
       </div>
       <p style={{ margin: "7px 0 0", fontSize: 11.5, lineHeight: 1.45, color: UI.muted }}>{note}</p>
     </div>
+  );
+}
+
+/** A labelled text box for the quote's header details. */
+function TextField({ id, label, value, onChange, placeholder }) {
+  return (
+    <label style={fieldLabel}>
+      {label}
+      <input
+        id={id} value={value ?? ""} placeholder={placeholder}
+        onChange={e => onChange(e.target.value)}
+        style={{ ...fieldStyle, padding: "10px 12px", fontSize: 13, marginTop: 6 }} className="mf-field"
+      />
+    </label>
+  );
+}
+
+/** A VAT rate, picked from the three in use. */
+function VatSelect({ id, value, onChange }) {
+  return (
+    <select
+      id={id} value={value} onChange={e => onChange(e.target.value)}
+      style={{ ...fieldStyle, width: 82, padding: "6px 8px", fontSize: 12.5 }} className="mf-field"
+    >
+      {VAT_RATES.map(r => <option key={r} value={String(r)}>{r}%</option>)}
+    </select>
   );
 }
 
@@ -353,6 +380,12 @@ export default function Pricer({ openProject, onSavedProject }) {
   const [discount, setDiscount] = useState("");
   const [project, setProject] = useState("");
   const [customer, setCustomer] = useState("");
+  // The customer quote's header: address, site, order number and who
+  // is selling it. Kept as one object so it saves and restores whole.
+  const [details, setDetails] = useState({});
+  const setDetail = key => value => setDetails(d => ({ ...d, [key]: value }));
+  const [vatDoorsets, setVatDoorsets] = useState(String(DEFAULT_VAT));
+  const [vatDelivery, setVatDelivery] = useState(String(DEFAULT_VAT));
   const [exporting, setExporting] = useState(null);   // null | "pdf" | "xlsx"
   const [projects, setProjects] = useState(null);
   const [notice, setNotice] = useState(null);
@@ -375,6 +408,9 @@ export default function Pricer({ openProject, onSavedProject }) {
         if (saved.discount) setDiscount(saved.discount);
         if (saved.project) setProject(saved.project);
         if (saved.customer) setCustomer(saved.customer);
+        if (saved.details && typeof saved.details === "object") setDetails(saved.details);
+        if (saved.vatDoorsets) setVatDoorsets(saved.vatDoorsets);
+        if (saved.vatDelivery) setVatDelivery(saved.vatDelivery);
       }
     } catch { /* a corrupt quote is not worth breaking the tab over */ }
     setHydrated(true);
@@ -385,9 +421,10 @@ export default function Pricer({ openProject, onSavedProject }) {
     try {
       window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify({
         lines, transport, labourMen, labourDays, discount, project, customer,
+        details, vatDoorsets, vatDelivery,
       }));
     } catch { /* best-effort */ }
-  }, [hydrated, lines, transport, labourMen, labourDays, discount, project, customer]);
+  }, [hydrated, lines, transport, labourMen, labourDays, discount, project, customer, details, vatDoorsets, vatDelivery]);
 
   // Whatever is open in the Specification Tool, described so the offer
   // to bring it across says what it actually is.
@@ -500,8 +537,12 @@ export default function Pricer({ openProject, onSavedProject }) {
 
   // The screen shows the same quote the downloads render — one
   // computation in lib/quote.js, three views of it.
-  const quoteInputs = { lines, margin: DEFAULT_MARGIN, transport, labourMen, labourDays, discount, project, customer };
+  const quoteInputs = {
+    lines, margin: DEFAULT_MARGIN, transport, labourMen, labourDays, discount, project, customer,
+    details, vatDoorsets, vatDelivery,
+  };
   const q = buildQuote(quoteInputs);
+  const vat = buildCustomerQuote(q).vat;
 
   // Both files are renderings of one quote, built at the moment of
   // download so they always match the screen. The generators are
@@ -555,9 +596,10 @@ export default function Pricer({ openProject, onSavedProject }) {
     try {
       window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify({
         lines: nextLines, transport, labourMen, labourDays, discount, project, customer,
+        details, vatDoorsets, vatDelivery,
       }));
     } catch { /* best-effort — the effect writes it again anyway */ }
-  }, [editing, lines, transport, labourMen, labourDays, discount, project, customer]);
+  }, [editing, lines, transport, labourMen, labourDays, discount, project, customer, details, vatDoorsets, vatDelivery]);
 
   const quoteSaveButton = (
     <SaveProjectButton
@@ -603,25 +645,19 @@ export default function Pricer({ openProject, onSavedProject }) {
 
       <div style={{ ...cardStyle, marginBottom: 16 }}>
         <CardTitle icon={ICONS.project}>Project</CardTitle>
+        {/* The customer quote's header. Everything is optional: a
+            detail left empty prints as a dash, an address line not at all. */}
         <div className="qs-2col" style={{ gap: 12, marginBottom: 20, maxWidth: 700 }}>
-          <label style={fieldLabel}>
-            Project
-            <input
-              id="pricer-project" value={project} placeholder="e.g. Docklands Block C"
-              onChange={e => setProject(e.target.value)}
-              style={{ ...fieldStyle, padding: "10px 12px", fontSize: 13, marginTop: 6 }} className="mf-field"
-            />
-          </label>
-          {/* Who the customer quote is addressed to — optional; the
-              quote leaves the block out when it is empty. */}
-          <label style={fieldLabel}>
-            Prepared for <span style={{ fontWeight: 400, textTransform: "none", letterSpacing: 0 }}>(optional)</span>
-            <input
-              id="pricer-customer" value={customer} placeholder="e.g. J. Murphy, ABC Construction"
-              onChange={e => setCustomer(e.target.value)}
-              style={{ ...fieldStyle, padding: "10px 12px", fontSize: 13, marginTop: 6 }} className="mf-field"
-            />
-          </label>
+          <TextField id="pricer-project" label="Project" value={project} onChange={setProject} placeholder="e.g. Docklands Block C" />
+          <TextField id="pricer-order" label="Order no." value={details.orderNo} onChange={setDetail("orderNo")} />
+          <TextField id="pricer-customer" label="Customer" value={customer} onChange={setCustomer} placeholder="e.g. ABC Construction" />
+          <TextField id="pricer-site" label="Site" value={details.site} onChange={setDetail("site")} placeholder={project || "e.g. Docklands Block C"} />
+          <TextField id="pricer-address1" label="Customer address" value={details.address1} onChange={setDetail("address1")} placeholder="Line 1" />
+          <TextField id="pricer-site-contact" label="Site contact" value={details.siteContact} onChange={setDetail("siteContact")} />
+          <TextField id="pricer-address2" label="Address line 2" value={details.address2} onChange={setDetail("address2")} />
+          <TextField id="pricer-salesperson" label="Salesperson" value={details.salesperson} onChange={setDetail("salesperson")} />
+          <TextField id="pricer-address3" label="Address line 3" value={details.address3} onChange={setDetail("address3")} />
+          <TextField id="pricer-salesperson-email" label="Salesperson email" value={details.salespersonEmail} onChange={setDetail("salespersonEmail")} />
         </div>
 
         <Button primary onClick={() => setEditing({ lineId: null, config: initialConfig(), name: "", sessionKey: lineId() })}>
@@ -766,6 +802,32 @@ export default function Pricer({ openProject, onSavedProject }) {
               Total (ex. VAT)
             </span>
             <span style={{ fontSize: 19, fontWeight: 700, color: UI.ink }}>{money.format(q.total)}</span>
+          </div>
+
+          {/* VAT goes on top, at the rate picked for each part — usually
+              the same, but product at 23% with labour at 13.5% happens. */}
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 14, padding: "10px 0 6px" }}>
+            <span style={{ fontSize: 13 }}>VAT on doorsets</span>
+            <VatSelect id="vat-doorsets" value={vatDoorsets} onChange={setVatDoorsets} />
+          </div>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 14, padding: "6px 0" }}>
+            <span style={{ fontSize: 13 }}>VAT on delivery and installation</span>
+            <VatSelect id="vat-delivery" value={vatDelivery} onChange={setVatDelivery} />
+          </div>
+          {vat.lines.map(l => (
+            <div key={l.label} style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 14, padding: "6px 0" }}>
+              <span style={{ fontSize: 13 }}>{l.label}</span>
+              <span style={{ fontSize: 13.5, fontWeight: 600, color: UI.ink }}>{money.format(l.amount)}</span>
+            </div>
+          ))}
+          <div style={{
+            display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 14,
+            padding: "10px 0 0", marginTop: 6, borderTop: `1px solid ${UI.rule}`,
+          }}>
+            <span style={{ fontSize: 13, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: UI.ink }}>
+              Total inc VAT
+            </span>
+            <span style={{ fontSize: 16, fontWeight: 700, color: UI.ink }}>{money.format(vat.totalIncVat)}</span>
           </div>
 
           <div style={{ marginTop: 16, paddingTop: 14, borderTop: `1px solid ${UI.ruleStrong}` }}>
